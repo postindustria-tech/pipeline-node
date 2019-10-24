@@ -1,0 +1,86 @@
+trigger:
+  - master
+  - develop
+  - release/*  
+    
+pool:
+  name: Azure Pipelines
+  demands: npm
+
+steps:
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.core'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.core
+    verbose: true
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.engines'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.engines
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.engines.fiftyone'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.engines.fiftyone
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.devicedetection'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.devicedetection
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.cloudrequestengine'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.cloudrequestengine
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.javascript'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.javascriptbundler
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm publish fiftyone.pipeline.geolocation'
+  inputs:
+    command: publish
+    workingDir: fiftyone.pipeline.geolocation
+    verbose: false
+    publishRegistry: useFeed
+    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
+  continueOnError: true
+  condition: succeededOrFailed()

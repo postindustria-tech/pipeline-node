@@ -1,13 +1,8 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
-trigger:
-- master
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
+  
 strategy:
   matrix:
     node_8_x:
@@ -26,4 +21,6 @@ steps:
     jest test --reporter jest-junit-reporter
     npm run build
   displayName: 'npm install and build'
+
+
 
