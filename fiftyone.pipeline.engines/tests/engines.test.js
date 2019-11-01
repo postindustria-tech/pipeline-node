@@ -1,8 +1,8 @@
-let engine = require("../engine");
-let pipelineBuilder = require("../../FiftyOne.Pipeline.Core/pipelineBuilder");
-let aspectDataDictionary = require("../aspectDataDictionary");
-let basicListEvidenceKeyFilter = require("../../FiftyOne.Pipeline.Core/basicListEvidenceKeyFilter");
-let lruCache = require("../lruCache");
+let engine = require(__dirname + "/../engine");
+let pipelineBuilder = require(__dirname + "/../../fiftyone.pipeline.core/pipelineBuilder");
+let aspectDataDictionary = require(__dirname + "/../aspectDataDictionary");
+let basicListEvidenceKeyFilter = require(__dirname + "/../../fiftyone.pipeline.core/basicListEvidenceKeyFilter");
+let lruCache = require(__dirname + "/../lruCache");
 
 let cache = new lruCache({ size: 1 });
 

@@ -1,7 +1,7 @@
-let flowElement = require("../../FiftyOne.Pipeline.Core/flowElement");
-let pipelineBuilder = require("../../FiftyOne.Pipeline.Core/pipelineBuilder");
-let elementDataDictionary = require("../../FiftyOne.Pipeline.Core/elementDataDictionary");
-let JavaScriptBundler = require("../javascriptBundler");
+let flowElement = require(__dirname + "/../../fiftyone.pipeline.core/flowElement");
+let pipelineBuilder = require(__dirname + "/../../fiftyone.pipeline.core/pipelineBuilder");
+let elementDataDictionary = require(__dirname + "/../../fiftyone.pipeline.core/elementDataDictionary");
+let JavaScriptBundler = require(__dirname + "/../javascriptBundler");
 
 let JavaScriptCreator = new flowElement({
     dataKey: "MyJSEngine",
@@ -19,14 +19,10 @@ let JavaScriptCreator = new flowElement({
     },
     properties: {
         "first-value": {
-            meta: {
-                type: "javascript"
-            }
+            type: "javascript"
         },
         "second.value": {
-            meta: {
-                type: "javascript"
-            }
+            type: "javascript"
         }
     }
 });
@@ -42,16 +38,14 @@ test('JavaScript bundler', done => {
 
     flowData.process().then(function (output) {
 
-        let JS = flowData.get("JavaScriptBundler").get("javascript");
+        let JS = flowData.get("javascript").get("javascript");
 
-        console.log(JS);
-        
         eval(JS);
-    
+
         expect(testResults["first"] === true && testResults["second"] === false).toBe(true);
 
         done();
-    
+
     })
 
 });
