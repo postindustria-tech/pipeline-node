@@ -127,7 +127,7 @@ class shareUsage extends engine {
         let data = "<devices>" + this.shareData.join() + "</devices>";
 
         let options = {
-            hostname: 'devices.51degrees.com',
+            hostname: 'devices-v4.51degrees.com',
             path: '/new.ashx',
             method: 'POST',
             headers: { 'Content-Encoding': 'gzip', 'Content-Type': "text/xml" }
