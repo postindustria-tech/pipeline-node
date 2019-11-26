@@ -43,7 +43,7 @@ let test = function (userAgent) {
             // Add User-Agent header evidence for processing
             flowData.evidence.add("header.user-agent", userAgent);
             // Retrieve IsMobile device information from the pipeline
-            resolve(flowData.get("device").get("ismobile"));
+            resolve(flowData.device.ismobile);
         });
     });
 }

@@ -197,9 +197,17 @@ class pipeline {
     */
     createFlowData() {
 
-        this.log("info", "flowData created");
+        let pipelineFlowData = new flowData(this);
 
-        return new flowData(this);
+        // Create getters for flowElements by key so users can use flowData.elementDataKey instead of flowData.get(elementDataKey)
+
+        Object.keys(this.flowElements).forEach(function (element) {
+
+            Object.defineProperty(pipelineFlowData, element, { get: function () { return this.get(element) } });
+
+        });
+
+        return pipelineFlowData;
 
     }
 

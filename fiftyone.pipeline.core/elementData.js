@@ -15,6 +15,10 @@ class elementData {
 
         this.flowElement = flowElement;
 
+        return new Proxy(this, {
+            get: (data, key) => data[key] || data.get(key)
+        });
+
     }
 
     /**

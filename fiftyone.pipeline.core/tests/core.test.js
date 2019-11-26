@@ -75,7 +75,7 @@ let error = new flowElement({
 });
 
 let stop = new flowElement({
-    dataKey: "stop",
+    dataKey: "stopElement",
     processInternal: function (flowData) {
 
         flowData.stop();
@@ -157,6 +157,30 @@ test('get', done => {
     syncFlowData.process().then(function () {
 
         expect(syncFlowData.get("sync").get("integer")).toBe(5);
+
+        done();
+
+    });
+
+});
+
+test('get from flowElement property', done => {
+
+    syncFlowData.process().then(function () {
+
+        expect(syncFlowData.sync.get("integer")).toBe(5);
+
+        done();
+
+    });
+
+});
+
+test('get from flowElement property as property', done => {
+
+    syncFlowData.process().then(function () {
+
+        expect(syncFlowData.sync.integer).toBe(5);
 
         done();
 
