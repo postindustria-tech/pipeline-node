@@ -8,22 +8,16 @@ let require51 = (requestedPackage) => {
     }
 }
 
-const deviceDetection = require("../deviceDetectionOnPremise");
-const pipelineBuilder = require51("fiftyone.pipeline.core").pipelineBuilder;
+const ddPipelineBuilder = require("../deviceDetectionPipelineBuilder");
 const fs = require("fs");
 
-// Create a new Device Detection engine and set the config.
+// Create a new Device Detection pipeline and set the config.
 // Not supplying a dataFile will default the implementation to use our Cloud service. 
-let engine = new deviceDetection({
-    // Performance profiles and additional options will be available in a later release.
-    /* userAgentCacheCapacity: 100, 
-    performanceProfile: "HighPerformance",*/
+let pipeline = new ddPipelineBuilder({    
+    performanceProfile: "MaxPerformance",
     dataFile: "../datafile/51Degrees-LiteV3.2.dat",
-    licenceKeys: "YOUR_LICENSE_KEY"
-})
-
-// Create a new instance of the pipeline and add the Device Detection engine.
-let pipeline = new pipelineBuilder().add(engine).build();
+    autoUpdate: false
+}).build();
 
 pipeline.on("error", console.error);
 

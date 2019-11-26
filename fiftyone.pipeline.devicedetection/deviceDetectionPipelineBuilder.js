@@ -26,9 +26,10 @@ class deviceDetectionPipelineBuilder extends pipelineBuilder {
      * @param {Boolean} options.shareUsage // include share usage element?
      * @param {String} options.resourceKey // resourceKey for cloud
      * @param {Number} options.cacheSize // size of the default cache (includes cache if set)
+     * @param {String} options.performanceProfile // used to control the tradeoff between performance and system memory usage (Only applies to on-premise, not cloud)
      * 
     */
-    constructor({ licenceKeys = null, dataFile = null, autoUpdate = true, shareUsage = true, resourceKey = null, cacheSize = null }) {
+    constructor({ licenceKeys = null, dataFile = null, autoUpdate = true, shareUsage = true, resourceKey = null, cacheSize = null, performanceProfile = "LowMemory" }) {
 
         // if dataFile is set, check the file extension to work out which type of datafile it is
 
@@ -52,7 +53,7 @@ class deviceDetectionPipelineBuilder extends pipelineBuilder {
 
         if (dataFile) {
 
-            this.flowElements.push(new deviceDetectionOnPremise({ dataFile, autoUpdate, licenceKeys, cache }));
+            this.flowElements.push(new deviceDetectionOnPremise({ dataFile, autoUpdate, licenceKeys, cache, performanceProfile }));
 
         } else {
 

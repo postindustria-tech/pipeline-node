@@ -1,3 +1,11 @@
+let require51 = (requestedPackage) => {
+    try {
+        return require(__dirname + "/../" + requestedPackage);
+    } catch (e) {
+        return require(requestedPackage);
+    }
+};
+
 const pipeline = require("./pipeline");
 const fs = require("fs");
 
@@ -33,7 +41,7 @@ class pipelineBuilder {
 
         config.PipelineOptions.Elements.forEach(function (element) {
 
-            let flowElement = require(element.elementName);
+            let flowElement = require51(element.elementName);
 
             if (!element.elementParameters) {
 
