@@ -22,7 +22,7 @@ let pipeline = new ddPipelineBuilder({
 pipeline.on("error", console.error);
 
 // Read from a list of 20000 User Agents.
-let userAgents = fs.readFileSync("20000_User_Agents.csv", "utf8");
+let userAgents = fs.readFileSync("../datafile/20000 User Agents.csv", "utf8");
 
 userAgents = userAgents.split("\n");
 

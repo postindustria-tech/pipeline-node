@@ -7,6 +7,7 @@ let require51 = (requestedPackage) => {
 }
 
 const aspectData = require51("fiftyone.pipeline.engines").aspectData;
+const aspectPropertyValue = require51("fiftyone.pipeline.engines/aspectPropertyValue");
 const dataFileMissingPropertyService = require("./dataFileMissingPropertyService");
 
 class swigData extends aspectData {
@@ -40,7 +41,7 @@ class swigData extends aspectData {
             let value;
 
             switch (property.meta.type) {
-                case "bool":
+                case "bool":                
                     value = this.swigResults.getValueAsBool(property.meta.name);
                     break;
                 case "string":
@@ -64,8 +65,17 @@ class swigData extends aspectData {
                     break;
             }
 
-            return value;
+            let result = new aspectPropertyValue();
+            if (value.hasValue())
+            {
+                result.value = value.getValue();
+            }
+            else
+            {
+                result.noValueMessage = value.getNoValueMessage();
+            }
 
+            return result;
         }
 
     }
