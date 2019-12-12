@@ -1,7 +1,7 @@
 {
   "name": "fiftyone.pipeline.core",
   "version": "1.0.21",
-  "description": "",
+  "description": "Core library for the 51Degrees Pipeline API",
   "directories": {
     "test": "tests"
   },
@@ -13,5 +13,12 @@
   "license": "MPL-2.0",
   "devDependencies": {
     "jest": "^24.9.0"
-  }
+  },
+  "contributors": [
+    "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",
+	"Steve Ballantine <stephen@51degrees.com> (https://51degrees.com)",
+	"Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
+	"Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
+  ],
+  "license": "AGPL-3.0-or-later"
 }

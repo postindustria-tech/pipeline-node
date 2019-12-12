@@ -1,7 +1,7 @@
 {
   "name": "fiftyone.pipeline.cloudrequestengine",
   "version": "1.0.21",
-  "description": "",
+  "description": "Cloud request engine for the 51Degrees Pipeline API",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -16,5 +16,12 @@
   "dependencies": {
     "fiftyone.pipeline.core": "^1.0.0",
     "fiftyone.pipeline.engines": "^1.0.0"
-  }
+  },
+  "contributors": [
+    "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",
+	"Steve Ballantine <stephen@51degrees.com> (https://51degrees.com)",
+	"Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
+	"Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
+  ],
+  "license": "AGPL-3.0-or-later"
 }
