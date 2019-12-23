@@ -130,14 +130,6 @@ steps:
   displayName: 'Copy tgz files'
   condition: succeededOrFailed()
 
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/package.json' 
-    targetFolder: $(Build.ArtifactStagingDirectory)/npm
-  displayName: 'Copy package.json files'
-  condition: succeededOrFailed()
-
 - script: |
     ls $(Build.ArtifactStagingDirectory)/**/*
   displayName: 'List artifact staging contents'
