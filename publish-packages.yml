@@ -97,60 +97,50 @@ steps:
   continueOnError: true
   condition: succeededOrFailed()
 
-# Publish each package.
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.core'
-  inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.core
-    verbose: true
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+# Create packages
+- script: |
+    cd fiftyone.pipeline.core
+    npm pack
+    cd ..
+    cd fiftyone.pipeline.engines
+    npm pack
+    cd ..
+    cd fiftyone.pipeline.engines.fiftyone
+    npm pack
+    cd ..
+    cd fiftyone.pipeline.cloudrequestengine
+    npm pack
+    cd ..
+    cd fiftyone.pipeline.javascriptbundler
+    npm pack
+  displayName: 'Create npm packages for later release'
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.engines'
-  inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.engines
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+- script: |
+    ls **/*.tgz
+  displayName: 'List tgz files'
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.engines.fiftyone'
+# Create artifact containing packages.
+- task: CopyFiles@2
   inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.engines.fiftyone
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/*.tgz' 
+    targetFolder: $(Build.ArtifactStagingDirectory)/npm
+  displayName: 'Copy tgz files'
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.cloudrequestengine'
+- task: CopyFiles@2
   inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.cloudrequestengine
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/package.json' 
+    targetFolder: $(Build.ArtifactStagingDirectory)/npm
+  displayName: 'Copy package.json files'
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.javascript'
-  inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.javascriptbundler
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+- script: |
+    ls $(Build.ArtifactStagingDirectory)/**/*
+  displayName: 'List artifact staging contents'
   condition: succeededOrFailed()
 
 # Add a tag to the git repository with the version number of
@@ -161,4 +151,12 @@ steps:
     tagUser: 'Azure DevOps'
     tagEmail: 'CIUser@51Degrees.com'
     tag: 'v$(GitVersion.NuGetVersion)'
-  condition: succeededOrFailed()
+  condition: succeeded()
+
+# Publish artifacts to DevOps
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/npm'
+    artifactName: npm
+  displayName: 'Publish npm artifact'
+  condition: succeeded()
