@@ -23,5 +23,12 @@
     "Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
     "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
   ],
-  "license": "AGPL-3.0-or-later"
+  "license": "AGPL-3.0-or-later",
+  "bugs": { 
+    "url" : "https://github.com/51Degrees/pipeline-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/51Degrees/pipeline-node"
+  }
 }
