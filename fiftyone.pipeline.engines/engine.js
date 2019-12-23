@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- let require51 = (requestedPackage) => {
+let require51 = (requestedPackage) => {
     try {
         return require(__dirname + "/../" + requestedPackage)
     } catch (e) {

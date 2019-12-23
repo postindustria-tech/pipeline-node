@@ -1,15 +1,18 @@
 {
-  "name": "fiftyone.pipeline.core",
+  "name": "fiftyone.pipeline.javascriptbundler",
   "version": "1.0.21",
-  "description": "Core library for the 51Degrees Pipeline API",
+  "description": "JavaScript builder element for the 51Degrees Pipeline API",
+  "main": "index.js",
   "directories": {
     "test": "tests"
   },
-  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "author": "51Degrees <support@51Degrees.com>",
+  "dependencies": {
+    "fiftyone.pipeline.core": "^1.0.0"
+  },
   "devDependencies": {
     "jest": "^24.9.0"
   },

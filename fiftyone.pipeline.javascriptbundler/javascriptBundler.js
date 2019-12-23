@@ -56,6 +56,12 @@ class JavaScriptBundlerElement extends flowElement {
 
             Object.entries(javascript).forEach(function ([key, value]) {
 
+                if (value.hasValue) {
+
+                    value = value.value;
+
+                }
+
                 output += sanitizeName(key) + "(){" + value + "}";
 
             })
@@ -66,7 +72,7 @@ class JavaScriptBundlerElement extends flowElement {
 
             // Run function call for each property
 
-            Object.entries(javascript).forEach(function ([key, value]) {
+            Object.keys(javascript).forEach(function (key) {
 
                 output += "fod_co." + sanitizeName(key) + "();"
 

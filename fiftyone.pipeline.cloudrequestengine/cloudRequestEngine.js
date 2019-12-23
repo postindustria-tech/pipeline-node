@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- let require51 = (requestedPackage) => {
+let require51 = (requestedPackage) => {
     try {
         return require(__dirname + "/../" + requestedPackage)
     } catch (e) {
@@ -37,7 +37,7 @@ class cloudRequestEngine extends engine {
      * @param {String} options.resourceKey
      * @param {String} options.licenseKey
     */
-    constructor({ resourceKey, licenseKey, baseURL = "https://ts.51degrees.com/api/v4/" }) {
+    constructor({ resourceKey, licenseKey, baseURL = "https://cloud.51degrees.com/api/v4/" }) {
 
         super(...arguments);
 

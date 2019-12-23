@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- const flowData = require("./flowData");
+const flowData = require("./flowData");
 const EventEmitter = require("events");
 
 class pipeline {

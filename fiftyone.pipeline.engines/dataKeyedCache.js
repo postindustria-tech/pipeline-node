@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- class dataKeyedCache {
+class dataKeyedCache {
 
     /**
      *  A simple cache getter that takes a cache key and returns an element if it is found in the cache

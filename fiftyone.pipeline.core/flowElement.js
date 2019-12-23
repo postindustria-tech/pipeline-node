@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- const evidenceKeyFilterBase = require("./evidenceKeyFilter");
+const evidenceKeyFilterBase = require("./evidenceKeyFilter");
 
 class flowElement {
 

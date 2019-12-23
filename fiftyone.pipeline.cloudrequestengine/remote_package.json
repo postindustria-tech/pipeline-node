@@ -1,17 +1,21 @@
 {
-  "name": "fiftyone.pipeline.core",
+  "name": "fiftyone.pipeline.cloudrequestengine",
   "version": "1.0.21",
-  "description": "Core library for the 51Degrees Pipeline API",
+  "description": "Cloud request engine for the 51Degrees Pipeline API",
+  "main": "index.js",
   "directories": {
     "test": "tests"
   },
-  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
   "author": "51Degrees <support@51Degrees.com>",
   "devDependencies": {
     "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "fiftyone.pipeline.core": "^1.0.0",
+    "fiftyone.pipeline.engines": "^1.0.0"
   },
   "contributors": [
     "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",

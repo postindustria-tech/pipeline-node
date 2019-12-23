@@ -15,17 +15,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
-module.exports = {
 
-    aspectData: require("./aspectData"),
-    aspectDataDictionary: require("./aspectDataDictionary"),
-    aspectPropertyValue: require("./aspectPropertyValue"),
-    dataFile: require("./dataFile"),
-    dataKeyedCache: require("./dataKeyedCache"),
-    engine: require("./engine"),
-    lru: require("./lru"),
-    lruCache: require("./lruCache"),
-    missingPropertyService: require("./missingPropertyService"),
-    tracker: require("./tracker")
+// This async pipeline returns its results after a delay of 500 milliseconds
 
-}
+let pipelineCore = require("../../");
+let flowElement = pipelineCore.flowElement;
+let elementDataDictionary = pipelineCore.elementDataDictionary;
+
+module.exports = new flowElement({
+    dataKey: "async",
+    processInternal: function (flowData) {
+
+        let flowElement = this;
+
+        return new Promise(function (resolve, reject) {
+
+            setTimeout(function () {
+
+                let contents = { string: "hello" };
+
+                let data = new elementDataDictionary({ flowElement: flowElement, contents: contents });
+
+                flowData.setElementData(data);
+
+                resolve();
+
+            }, 500);
+
+        });
+
+    },
+    properties: {
+        string: {
+            type: "string"
+        }
+    }
+});

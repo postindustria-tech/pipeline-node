@@ -52,8 +52,14 @@ class dataFileUpdateService {
 
         if (dataFile.verifyIfModifiedSince) {
 
-            requestOptions.headers = {
-                'If-Modified-Since': dataFile.getDatePublished(),
+            try {
+                requestOptions.headers = {
+                    'If-Modified-Since': dataFile.getDatePublished(),
+                }
+            } catch (e) {
+
+                // getPublished might not exist if no datafile
+
             }
 
         }
@@ -74,7 +80,6 @@ class dataFileUpdateService {
 
             if (response.statusCode !== 200) {
 
-                dataFileUpdateService.checkNextUpdate(dataFile);
                 dataFile.updating = false;
 
                 switch (response.statusCode) {
@@ -95,6 +100,8 @@ class dataFileUpdateService {
                             dataFile.flowElement.dataKey + "'");
                         break;
                 }
+
+                dataFileUpdateService.checkNextUpdate(dataFile);
 
                 return false;
 
@@ -151,15 +158,37 @@ class dataFileUpdateService {
 
         let dataFileUpdateService = this;
 
-        fs.rename(filename, dataFile.path, function (err, data) {
+        fs.readFile(filename, function (err, data) {
 
-            dataFile.refresh();
+            fs.writeFile(dataFile.path, data, function (err) {
 
-            dataFileUpdateService.checkNextUpdate(dataFile);
+                if (err) {
 
-            dataFile.updating = false;
+                    dataFileUpdateService.pipe.log("error", err);
+
+                }
+
+                dataFile.refresh();
+
+                dataFileUpdateService.checkNextUpdate(dataFile);
+
+                dataFile.updating = false;
+
+                // Delete the temp file
+                fs.unlink(filename, function (err) {
+
+                    if (err) {
+
+                        dataFileUpdateService.pipeline.log("error", err);
+
+                    }
+
+                });
+
+            });
 
         });
+
     }
 
     processFile(dataFile, filename) {
@@ -202,20 +231,20 @@ class dataFileUpdateService {
 
             interval += dataFile.getNextUpdate().getMilliseconds();
 
-            dataFile.updateOnStart = true;
-
             // Run update on start if specified to do so
             if (dataFile.updateOnStart) {
 
                 dataFileUpdateService.updateDataFile(dataFile);
 
+            } else {
+
+                setTimeout(function () {
+
+                    dataFileUpdateService.updateDataFile(dataFile);
+
+                }, interval);
+
             }
-
-            setTimeout(function () {
-
-                dataFileUpdateService.updateDataFile(dataFile);
-
-            }, interval);
 
         } catch (e) {
 
@@ -231,21 +260,61 @@ class dataFileUpdateService {
 
         dataFile.registered = true;
 
-        this.checkNextUpdate(dataFile);
+        if (dataFile.updateOnStart) {
+
+            this.updateDataFile(dataFile);
+
+        } else {
+
+            if (dataFile.autoUpdate) {
+
+                this.checkNextUpdate(dataFile);
+
+            }
+
+        }
 
         // check if fileSystemWatcher is enabled and listen for datafile changes
 
         if (dataFile.fileSystemWatcher) {
 
-            fs.watch(dataFile.path, function (event) {
+            let watch = function () {
 
-                if (!dataFile.updating) {
+                fs.watch(dataFile.path, { persistent: false }, function (event) {
 
-                    dataFile.refresh();
+                    if (!dataFile.updating) {
 
-                }
+                        dataFile.refresh();
 
-            });
+                    }
+
+                });
+
+            };
+
+            if (fs.existsSync(dataFile.path)) {
+
+                watch();
+
+            } else {
+
+                let checkWatcherCanStart = setInterval(function () {
+
+                    try {
+
+                        watch();
+
+                        clearInterval(checkWatcherCanStart);
+
+                    } catch (e) {
+
+
+
+                    }
+
+                }, 500);
+
+            }
 
         }
 

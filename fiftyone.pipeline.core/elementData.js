@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- class elementData {
+class elementData {
 
     /**
      * constructor for elementData, stores information created by a flowElement based on flowData. Stored (keyed by flowElement and searchable via meta data properties) in flowData
@@ -33,7 +33,19 @@
         this.flowElement = flowElement;
 
         return new Proxy(this, {
-            get: (data, key) => data[key] || data.get(key)
+            get: (data, key) => {
+                
+                try {
+
+                    return data[key] || data.get(key);
+
+                } catch(e){
+
+                    // Skip missing property errors etc
+
+                }
+                
+            }
         });
 
     }

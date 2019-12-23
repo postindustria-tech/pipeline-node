@@ -15,17 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
-module.exports = {
+// This flowElement is a dummy for putting in a pipeline after the stopElement (demonstrating that it will never process)
 
-    aspectData: require("./aspectData"),
-    aspectDataDictionary: require("./aspectDataDictionary"),
-    aspectPropertyValue: require("./aspectPropertyValue"),
-    dataFile: require("./dataFile"),
-    dataKeyedCache: require("./dataKeyedCache"),
-    engine: require("./engine"),
-    lru: require("./lru"),
-    lruCache: require("./lruCache"),
-    missingPropertyService: require("./missingPropertyService"),
-    tracker: require("./tracker")
+let pipelineCore = require("../../");
+let flowElement = pipelineCore.flowElement;
+let elementDataDictionary = pipelineCore.elementDataDictionary;
 
-}
+module.exports = new flowElement({
+    dataKey: "neverRun",
+    processInternal: function (flowData) {
+
+        let data = new elementDataDictionary({ flowElement: this, contents: { "no": false } });
+
+        flowData.setElementData(data);
+
+    }
+});

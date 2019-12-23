@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- const elementData = require("./elementData");
+const elementData = require("./elementData");
 
 class elementDataDictionary extends elementData {
 

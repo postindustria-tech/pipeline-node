@@ -4,10 +4,100 @@ trigger:
   - release/*  
     
 pool:
-  name: Azure Pipelines
-  demands: npm
+  vmImage: 'ubuntu-latest'
+
+variables: 
+    # Access token for the git repository. Used by the git tag task.
+  - name: system_accesstoken
+    value: $(System.AccessToken)
 
 steps:
+# The lines below are needed to allow the pipeline access to the
+# OAuth access token that controls write access to the git repository. 
+# (Required for GitTag task)
+- checkout: self
+  lfs: true
+  submodules: recursive
+  persistCredentials: true
+
+- task: gittools.gitversion.gitversion-task.GitVersion@5
+  displayName: 'Determine Version Number'
+  # Give this task a name so we can use the variables it sets later. 
+  name: GitVersion
+  inputs:
+    preferBundledVersion: false
+
+# All modules that reference other pipeline modules in this repository
+# have package.json files where the dependency is defined relative to 
+# the local file system.
+# We need to change these dependencies to 'normal' remote NPM references 
+# before creating the packages.
+- script: |
+    ls **/remote_package.json
+
+    rm -f fiftyone.pipeline.cloudrequestengine/package.json
+    rm -f fiftyone.pipeline.engines/package.json
+    rm -f fiftyone.pipeline.engines.fiftyone/package.json
+    rm -f fiftyone.pipeline.javascriptbundler/package.json
+
+    mv fiftyone.pipeline.cloudrequestengine/remote_package.json fiftyone.pipeline.cloudrequestengine/package.json
+    mv fiftyone.pipeline.engines/remote_package.json fiftyone.pipeline.engines/package.json
+    mv fiftyone.pipeline.engines.fiftyone/remote_package.json fiftyone.pipeline.engines.fiftyone/package.json
+    mv fiftyone.pipeline.javascriptbundler/remote_package.json fiftyone.pipeline.javascriptbundler/package.json
+  displayName: 'Switch to package.json that has remote dependencies'
+
+# Set version number for each package.
+- task: Npm@1
+  displayName: 'npm version fiftyone.pipeline.core'
+  inputs:
+    command: custom
+    workingDir: fiftyone.pipeline.core
+    verbose: true
+    customCommand: version $(GitVersion.SemVer)    
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm version fiftyone.pipeline.engines'
+  inputs:
+    command: custom
+    workingDir: fiftyone.pipeline.engines
+    verbose: true
+    customCommand: version $(GitVersion.SemVer)    
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm version fiftyone.pipeline.engines.fiftyone'
+  inputs:
+    command: custom
+    workingDir: fiftyone.pipeline.engines.fiftyone
+    verbose: true
+    customCommand: version $(GitVersion.SemVer)    
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm version fiftyone.pipeline.cloudrequestengine'
+  inputs:
+    command: custom
+    workingDir: fiftyone.pipeline.cloudrequestengine
+    verbose: true
+    customCommand: version $(GitVersion.SemVer)    
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: Npm@1
+  displayName: 'npm version fiftyone.pipeline.javascriptbundler'
+  inputs:
+    command: custom
+    workingDir: fiftyone.pipeline.javascriptbundler
+    verbose: true
+    customCommand: version $(GitVersion.SemVer)    
+  continueOnError: true
+  condition: succeededOrFailed()
+
+# Publish each package.
 - task: Npm@1
   displayName: 'npm publish fiftyone.pipeline.core'
   inputs:
@@ -42,17 +132,6 @@ steps:
   condition: succeededOrFailed()
 
 - task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.devicedetection'
-  inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.devicedetection
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
-  condition: succeededOrFailed()
-
-- task: Npm@1
   displayName: 'npm publish fiftyone.pipeline.cloudrequestengine'
   inputs:
     command: publish
@@ -74,13 +153,12 @@ steps:
   continueOnError: true
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm publish fiftyone.pipeline.geolocation'
+# Add a tag to the git repository with the version number of
+# the package that has just been published
+- task: ATP.ATP-GitTag.GitTag.GitTag@5
+  displayName: 'Tag Repo With Version Number'
   inputs:
-    command: publish
-    workingDir: fiftyone.pipeline.geolocation
-    verbose: false
-    publishRegistry: useFeed
-    publishFeed: 'd2431f86-c1e6-4d8b-8d27-311cf3614847'
-  continueOnError: true
+    tagUser: 'Azure DevOps'
+    tagEmail: 'CIUser@51Degrees.com'
+    tag: 'v$(GitVersion.NuGetVersion)'
   condition: succeededOrFailed()

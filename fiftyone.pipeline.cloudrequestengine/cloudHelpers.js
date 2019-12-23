@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- module.exports = {
+module.exports = {
 
     /**
      * Helper to make an HTTP/HTTPS get request and return a promise with the result

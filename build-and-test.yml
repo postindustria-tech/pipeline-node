@@ -28,8 +28,7 @@ steps:
       "repository": { 
         "type": "git", "url": "https://github.com/51Degrees/pipeline-node" 
         }, 
-      "author": "51Degrees", 
-      "license": "MPL-2.0", 
+      "author": "51Degrees",
       "dependencies": { 
         "jest": "^24.9.0",
         "jest-junit": "^9.0.0"

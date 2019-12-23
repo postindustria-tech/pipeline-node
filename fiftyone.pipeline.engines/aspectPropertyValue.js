@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- class aspectPropertyValue {
+class aspectPropertyValue {
 
     constructor(noValueMessage="No value has been set.") {
         this.noValueMessage = noValueMessage;

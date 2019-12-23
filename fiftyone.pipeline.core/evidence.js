@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- const url = require("url");
+const url = require("url");
 
 class evidence {
 

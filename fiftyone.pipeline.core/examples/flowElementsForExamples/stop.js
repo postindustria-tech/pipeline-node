@@ -15,17 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
-module.exports = {
+// This flowElement stops processing of any further flowElements
 
-    aspectData: require("./aspectData"),
-    aspectDataDictionary: require("./aspectDataDictionary"),
-    aspectPropertyValue: require("./aspectPropertyValue"),
-    dataFile: require("./dataFile"),
-    dataKeyedCache: require("./dataKeyedCache"),
-    engine: require("./engine"),
-    lru: require("./lru"),
-    lruCache: require("./lruCache"),
-    missingPropertyService: require("./missingPropertyService"),
-    tracker: require("./tracker")
+let pipelineCore = require("../../");
+let flowElement = pipelineCore.flowElement;
 
-}
+module.exports = new flowElement({
+    dataKey: "stopElement",
+    processInternal: function (flowData) {
+
+        flowData.stop();
+
+    }
+});

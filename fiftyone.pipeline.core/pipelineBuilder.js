@@ -15,16 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- let require51 = (requestedPackage) => {
-    try {
-        return require(__dirname + "/../" + requestedPackage);
-    } catch (e) {
-        return require(requestedPackage);
-    }
-};
-
 const pipeline = require("./pipeline");
 const fs = require("fs");
+const path = require("path");
 
 class pipelineBuilder {
 
@@ -38,9 +31,9 @@ class pipelineBuilder {
      * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
      * @param {String} path path to a JSON configuration file
     */
-    buildFromConfigurationFile(path) {
+    buildFromConfigurationFile(configPath) {
 
-        let file = fs.readFileSync(path, "utf8");
+        let file = fs.readFileSync(configPath, "utf8");
 
         let parsedFile = JSON.parse(file);
 
@@ -58,7 +51,27 @@ class pipelineBuilder {
 
         config.PipelineOptions.Elements.forEach(function (element) {
 
-            let flowElement = require51(element.elementName);
+            let flowElement;
+
+            try {
+
+                flowElement = require(element.elementName);
+
+            } catch (e) {
+
+                try {
+
+                    let localPath = path.resolve(process.cwd(), element.elementName);
+
+                    flowElement = require(localPath);
+
+                } catch (e) {
+
+                    throw "Can't find " + element.elementName;
+
+                }
+
+            }
 
             if (!element.elementParameters) {
 
@@ -71,6 +84,7 @@ class pipelineBuilder {
         })
 
         return new pipeline(flowElements);
+
 
     }
 

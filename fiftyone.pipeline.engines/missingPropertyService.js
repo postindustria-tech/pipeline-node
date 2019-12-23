@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- class missingPropertyService {
+class missingPropertyService {
 
     /**
      * Simple base class for a missing property service that returns an error if the property is not available for some reason

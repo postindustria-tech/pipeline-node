@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * ******************************************************************** */
 
- let evidence = require("./evidence");
+let evidence = require("./evidence");
 
 class flowData {
 
@@ -171,7 +171,13 @@ class flowData {
 
             if (typeof metaValueorFuncton !== "function") {
 
-                filteredProperties = propertyList[metaKey][metaValueorFuncton];
+                metaValueorFuncton = metaValueorFuncton.toLowerCase();
+
+                if(propertyList[metaKey][metaValueorFuncton]){
+
+                    filteredProperties = propertyList[metaKey][metaValueorFuncton];
+
+                }
 
             } else {
 
