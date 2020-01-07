@@ -1,0 +1,30 @@
+{
+  "name": "fiftyone.pipeline.core",
+  "version": "1.0.21",
+  "description": "Core library for the 51Degrees Pipeline API",
+  "directories": {
+    "test": "tests"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "51Degrees <support@51Degrees.com>",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "contributors": [
+    "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",
+    "Steve Ballantine <stephen@51degrees.com> (https://51degrees.com)",
+    "Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
+    "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
+  ],
+  "license": "EUPL-1.2",
+  "bugs": { 
+    "url" : "https://github.com/51Degrees/pipeline-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/51Degrees/pipeline-node"
+  }
+}
