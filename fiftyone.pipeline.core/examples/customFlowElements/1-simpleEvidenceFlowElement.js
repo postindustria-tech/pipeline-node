@@ -20,8 +20,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-/*
-@example simpleEvidenceFlowElement.js
+/**
+@example 1-simpleEvidenceFlowElement.js
 
 This example demonstrates the creation of a custom flow element which takes a birth date as evidence and uses it to check a lookup table for a starsign.
 

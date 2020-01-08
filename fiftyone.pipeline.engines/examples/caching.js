@@ -20,14 +20,14 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-/*
+/**
 @example caching.js
 
 This example demonstrates how to add a cache to an aspect engine. The fiftyone.pipeline.engines module comes with an implementation of an lru cache.
 
 To use this cache instead of a custom one use the lruCache class and pass in a size parameter for the size of the cache:
 
-```{js}
+```
 
 const engine = require("fiftyone.pipeline.engines");
 

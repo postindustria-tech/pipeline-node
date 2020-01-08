@@ -20,7 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-/*
+/**
 @example onPremiseFlowElement.js
 
 This example demonstrates the creation of a custom flow element which takes a 

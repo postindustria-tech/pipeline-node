@@ -50,6 +50,15 @@
     </member>
   </compound>
   <compound kind="class">
+    <name>astrology</name>
+    <filename>classastrology.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>async</name>
+    <filename>classasync.html</filename>
+    <base>flowElement</base>
+  </compound>
+  <compound kind="class">
     <name>basicListEvidenceKeyFilter</name>
     <filename>classbasic_list_evidence_key_filter.html</filename>
     <base>evidenceKeyFilter</base>
@@ -395,6 +404,15 @@
     </member>
   </compound>
   <compound kind="class">
+    <name>myCustomCache</name>
+    <filename>classmy_custom_cache.html</filename>
+  </compound>
+  <compound kind="class">
+    <name>neverRun</name>
+    <filename>classnever_run.html</filename>
+    <base>flowElement</base>
+  </compound>
+  <compound kind="class">
     <name>Node</name>
     <filename>class_node.html</filename>
   </compound>
@@ -499,6 +517,16 @@
     <base>tracker</base>
   </compound>
   <compound kind="class">
+    <name>stop</name>
+    <filename>classstop.html</filename>
+    <base>flowElement</base>
+  </compound>
+  <compound kind="class">
+    <name>sync</name>
+    <filename>classsync.html</filename>
+    <base>flowElement</base>
+  </compound>
+  <compound kind="class">
     <name>tracker</name>
     <filename>classtracker.html</filename>
     <base>dataKeyedCache</base>
@@ -518,8 +546,8 @@
     </member>
   </compound>
   <compound kind="page">
-    <name>md_C:_Dev_Pipeline_pipeline-node_readme</name>
+    <name>md_D:_Workspace_V4_pipeline-node_readme</name>
     <title>readme</title>
-    <filename>md__c_1__dev__pipeline_pipeline-node_readme</filename>
+    <filename>md__d_1__workspace__v4_pipeline-node_readme</filename>
   </compound>
 </tagfile>

@@ -20,7 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-/*
+/**
 @example pipelines.js
 
 This example demonstrates syncronous and asyncronous pipelines with multiple flowElements and other core features of the 51Degrees pipeline
