@@ -11,7 +11,7 @@
   },
   "author": "51Degrees <support@51Degrees.com>",
   "dependencies": {
-    "fiftyone.pipeline.core": "^1.0.0"
+    "fiftyone.pipeline.core": "^4.1.0-beta"
   },
   "devDependencies": {
     "jest": "^24.9.0"
