@@ -62,13 +62,37 @@ let getStarSign = (month, day) => {
 
 };
 
+//! [class]
+//! [constructor]
 // Astrology flowElement
-let astrology = new FiftyOnePipelineCore.flowElement({
-    dataKey: "astrology", // datakey used to categorise data coming back from this flowElement in a pipeline
-    evidenceKeyFilter: new FiftyOnePipelineCore.basicListEvidenceKeyFilter(["cookie.latitude", "query.dateOfBirth"]), // A filter (in this case a basic list) stating which evidence the flowElement is interested in
+class astrology extends FiftyOnePipelineCore.flowElement {
+
+    constructor() {
+
+        super(...arguments);
+
+        // datakey used to categorise data coming back from this flowElement in a pipeline
+        this.dataKey = "astrology";
+        
+        // A filter (in this case a basic list) stating which evidence the flowElement is interested in
+        this.evidenceKeyFilter = new FiftyOnePipelineCore.basicListEvidenceKeyFilter(["cookie.latitude", "query.dateOfBirth"]);
+
+        // The properties list includes extra information about the properties available from a flowElement
+        this.properties = {
+            starSign: {
+                type: "string",
+                description: "the user's starsign"
+            },
+            getLatitude: {
+                type: "javascript",
+                description: "JavaScript used to get a user's latitude"
+            }
+        };
+    }
+//! [constructor]
 
     // The processInternal function is the core working of a flowElement. It takes flowData, reads evidence and returns data.
-    processInternal: function (flowData) {
+    processInternal(flowData) {
 
         let result = {};
 
@@ -111,25 +135,18 @@ let astrology = new FiftyOnePipelineCore.flowElement({
         // Set this data on the flowElement
         flowData.setElementData(data);
 
-    },
-    // The properties list includes extra information about the properties available from a flowElement
-    properties: {
-        starSign: {
-            type: "string",
-            description: "the user's starsign"
-        },
-        getLatitude: {
-            type: "javascript",
-            description: "JavaScript used to get a user's latitude"
-        }
     }
-});
+}
 
+//! [class]
+
+//! [usage]
+let element = new astrology();
 
 const http = require('http');
 
 let pipeline = new FiftyOnePipelineCore.pipelineBuilder()
-    .add(astrology)
+    .add(element)
     .build();
 
 const server = http.createServer((req, res) => {
@@ -178,3 +195,4 @@ const server = http.createServer((req, res) => {
 let portNum = process.env.PORT || 3000;
 console.info("To test this example, browse to http://localhost:" + portNum);
 server.listen(portNum);
+//! [usage]

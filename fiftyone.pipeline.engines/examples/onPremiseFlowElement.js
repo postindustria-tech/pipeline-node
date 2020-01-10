@@ -41,6 +41,8 @@ const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 // functionality such as auto updating datafiles, caches and missing property services 
 const FiftyOnePipelineEngines = require(__dirname +"/../"); // Change this to fiftyone.pipeline.engines in your code
 
+//! [class]
+//! [constructor]
 // Astrology flowElement
 class astrology extends FiftyOnePipelineEngines.engine {
 
@@ -66,10 +68,12 @@ class astrology extends FiftyOnePipelineEngines.engine {
         this.refresh();
 
     }
+//! [constructor]
 
     // A function called when the datafile is updated / refreshed. In this 
     // case it simply loads the JSON from the file into the engine's memory.
 
+//! [refresh]
     refresh() {
 
         let engine = this;
@@ -94,6 +98,7 @@ class astrology extends FiftyOnePipelineEngines.engine {
 
 
     }
+//! [refresh]
 
     // Internal processing function
     processInternal(flowData) {
@@ -166,7 +171,9 @@ class astrology extends FiftyOnePipelineEngines.engine {
     }
 
 }
+//! [class]
 
+//! [usage]
 let astrologyElement = new astrology({ datafile: (process.env.directory || __dirname) + "/astrology.json" });
 
 const http = require('http');
@@ -208,3 +215,4 @@ const server = http.createServer((req, res) => {
 let portNum = process.env.PORT || 3000;
 console.info("To test this example, browse to http://localhost:" + portNum);
 server.listen(portNum);
+//! [usage]
