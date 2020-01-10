@@ -16,8 +16,32 @@ This repository produces 5 modules:
 - **fiftyone.pipeline.cloudrequestengine** - An engine used to make requests to the 51Degrees cloud service.
 - **fiftyone.pipeline.javascriptbundler** - A flow element used to bundle together and minify multiple JavaScript snippets.
 
+## Installation
+
+The modules in this repository are available on the node package manager:
+
+```
+npm i fiftyone.pipeline.core
+npm i fiftyone.pipeline.engines
+npm i fiftyone.pipeline.engines.fiftyone
+npm i fiftyone.pipeline.cloudrequestengine
+npm i fiftyone.pipeline.javascriptbundler
+```
+
+They can also be installed from this repository by running:
+
+```
+npm i <path to module>
+```
+
 ## Tests
-Most modules include some automated tests. To run these, navigate to the module directory and execute:
+Most modules include some automated tests. To run these, make sure jest is installed:
+
+```
+npm install jest --global
+```
+
+Then, navigate to the module directory and execute:
 
 ```
 npm test
