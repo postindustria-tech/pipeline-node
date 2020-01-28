@@ -118,12 +118,12 @@ class cloudRequestEngine extends engine {
 
         return new Promise(function (resolve, reject) {
 
-            let url = engine.baseURL + "accessibleproperties/";
+            let url = engine.baseURL + "accessibleproperties?resource=" + engine.resourceKey;
 
-            // licensekey is optional
+            // licenseKey is optional
             if (engine.licenseKey) {
 
-                url += "?license=" + engine.licenseKey;
+                url += "&license=" + engine.licenseKey;
 
             }
 
