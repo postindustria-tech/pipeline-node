@@ -38,12 +38,10 @@ steps:
     rm -f fiftyone.pipeline.cloudrequestengine/package.json
     rm -f fiftyone.pipeline.engines/package.json
     rm -f fiftyone.pipeline.engines.fiftyone/package.json
-    rm -f fiftyone.pipeline.javascriptbundler/package.json
 
     mv fiftyone.pipeline.cloudrequestengine/remote_package.json fiftyone.pipeline.cloudrequestengine/package.json
     mv fiftyone.pipeline.engines/remote_package.json fiftyone.pipeline.engines/package.json
     mv fiftyone.pipeline.engines.fiftyone/remote_package.json fiftyone.pipeline.engines.fiftyone/package.json
-    mv fiftyone.pipeline.javascriptbundler/remote_package.json fiftyone.pipeline.javascriptbundler/package.json
   displayName: 'Switch to package.json that has remote dependencies'
 
 # Set version number for each package.
@@ -87,16 +85,6 @@ steps:
   continueOnError: true
   condition: succeededOrFailed()
 
-- task: Npm@1
-  displayName: 'npm version fiftyone.pipeline.javascriptbundler'
-  inputs:
-    command: custom
-    workingDir: fiftyone.pipeline.javascriptbundler
-    verbose: true
-    customCommand: version $(GitVersion.SemVer)    
-  continueOnError: true
-  condition: succeededOrFailed()
-
 # Create packages
 - script: |
     cd fiftyone.pipeline.core
@@ -109,9 +97,6 @@ steps:
     npm pack
     cd ..
     cd fiftyone.pipeline.cloudrequestengine
-    npm pack
-    cd ..
-    cd fiftyone.pipeline.javascriptbundler
     npm pack
   displayName: 'Create npm packages for later release'
   condition: succeededOrFailed()
@@ -142,7 +127,6 @@ steps:
   inputs:
     tagUser: 'Azure DevOps'
     tagEmail: 'CIUser@51Degrees.com'
-    tag: 'v$(GitVersion.NuGetVersion)'
   condition: succeeded()
 
 # Publish artifacts to DevOps

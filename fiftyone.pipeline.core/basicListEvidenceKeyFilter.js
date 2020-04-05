@@ -22,6 +22,10 @@
 
 const evidenceKeyFilter = require("./evidenceKeyFilter");
 
+/**
+  * An instance of evidenceKeyFilter that uses a simple array of keys
+  * Evidence not using these keys is filtered out
+*/
 class basicListEvidenceKeyFilter extends evidenceKeyFilter {
 
     /**
@@ -37,12 +41,24 @@ class basicListEvidenceKeyFilter extends evidenceKeyFilter {
     }
 
     /**
-     * filterEvidence removes anything not in the list 
-     * the filter was constructed with
+    * @param {string} key to check in the filter
+    * @return {boolean} is this key in the filter's keys list? 
     */
     filterEvidenceKey(key) {
 
-        return this.list.includes(key);
+        let keep;
+
+        this.list.forEach(function(element){
+
+            if(element.toLowerCase() === key.toLowerCase()){
+
+                keep = true;
+
+            };
+
+        })
+
+        return keep;
 
     }
 

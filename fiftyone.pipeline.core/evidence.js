@@ -65,11 +65,19 @@ class evidence {
 
         // Filter out any evidence that isn't needed in the pipeline
 
-        let keep = Object.values(this.flowData.pipeline.flowElements).reduce(function (curr, flowElement) {
+        let keep;
 
-            return flowElement.evidenceKeyFilter.filterEvidenceKey(key);
+        for (let flowElement in this.flowData.pipeline.flowElements){
 
-        }, true);
+            flowElement = this.flowData.pipeline.flowElements[flowElement];
+
+            if(flowElement.evidenceKeyFilter.filterEvidenceKey(key)){
+
+                keep = true;
+
+            }
+
+        }
 
         if (keep) {
 
@@ -124,6 +132,8 @@ class evidence {
 
                 requestHeaderValue = value;
 
+                evidence.add(requestHeaderKey, requestHeaderValue);
+
             } else {
 
                 value.split(';').forEach((cookie) => {
@@ -133,13 +143,25 @@ class evidence {
 
                     requestHeaderValue = decodeURI(parts.join('='));
 
+                    evidence.add(requestHeaderKey, requestHeaderValue);
+
                 });
 
             }
 
-            evidence.add(requestHeaderKey, requestHeaderValue);
-
         });
+
+        // Add protocol
+
+        evidence.add("header.protocol", request.connection.encrypted ? 'https' : 'http');
+
+        // Use referer header to set protocol if set
+
+        if(request.headers.referer){
+
+            evidence.add("header.protocol", url.parse(request.headers.referer).protocol.replace(":", ""));
+
+        }
 
         // Add IP address
 
@@ -149,7 +171,7 @@ class evidence {
 
         // Get querystring data
 
-        let params = require('url').parse(request.url, true);
+        let params = url.parse(request.url, true);
 
         let query = params.query;
 

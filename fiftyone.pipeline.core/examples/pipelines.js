@@ -27,9 +27,12 @@ This example demonstrates syncronous and asyncronous pipelines with multiple flo
 
 */
 
-// First require the core Pipeline (change this to `fiftyone.pipeline.core` 
-// to use the modules from NPM rather than your local code)
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
 let pipelineCore = require("../");
+//let pipelineCore = require("fiftyone.pipeline.core");
 
 let pipelineBuilder = pipelineCore.pipelineBuilder;
 

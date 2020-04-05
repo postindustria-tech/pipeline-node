@@ -3,7 +3,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -13,120 +13,136 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 const pipeline = require("./pipeline");
+
 const fs = require("fs");
 const path = require("path");
 
 class pipelineBuilder {
+  constructor(settings = {}) {
+    this.flowElements = [];
 
-    constructor() {
-
-        this.flowElements = [];
-
+    if (settings.addJavaScriptBuilder) {
+      this.addJavaScriptBuilder = settings.addJavascriptBuilder;
+    } else {
+      this.addJavaScriptBuilder = true;
     }
 
-    /**
-     * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
-     * @param {String} path path to a JSON configuration file
-    */
-    buildFromConfigurationFile(configPath) {
-
-        let file = fs.readFileSync(configPath, "utf8");
-
-        let parsedFile = JSON.parse(file);
-
-        return this.buildFromConfiguration(parsedFile);
-
+    if (settings.javascriptBuilderSettings) {
+      this.javascriptBuilderSettings = settings.javascriptBuilderSettings;
     }
 
-    /**
-     * Create a pipeline from a JSON configuration
-     * @param {Object} config a JSON configuration object
-    */
-    buildFromConfiguration(config) {
+  }
 
-        let flowElements = [];
+  /**
+   * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
+   * @param {String} path path to a JSON configuration file
+   */
+  buildFromConfigurationFile(configPath) {
+    let file = fs.readFileSync(configPath, "utf8");
 
-        config.PipelineOptions.Elements.forEach(function (element) {
+    let parsedFile = JSON.parse(file);
 
-            let flowElement;
+    return this.buildFromConfiguration(parsedFile);
+  }
 
-            try {
+  /**
+   * Create a pipeline from a JSON configuration
+   * @param {Object} config a JSON configuration object
+   */
+  buildFromConfiguration(config) {
+    let flowElements = [];
 
-                flowElement = require(element.elementName);
+    config.PipelineOptions.Elements.forEach(function(element) {
+      let flowElement;
 
-            } catch (e) {
+      try {
+        flowElement = require(element.elementName);
+      } catch (e) {
+        try {
+          let localPath = path.resolve(process.cwd(), element.elementName);
 
-                try {
+          flowElement = require(localPath);
+        } catch (e) {
+          throw "Can't find " + element.elementName;
+        }
+      }
 
-                    let localPath = path.resolve(process.cwd(), element.elementName);
+      if (!element.elementParameters) {
+        element.elementParameters = {};
+      }
 
-                    flowElement = require(localPath);
+      flowElements.push(new flowElement(element.elementParameters));
+    });
 
-                } catch (e) {
+    flowElements = flowElements.concat(this.getJavaScriptElements());
 
-                    throw "Can't find " + element.elementName;
+    return new pipeline(flowElements);
+  }
 
-                }
+  getJavaScriptElements() {
+    let flowElements = [];
 
-            }
+    if (this.addJavaScriptBuilder) {
+      
+      // Add JavaScript elements
 
-            if (!element.elementParameters) {
+      const javascriptBuilder = require("./javascriptbuilder");
+      const jsonBundler = require("./jsonbundler");
+      const sequenceElement = require("./sequenceElement");
 
-                element.elementParameters = {};
+      flowElements.push(new sequenceElement());
+      flowElements.push(new jsonBundler());
 
-            }
+      if (this.javascriptBuilderSettings) {
 
-            flowElements.push(new flowElement(element.elementParameters));
-
-        })
-
-        return new pipeline(flowElements);
-
-
+        flowElements.push(
+          new javascriptBuilder(this.javascriptBuilderSettings)
+        );
+      } else {
+        flowElements.push(new javascriptBuilder({}));
+      }
     }
 
-    /**
-     * Add a single flowElement to be executed in series
-     * @param {flowElement} flowElement
-    */
-    add(flowElement) {
+    return flowElements;
+  }
 
-        this.flowElements.push(flowElement);
+  /**
+   * Add a single flowElement to be executed in series
+   * @param {flowElement} flowElement
+   */
+  add(flowElement) {
+    this.flowElements.push(flowElement);
 
-        return this;
+    return this;
+  }
 
-    }
+  /**
+   * Add an array of flowElements to be executed in parallel
+   * @param {flowElement[]} flowElements
+   */
+  addParallel(flowElements) {
+    this.flowElements.push(flowElements);
 
-    /**
-     * Add an array of flowElements to be executed in parallel
-     * @param {flowElement[]} flowElements
-    */
-    addParallel(flowElements) {
+    return this;
+  }
 
-        this.flowElements.push(flowElements);
+  /**
+   * Build the pipeline from the flowElements that have been added
+   * @returns {pipeline}
+   */
+  build() {
+    this.flowElements = this.flowElements.concat(this.getJavaScriptElements());
 
-        return this;
-
-    }
-
-    /**
-     * Build the pipeline from the flowElements that have been added
-     * @returns {pipeline}
-    */
-    build() {
-
-        return new pipeline(this.flowElements);
-
-    }
-
+    return new pipeline(this.flowElements);
+  }
 }
 
 module.exports = pipelineBuilder;

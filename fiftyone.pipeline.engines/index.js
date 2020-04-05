@@ -24,7 +24,6 @@ module.exports = {
 
     aspectData: require("./aspectData"),
     aspectDataDictionary: require("./aspectDataDictionary"),
-    aspectPropertyValue: require("./aspectPropertyValue"),
     dataFile: require("./dataFile"),
     dataKeyedCache: require("./dataKeyedCache"),
     engine: require("./engine"),

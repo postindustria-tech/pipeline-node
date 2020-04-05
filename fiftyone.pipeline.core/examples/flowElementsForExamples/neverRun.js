@@ -22,7 +22,12 @@
 
 // This flowElement is a dummy for putting in a pipeline after the stopElement (demonstrating that it will never process)
 
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
 let pipelineCore = require("../../");
+//let pipelineCore = require("fiftyone.pipeline.core");
 let flowElement = pipelineCore.flowElement;
 let elementDataDictionary = pipelineCore.elementDataDictionary;
 

@@ -22,7 +22,12 @@
 
 // This flowElement runs syncronously and checks the value of the async flowElement in order to demonstrate sync vs async pipelines
 
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
 let pipelineCore = require("../../");
+//let pipelineCore = require("fiftyone.pipeline.core");
 let flowElement = pipelineCore.flowElement;
 let elementDataDictionary = pipelineCore.elementDataDictionary;
 let basicListEvidenceKeyFilter = pipelineCore.basicListEvidenceKeyFilter;

@@ -39,7 +39,13 @@ const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 
 // Next require the engines extension that extends flowElements to support 
 // functionality such as auto updating datafiles, caches and missing property services 
-const FiftyOnePipelineEngines = require(__dirname +"/../"); // Change this to fiftyone.pipeline.engines in your code
+
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
+const FiftyOnePipelineEngines = require(__dirname +"/../"); 
+//const FiftyOnePipelineEngines = require("fiftyone.pipeline.engines");
 
 //! [class]
 //! [constructor]

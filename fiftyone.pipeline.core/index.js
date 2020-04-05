@@ -21,7 +21,6 @@
  * ********************************************************************* */
 
 module.exports = {
-
     basicListEvidenceKeyFilter: require("./basicListEvidenceKeyFilter"),
     elementData: require("./elementData"),
     elementDataDictionary: require("./elementDataDictionary"),
@@ -30,6 +29,9 @@ module.exports = {
     flowData: require("./flowData"),
     flowElement: require("./flowElement"),
     pipeline: require("./pipeline"),
-    pipelineBuilder: require("./pipelineBuilder")
-    
+    pipelineBuilder: require("./pipelineBuilder"),
+    aspectPropertyValue: require("./aspectPropertyValue"),
+    jsonBundler: require("./jsonbundler"),
+    javascriptBuilder: require("./javascriptbuilder"),
+    sequenceElement: require("./sequenceElement")
 }

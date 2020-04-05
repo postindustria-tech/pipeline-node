@@ -68,6 +68,8 @@ class elementData {
 
     /**
      * A wrapper that performs actions before passing on processing (or skipping) the getInternal method
+     * @param {String} key
+     * @return {mixed} value
     */
     get(key) {
 
@@ -76,7 +78,9 @@ class elementData {
     }
 
     /**
-     * Return string version of elementData
+     * Return string value of property
+     * @param {String} key
+     * @return {string} value
     */
     getAsString(key) {
 
@@ -91,7 +95,9 @@ class elementData {
     }
 
     /**
-     * Return float version of elementData
+     * Return float value of property
+     * @param {String} key
+     * @return {float} value
     */
     getAsFloat(key) {
 
@@ -106,7 +112,9 @@ class elementData {
     }
 
     /**
-     * Return integer version of elementData
+     * Return int value of property
+     * @param {String} key
+     * @return {int} value
     */
     getAsInteger(key) {
 

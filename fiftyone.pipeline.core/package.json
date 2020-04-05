@@ -10,6 +10,10 @@
     "test": "jest"
   },
   "author": "51Degrees <support@51Degrees.com>",
+  "dependencies": {
+    "mustache": "^4.0.1",
+    "uglify-js": "^3.8.1"
+  },
   "devDependencies": {
     "jest": "^24.9.0"
   },
@@ -20,8 +24,8 @@
     "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
   ],
   "license": "EUPL-1.2",
-  "bugs": { 
-    "url" : "https://github.com/51Degrees/pipeline-node/issues"
+  "bugs": {
+    "url": "https://github.com/51Degrees/pipeline-node/issues"
   },
   "repository": {
     "type": "git",

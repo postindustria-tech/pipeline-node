@@ -27,10 +27,13 @@ This example demonstrates the creation of a custom flow element which takes a bi
 
 */
 
-// First require the core Pipeline (change this to `fiftyone.pipeline.core` 
-// to use the modules from NPM rather than your local code)
-
+// First require the core Pipeline 
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
 const FiftyOnePipelineCore = require((process.env.directory || __dirname) + "/../../");
+//const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 
 // Function to get star sign from month and day
 let getStarSign = (month, day) => {

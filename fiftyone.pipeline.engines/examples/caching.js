@@ -38,7 +38,12 @@ let lruCache = new engine.lruCache(100);
 */
 
 const pipeline = require("fiftyone.pipeline.core");
-const engine = require(".."); // change this to fiftyone.pipeline.engines in your code
+// Note that this example is designed to be run from within the 
+// source repository. If this code has been copied to run standalone 
+// then you'll need to replace the require below with the commented 
+// out version below it.
+const engine = require(".."); 
+//const engine = require("fiftyone.pipeline.engines");
 
 const lruCache = new engine.lruCache(100);
 

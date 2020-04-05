@@ -35,7 +35,9 @@ steps:
       "author": "51Degrees",
       "dependencies": { 
         "jest": "^24.9.0",
-        "jest-junit": "^9.0.0"
+        "jest-junit": "^9.0.0",
+        "mustache": "^4.0.1",
+        "uglify-js": "^3.8.1"
         },
       "jest-junit": {
           "outputName": "'"$NODE_VERSION"'.xml"    
@@ -46,8 +48,7 @@ steps:
   displayName: 'Create package.json for tests'
 
 - script: |
-    npm install jest
-    npm install jest-junit
+    npm install
     npm test
   displayName: 'Build and Test'
 

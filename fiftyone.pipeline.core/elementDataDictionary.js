@@ -38,7 +38,11 @@ class elementDataDictionary extends elementData {
 
     }
 
-    // Retrieve the value from the dictionary
+     /**
+     * Return value from elementData dictionary
+     * @param {String} key
+     * @return {int} value
+    */
     getInternal(key) {
 
         return this.contents[key];

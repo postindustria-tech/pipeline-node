@@ -23,5 +23,12 @@
     "Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
     "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
   ],
-  "license": "EUPL-1.2"
+  "license": "EUPL-1.2",
+  "bugs": { 
+    "url" : "https://github.com/51Degrees/pipeline-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/51Degrees/pipeline-node"
+  }
 }
