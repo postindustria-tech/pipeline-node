@@ -40,10 +40,8 @@ class JSONBundlerElement extends flowElement {
   processInternal(flowData) {
     // Get every property on every flowElement
     // Storing JavaScript properties in an extra section
-    // Also storing any null value exceptions that come out of aspect property values
 
     let output = {
-      nullValueReasons: {},
       javascriptProperties: []
     };
 
@@ -64,6 +62,7 @@ class JSONBundlerElement extends flowElement {
         // Get the value
 
         let value;
+        let nullReason = "Unknown";
 
         try {
           let valueContainer = flowData.get(flowElement).get(property);
@@ -77,12 +76,7 @@ class JSONBundlerElement extends flowElement {
               value = valueContainer.value;
             } else {
               value = null;
-
-              let nullValueReason = valueContainer.noValueMessage;
-
-              output.nullValueReasons[
-                flowElement + "." + property
-              ] = nullValueReason;
+              nullReason = valueContainer.noValueMessage;
             }
           } else {
             // Standard value
@@ -96,6 +90,9 @@ class JSONBundlerElement extends flowElement {
         }
 
         output[flowElement][property] = value;
+        if(value == null) {
+          output[flowElement][property + "nullreason"] = nullReason;
+        }
 
         let propertyObject = properties[property];
 

@@ -98,7 +98,7 @@ fiftyoneDegreesManager = function() {
     var processJSproperties = function(resolve, reject) {
         var executeCallback = true;
 
-        if (json.javascriptProperties !== undefined && 
+        if (json.javascriptProperties !== undefined &&
             json.javascriptProperties.length > 0) {
 
             // Execute each of the Javascript property code snippets using the
@@ -120,7 +120,7 @@ fiftyoneDegreesManager = function() {
                     var func = undefined;
                     var searchString = '// 51D replace this comment with callback function.';
 
-                    if(body.indexOf(searchString) !== -1){                
+                    if(body.indexOf(searchString) !== -1){
                         callbackCounter++;
                         body = body.replace(/\/\/ 51D replace this comment with callback function./g, 'callbackFunc(resolveFunc, rejectFunc);');
                         func = new Function('callbackFunc', 'resolveFunc', 'rejectFunc',
@@ -142,7 +142,7 @@ fiftyoneDegreesManager = function() {
                         );
                         func();
                     }
-                }                
+                }
             }
         } else {
             executeCallback = false;
@@ -201,7 +201,7 @@ fiftyoneDegreesManager = function() {
         processJSproperties(resolve, reject);
     }
 
-    var fireChangeFuncs = function(json) {        
+    var fireChangeFuncs = function(json) {
         for (var i = 0; i < changeFuncs.length; i++) {
             if (typeof changeFuncs[i] === 'function' &&
                 changeFuncs[i].length === 1) {
@@ -296,8 +296,8 @@ fiftyoneDegreesManager = function() {
                 (function(i) {
                     Object.defineProperty(obj, i, {
                         get: function (){
-                            if(data[key][i] === null && (i !== "javascriptProperties" || i !== "nullValueReasons")){
-                                return data.nullValueReasons[key+'.'+i];
+                            if(data[key][i] === null && (i !== "javascriptProperties")){
+                                return data[key][i + "nullreason"];
                             } else {
                                 return data[key][i];
                             }
@@ -321,7 +321,7 @@ fiftyoneDegreesManager = function() {
     this.complete = function(resolve) {
         if(completed){
             resolve(json);
-        }else{            
+        }else{
             this.onChange(function(data) {
                 if(completed){
                     resolve(data);
@@ -331,7 +331,7 @@ fiftyoneDegreesManager = function() {
     };
 
     // Update this instance with the initial JSON payload.
-    update.call(this, json);    
+    update.call(this, json);
 {{#_supportsPromises}}
     var parent = this;
     this.promise.then(function(value) {

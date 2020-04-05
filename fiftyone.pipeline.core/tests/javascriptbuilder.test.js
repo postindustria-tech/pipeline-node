@@ -51,11 +51,8 @@ test("jsonbuilder contents", done => {
 
     expect(json).toBe(
       JSON.stringify({
-        nullValueReasons: {
-          "testengine.four": "This property is not available"
-        },
         javascriptProperties: ["testengine.three"],
-        testengine: { one: 1, two: 2, three: "console.log('ok')", four: null },
+        testengine: { one: 1, two: 2, three: "console.log('ok')", four: null, fournullreason: "This property is not available" },
       })
     );
 
