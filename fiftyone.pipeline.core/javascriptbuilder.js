@@ -46,8 +46,6 @@ class JavaScriptBuilderElement extends flowElement {
     _protocol = "",
     _host = "",
     _endPoint = "",
-    _overrideHost = false,
-    _overrideProtocol = false,
     _enableCookies = true,
     _minify = true,
   } = {}) {
@@ -58,8 +56,6 @@ class JavaScriptBuilderElement extends flowElement {
       _protocol: _protocol,
       _host: _host,
       _endPoint: _endPoint,
-      _overrideHost: _overrideHost,
-      _overrideProtocol: _overrideProtocol,
       _enableCookies: _enableCookies,
       _minify: _minify,
     };
@@ -84,21 +80,21 @@ class JavaScriptBuilderElement extends flowElement {
     }
 
     // Generate url from parts
-
     let protocol = this.settings._protocol;
     let host = this.settings._host;
 
-    if (this.settings._overrideProtocol) {
+    if(!protocol) {
       // Check if protocol is provided in evidence
-
       if (flowData.evidence.get("header.protocol")) {
         protocol = flowData.evidence.get("header.protocol");
       }
     }
+    if(!protocol){
+      protocol = "https";
+    }
 
-    if (this.settings._overrideHost) {
+    if(!host) {
       // Check if host is provided in evidence
-
       if (flowData.evidence.get("header.host")) {
         host = flowData.evidence.get("header.host");
       }

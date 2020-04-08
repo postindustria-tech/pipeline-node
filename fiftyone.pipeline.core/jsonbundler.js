@@ -98,16 +98,24 @@ class JSONBundlerElement extends flowElement {
 
         if(!flowData.evidence.get("query.sequence") || flowData.evidence.get("query.sequence") < 10){
 
+          var type = propertyObject[Object.keys(propertyObject).find(key => key.toLowerCase() === "type")];
+
           if (
-            propertyObject.type &&
-            propertyObject.type.toLowerCase() === "javascript"
+            type &&
+            type.toLowerCase() === "javascript"
           ) {
-            output.javascriptProperties.push(flowElement + "." + property);
+            if(value) {
+
+              output.javascriptProperties.push(flowElement + "." + property);
+
+            }
+
           }
 
         }
 
       }
+
     }
 
     let data = new elementDataDictionary({

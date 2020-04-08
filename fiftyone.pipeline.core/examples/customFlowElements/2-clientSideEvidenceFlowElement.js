@@ -152,8 +152,6 @@ const http = require("http");
 
 let pipeline = new FiftyOnePipelineCore.pipelineBuilder({
   javascriptBuilderSettings: {
-    _overrideHost: true,
-    _overrideProtocol: true,
     _endPoint: "/json",
   },
 })
