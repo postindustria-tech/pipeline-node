@@ -51,6 +51,7 @@ const Engine = require51('fiftyone.pipeline.engines').Engine;
 const querystring = require('querystring');
 const cloudHelpers = require('./cloudHelpers');
 const AspectDataDictionary = require51('fiftyone.pipeline.engines').AspectDataDictionary;
+const BasicListEvidenceKeyFilter = require51('fiftyone.pipeline.core').BasicListEvidenceKeyFilter;
 
 class CloudRequestEngine extends Engine {
   /**
@@ -70,9 +71,12 @@ class CloudRequestEngine extends Engine {
     }
 
     this.resourceKey = resourceKey;
-
     this.licenseKey = licenseKey;
     this.baseURL = baseURL;
+    this.evidenceKeys = [];
+
+    // Trigger get and store of evidence keys on init
+    this.getEvidenceKeys();
   }
 
   /**
@@ -155,6 +159,14 @@ class CloudRequestEngine extends Engine {
 
         resolve();
       }).catch(reject);
+    });
+  }
+
+  getEvidenceKeys () {
+    const engine = this;
+    const url = this.baseURL + 'evidencekeys';
+    cloudHelpers.makeHTTPRequest(url).then(function (body) {
+      engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(JSON.parse(body));
     });
   }
 }
