@@ -20,56 +20,58 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const flowElement = require("./flowElement.js");
-const elementDataDictionary = require("./elementDataDictionary.js");
-const basicListEvidenceKeyFilter = require("./basicListEvidenceKeyFilter.js");
+const FlowElement = require('./flowElement.js');
+const ElementDataDictionary = require('./elementDataDictionary.js');
+const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter.js');
 
-class JSONBundlerElement extends flowElement {
-  constructor() {
+class JSONBundlerElement extends FlowElement {
+  constructor () {
     super(...arguments);
 
-    this.dataKey = "jsonbundler";
-    this.evidenceKeyFilter = new basicListEvidenceKeyFilter([]);
-
+    this.dataKey = 'jsonbundler';
+    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter([]);
   }
 
   /**
    * The JSON Builder extracts all properties and serializes them into JSON
-   * @param {flowData} flowData
+   * @param {FlowData} flowData
    */
-  processInternal(flowData) {
+  processInternal (flowData) {
     // Get every property on every flowElement
     // Storing JavaScript properties in an extra section
 
-    let output = {
+    const output = {
       javascriptProperties: []
     };
 
-    for (let flowElement in flowData.pipeline.flowElements) {
-
-      if (flowElement === "jsonbundler" || flowElement === "javascriptbuilder" || flowElement === "sequence") {
+    for (const flowElement in flowData.pipeline.flowElements) {
+      if (
+        flowElement === 'jsonbundler' ||
+        flowElement === 'javascriptbuilder' ||
+        flowElement === 'sequence'
+      ) {
         continue;
       }
 
       // Create empty area for flowElement properties to go
       output[flowElement] = {};
 
-      let flowElementObject = flowData.pipeline.flowElements[flowElement];
+      const flowElementObject = flowData.pipeline.flowElements[flowElement];
 
-      let properties = flowElementObject.getProperties();
+      const properties = flowElementObject.getProperties();
 
-      for (let property in properties) {
+      for (const property in properties) {
         // Get the value
 
         let value;
-        let nullReason = "Unknown";
+        let nullReason = 'Unknown';
 
         try {
-          let valueContainer = flowData.get(flowElement).get(property);
+          const valueContainer = flowData.get(flowElement).get(property);
 
           // Check if value is of the aspect property value type
 
-          if (valueContainer.hasOwnProperty("hasValue")) {
+          if (valueContainer.hasOwnProperty('hasValue')) {
             // Check if it has a value
 
             if (valueContainer.hasValue) {
@@ -90,35 +92,33 @@ class JSONBundlerElement extends flowElement {
         }
 
         output[flowElement][property] = value;
-        if(value == null) {
-          output[flowElement][property + "nullreason"] = nullReason;
+        if (value == null) {
+          output[flowElement][property + 'nullreason'] = nullReason;
         }
 
-        let propertyObject = properties[property];
+        const propertyObject = properties[property];
 
-        if(!flowData.evidence.get("query.sequence") || flowData.evidence.get("query.sequence") < 10){
+        if (
+          !flowData.evidence.get('query.sequence') ||
+          flowData.evidence.get('query.sequence') < 10
+        ) {
+          var type =
+            propertyObject[
+              Object.keys(propertyObject).find(
+                (key) => key.toLowerCase() === 'type'
+              )
+            ];
 
-          var type = propertyObject[Object.keys(propertyObject).find(key => key.toLowerCase() === "type")];
-
-          if (
-            type &&
-            type.toLowerCase() === "javascript"
-          ) {
-            if(value) {
-
-              output.javascriptProperties.push(flowElement + "." + property);
-
+          if (type && type.toLowerCase() === 'javascript') {
+            if (value) {
+              output.javascriptProperties.push(flowElement + '.' + property);
             }
-
           }
-
         }
-
       }
-
     }
 
-    let data = new elementDataDictionary({
+    const data = new ElementDataDictionary({
       flowElement: this,
       contents: { json: output }
     });

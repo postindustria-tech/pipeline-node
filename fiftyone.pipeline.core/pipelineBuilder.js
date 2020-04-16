@@ -20,13 +20,13 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const pipeline = require("./pipeline");
+const Pipeline = require('./pipeline');
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-class pipelineBuilder {
-  constructor(settings = {}) {
+class PipelineBuilder {
+  constructor (settings = {}) {
     this.flowElements = [];
 
     if (settings.addJavaScriptBuilder) {
@@ -38,17 +38,16 @@ class pipelineBuilder {
     if (settings.javascriptBuilderSettings) {
       this.javascriptBuilderSettings = settings.javascriptBuilderSettings;
     }
-
   }
 
   /**
    * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
    * @param {String} path path to a JSON configuration file
    */
-  buildFromConfigurationFile(configPath) {
-    let file = fs.readFileSync(configPath, "utf8");
+  buildFromConfigurationFile (configPath) {
+    const file = fs.readFileSync(configPath, 'utf8');
 
-    let parsedFile = JSON.parse(file);
+    const parsedFile = JSON.parse(file);
 
     return this.buildFromConfiguration(parsedFile);
   }
@@ -57,19 +56,19 @@ class pipelineBuilder {
    * Create a pipeline from a JSON configuration
    * @param {Object} config a JSON configuration object
    */
-  buildFromConfiguration(config) {
+  buildFromConfiguration (config) {
     let flowElements = [];
 
-    config.PipelineOptions.Elements.forEach(function(element) {
-      let flowElement;
+    config.PipelineOptions.Elements.forEach(function (element) {
+      let FlowElement;
 
       try {
-        flowElement = require(element.elementName);
+        FlowElement = require(element.elementName);
       } catch (e) {
         try {
-          let localPath = path.resolve(process.cwd(), element.elementName);
+          const localPath = path.resolve(process.cwd(), element.elementName);
 
-          flowElement = require(localPath);
+          FlowElement = require(localPath);
         } catch (e) {
           throw "Can't find " + element.elementName;
         }
@@ -79,35 +78,33 @@ class pipelineBuilder {
         element.elementParameters = {};
       }
 
-      flowElements.push(new flowElement(element.elementParameters));
+      flowElements.push(new FlowElement(element.elementParameters));
     });
 
     flowElements = flowElements.concat(this.getJavaScriptElements());
 
-    return new pipeline(flowElements);
+    return new Pipeline(flowElements);
   }
 
-  getJavaScriptElements() {
-    let flowElements = [];
+  getJavaScriptElements () {
+    const flowElements = [];
 
     if (this.addJavaScriptBuilder) {
-      
       // Add JavaScript elements
 
-      const javascriptBuilder = require("./javascriptbuilder");
-      const jsonBundler = require("./jsonbundler");
-      const sequenceElement = require("./sequenceElement");
+      const JavascriptBuilder = require('./javascriptbuilder');
+      const JsonBundler = require('./jsonbundler');
+      const SequenceElement = require('./sequenceElement');
 
-      flowElements.push(new sequenceElement());
-      flowElements.push(new jsonBundler());
+      flowElements.push(new SequenceElement());
+      flowElements.push(new JsonBundler());
 
       if (this.javascriptBuilderSettings) {
-
         flowElements.push(
-          new javascriptBuilder(this.javascriptBuilderSettings)
+          new JavascriptBuilder(this.javascriptBuilderSettings)
         );
       } else {
-        flowElements.push(new javascriptBuilder({}));
+        flowElements.push(new JavascriptBuilder({}));
       }
     }
 
@@ -116,9 +113,9 @@ class pipelineBuilder {
 
   /**
    * Add a single flowElement to be executed in series
-   * @param {flowElement} flowElement
+   * @param {FlowElement} flowElement
    */
-  add(flowElement) {
+  add (flowElement) {
     this.flowElements.push(flowElement);
 
     return this;
@@ -126,9 +123,9 @@ class pipelineBuilder {
 
   /**
    * Add an array of flowElements to be executed in parallel
-   * @param {flowElement[]} flowElements
+   * @param {FlowElement[]} flowElements
    */
-  addParallel(flowElements) {
+  addParallel (flowElements) {
     this.flowElements.push(flowElements);
 
     return this;
@@ -136,13 +133,13 @@ class pipelineBuilder {
 
   /**
    * Build the pipeline from the flowElements that have been added
-   * @returns {pipeline}
+   * @returns {Pipeline}
    */
-  build() {
+  build () {
     this.flowElements = this.flowElements.concat(this.getJavaScriptElements());
 
-    return new pipeline(this.flowElements);
+    return new Pipeline(this.flowElements);
   }
 }
 
-module.exports = pipelineBuilder;
+module.exports = PipelineBuilder;

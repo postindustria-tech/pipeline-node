@@ -20,34 +20,34 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const mustache = require("mustache");
-const fs = require("fs");
-const querystring = require("querystring");
+const mustache = require('mustache');
+const fs = require('fs');
+const querystring = require('querystring');
 
 const template = fs.readFileSync(
-  __dirname + "/JavaScriptResource.mustache",
-  "utf8"
+  __dirname + '/JavaScriptResource.mustache',
+  'utf8'
 );
 
-const flowElement = require("./flowElement.js");
-const evidenceKeyFilter = require("./evidenceKeyFilter.js");
-const elementDataDictionary = require("./elementDataDictionary.js");
-var uglifyJS = require("uglify-js");
+const FlowElement = require('./flowElement.js');
+const EvidenceKeyFilter = require('./evidenceKeyFilter.js');
+const ElementDataDictionary = require('./elementDataDictionary.js');
+var uglifyJS = require('uglify-js');
 
-class JSEvidenceKeyFilter extends evidenceKeyFilter {
-  filterEvidenceKey(key) {
-    return key.indexOf("query.") !== -1 || key.indexOf("header.") !== -1;
+class JSEvidenceKeyFilter extends EvidenceKeyFilter {
+  filterEvidenceKey (key) {
+    return key.indexOf('query.') !== -1 || key.indexOf('header.') !== -1;
   }
 }
 
-class JavaScriptBuilderElement extends flowElement {
-  constructor({
-    _objName = "fod",
-    _protocol = "",
-    _host = "",
-    _endPoint = "",
+class JavaScriptBuilderElement extends FlowElement {
+  constructor ({
+    _objName = 'fod',
+    _protocol = '',
+    _host = '',
+    _endPoint = '',
     _enableCookies = true,
-    _minify = true,
+    _minify = true
   } = {}) {
     super(...arguments);
 
@@ -57,10 +57,10 @@ class JavaScriptBuilderElement extends flowElement {
       _host: _host,
       _endPoint: _endPoint,
       _enableCookies: _enableCookies,
-      _minify: _minify,
+      _minify: _minify
     };
 
-    this.dataKey = "javascriptbuilder";
+    this.dataKey = 'javascriptbuilder';
     this.evidenceKeyFilter = new JSEvidenceKeyFilter();
   }
 
@@ -68,14 +68,14 @@ class JavaScriptBuilderElement extends flowElement {
    * The JavaScriptBuilder serves JavaScript properties and allows for a fetch request to retrieve additional properties populated with data from the client side
    * @param {flowData} flowData
    */
-  processInternal(flowData) {
+  processInternal (flowData) {
     // Get output of jsonbuilder
 
-    let json = flowData.jsonbundler.json;
+    const json = flowData.jsonbundler.json;
 
-    let settings = { _jsonObject: JSON.stringify(json) };
+    const settings = { _jsonObject: JSON.stringify(json) };
 
-    for (let setting in this.settings) {
+    for (const setting in this.settings) {
       settings[setting] = this.settings[setting];
     }
 
@@ -83,20 +83,20 @@ class JavaScriptBuilderElement extends flowElement {
     let protocol = this.settings._protocol;
     let host = this.settings._host;
 
-    if(!protocol) {
+    if (!protocol) {
       // Check if protocol is provided in evidence
-      if (flowData.evidence.get("header.protocol")) {
-        protocol = flowData.evidence.get("header.protocol");
+      if (flowData.evidence.get('header.protocol')) {
+        protocol = flowData.evidence.get('header.protocol');
       }
     }
-    if(!protocol){
-      protocol = "https";
+    if (!protocol) {
+      protocol = 'https';
     }
 
-    if(!host) {
+    if (!host) {
       // Check if host is provided in evidence
-      if (flowData.evidence.get("header.host")) {
-        host = flowData.evidence.get("header.host");
+      if (flowData.evidence.get('header.host')) {
+        host = flowData.evidence.get('header.host');
       }
     }
 
@@ -105,36 +105,32 @@ class JavaScriptBuilderElement extends flowElement {
 
     if (settings._host && settings._protocol && settings._endPoint) {
       settings._url =
-        settings._protocol + "://" + settings._host + settings._endPoint;
+        settings._protocol + '://' + settings._host + settings._endPoint;
 
       // Get query parameters to add to the URL
 
-      let queryParams = this.evidenceKeyFilter.filterEvidence(
+      const queryParams = this.evidenceKeyFilter.filterEvidence(
         flowData.evidence.getAll()
       );
 
-      let query = {};
+      const query = {};
 
-      for (let param in queryParams) {
-
-        if(param.indexOf("query") !== -1){
-
-          let paramKey = param.split(".")[1];
+      for (const param in queryParams) {
+        if (param.indexOf('query') !== -1) {
+          const paramKey = param.split('.')[1];
 
           query[paramKey] = queryParams[param];
-
         }
-
       }
 
-      let urlQuery = querystring.stringify(query);
+      const urlQuery = querystring.stringify(query);
 
       // Does the URL already have a query string in it?
 
-      if (settings._url.indexOf("?") === -1) {
-        settings._url += "?";
+      if (settings._url.indexOf('?') === -1) {
+        settings._url += '?';
       } else {
-        settings._url += "&";
+        settings._url += '&';
       }
 
       settings._url += urlQuery;
@@ -146,25 +142,25 @@ class JavaScriptBuilderElement extends flowElement {
 
     // Use results from device detection if available to determine
     // if the browser supports promises.
-    let promises =
-      flowData.device != null &&
-      flowData.device.promise != null &&
-      flowData.device.promise.hasValue == true &&
-      flowData.device.promise.value == true;
+    const promises =
+      flowData.device !== undefined &&
+      flowData.device.promise !== undefined &&
+      flowData.device.promise.hasValue === true &&
+      flowData.device.promise.value === true;
     settings._supportsPromises = promises;
 
     let output = mustache.render(template, settings);
 
-    if(settings._minify) {
-      let minified = uglifyJS.minify(output);
-      if(minified.error == null){
+    if (settings._minify) {
+      const minified = uglifyJS.minify(output);
+      if (minified.error === null) {
         output = minified.code;
       }
     }
 
-    let data = new elementDataDictionary({
+    const data = new ElementDataDictionary({
       flowElement: this,
-      contents: { javascript: output },
+      contents: { javascript: output }
     });
 
     flowData.setElementData(data);

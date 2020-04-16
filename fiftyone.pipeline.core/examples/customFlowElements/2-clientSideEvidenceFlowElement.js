@@ -27,115 +27,115 @@ This example demonstrates the creation of a custom flow element which takes the 
 
 */
 
-// First require the core Pipeline 
-// Note that this example is designed to be run from within the 
-// source repository. If this code has been copied to run standalone 
-// then you'll need to replace the require below with the commented 
+// First require the core Pipeline
+// Note that this example is designed to be run from within the
+// source repository. If this code has been copied to run standalone
+// then you'll need to replace the require below with the commented
 // out version below it.
-const FiftyOnePipelineCore = require((process.env.directory || __dirname) + "/../../");
-//const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
+const FiftyOnePipelineCore = require((process.env.directory || __dirname) + '/../../');
+// const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 
 // Function to get star sign from month and day
-let getStarSign = (month, day) => {
-  if ((month == 1 && day <= 20) || (month == 12 && day >= 22)) {
-    return "capricorn";
-  } else if ((month == 1 && day >= 21) || (month == 2 && day <= 18)) {
-    return "aquarius";
-  } else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) {
-    return "pisces";
-  } else if ((month == 3 && day >= 21) || (month == 4 && day <= 20)) {
-    return "aries";
-  } else if ((month == 4 && day >= 21) || (month == 5 && day <= 20)) {
-    return "taurus";
-  } else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
-    return "gemini";
-  } else if ((month == 6 && day >= 22) || (month == 7 && day <= 22)) {
-    return "cancer";
-  } else if ((month == 7 && day >= 23) || (month == 8 && day <= 23)) {
-    return "leo";
-  } else if ((month == 8 && day >= 24) || (month == 9 && day <= 23)) {
-    return "virgo";
-  } else if ((month == 9 && day >= 24) || (month == 10 && day <= 23)) {
-    return "libra";
-  } else if ((month == 10 && day >= 24) || (month == 11 && day <= 22)) {
-    return "scorpio";
-  } else if ((month == 11 && day >= 23) || (month == 12 && day <= 21)) {
-    return "sagittarius";
+const getStarSign = (month, day) => {
+  if ((month === 1 && day <= 20) || (month === 12 && day >= 22)) {
+    return 'capricorn';
+  } else if ((month === 1 && day >= 21) || (month === 2 && day <= 18)) {
+    return 'aquarius';
+  } else if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) {
+    return 'pisces';
+  } else if ((month === 3 && day >= 21) || (month === 4 && day <= 20)) {
+    return 'aries';
+  } else if ((month === 4 && day >= 21) || (month === 5 && day <= 20)) {
+    return 'taurus';
+  } else if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) {
+    return 'gemini';
+  } else if ((month === 6 && day >= 22) || (month === 7 && day <= 22)) {
+    return 'cancer';
+  } else if ((month === 7 && day >= 23) || (month === 8 && day <= 23)) {
+    return 'leo';
+  } else if ((month === 8 && day >= 24) || (month === 9 && day <= 23)) {
+    return 'virgo';
+  } else if ((month === 9 && day >= 24) || (month === 10 && day <= 23)) {
+    return 'libra';
+  } else if ((month === 10 && day >= 24) || (month === 11 && day <= 22)) {
+    return 'scorpio';
+  } else if ((month === 11 && day >= 23) || (month === 12 && day <= 21)) {
+    return 'sagittarius';
   }
 };
 
 //! [class]
 //! [constructor]
 // Astrology flowElement
-class astrology extends FiftyOnePipelineCore.flowElement {
-  constructor() {
+class Astrology extends FiftyOnePipelineCore.FlowElement {
+  constructor () {
     super(...arguments);
 
     // datakey used to categorise data coming back from this flowElement in a pipeline
-    this.dataKey = "astrology";
+    this.dataKey = 'astrology';
 
     // A filter (in this case a basic list) stating which evidence the flowElement is interested in
-    this.evidenceKeyFilter = new FiftyOnePipelineCore.basicListEvidenceKeyFilter(
-      ["cookie.latitude", "query.dateOfBirth"]
+    this.evidenceKeyFilter = new FiftyOnePipelineCore.BasicListEvidenceKeyFilter(
+      ['cookie.latitude', 'query.dateOfBirth']
     );
 
     // The properties list includes extra information about the properties available from a flowElement
     this.properties = {
       hemisphere: {
-        type: "string",
-        description: "the user's hemisphere",
+        type: 'string',
+        description: "the user's hemisphere"
       },
       starSign: {
-        type: "string",
-        description: "the user's starsign",
+        type: 'string',
+        description: "the user's starsign"
       },
       getLatitude: {
-        type: "javascript",
-        description: "JavaScript used to get a user's latitude",
+        type: 'javascript',
+        description: "JavaScript used to get a user's latitude"
       }
     };
   }
   //! [constructor]
 
   // The processInternal function is the core working of a flowElement. It takes flowData, reads evidence and returns data.
-  processInternal(flowData) {
-    let result = {};
+  processInternal (flowData) {
+    const result = {};
 
     // Get the date of birth from the query string (submitted through a form on the client side)
-    let dateOfBirth = flowData.evidence.get("query.dateOfBirth");
+    let dateOfBirth = flowData.evidence.get('query.dateOfBirth');
 
     if (dateOfBirth) {
-      dateOfBirth = dateOfBirth.split("-");
+      dateOfBirth = dateOfBirth.split('-');
 
-      let month = dateOfBirth[1];
-      let day = dateOfBirth[2];
+      const month = parseInt(dateOfBirth[1]);
+      const day = parseInt(dateOfBirth[2]);
 
       result.starSign = getStarSign(month, day);
     }
 
     // Get the latitude from the a cookie if client side JavaScript to set the user's latitude has run
-    let latitude = flowData.evidence.get("cookie.latitude");
+    const latitude = flowData.evidence.get('cookie.latitude');
 
     if (!latitude) {
-      // If no cookie set, add client side javascript to set the cookie with 
+      // If no cookie set, add client side javascript to set the cookie with
       // the user's latitude.
-      // Note that the text '// 51D replace this comment with callback function.' 
-      // will be replaced with a callback to indicate once the value has 
+      // Note that the text '// 51D replace this comment with callback function.'
+      // will be replaced with a callback to indicate once the value has
       // been set.
-      // This can trigger another request to the web server with the additional 
-      // information, which can then be processed and used to update the 
+      // This can trigger another request to the web server with the additional
+      // information, which can then be processed and used to update the
       // JSON data on the client.
-      result.getLatitude = `navigator.geolocation.getCurrentPosition(function(position) { document.cookie = 'latitude=' + position.coords.latitude; // 51D replace this comment with callback function. });`;
+      result.getLatitude = 'navigator.geolocation.getCurrentPosition(function(position) { document.cookie = \'latitude=\' + position.coords.latitude; // 51D replace this comment with callback function. });';
     } else {
       // Calculate the hemisphere
-      result.hemisphere = latitude > 0 ? "Northern" : "Southern";
+      result.hemisphere = latitude > 0 ? 'Northern' : 'Southern';
     }
 
     // Save the data into an extension of the elementData class (in this case a simple dictionary subclass)
 
-    let data = new FiftyOnePipelineCore.elementDataDictionary({
+    const data = new FiftyOnePipelineCore.ElementDataDictionary({
       flowElement: this,
-      contents: result,
+      contents: result
     });
 
     // Set this data on the flowElement
@@ -146,20 +146,20 @@ class astrology extends FiftyOnePipelineCore.flowElement {
 //! [class]
 
 //! [usage]
-let element = new astrology();
+const element = new Astrology();
 
-const http = require("http");
+const http = require('http');
 
-let pipeline = new FiftyOnePipelineCore.pipelineBuilder({
+const pipeline = new FiftyOnePipelineCore.PipelineBuilder({
   javascriptBuilderSettings: {
-    _endPoint: "/json",
-  },
+    _endPoint: '/json'
+  }
 })
   .add(element)
   .build();
 
 const server = http.createServer((req, res) => {
-  let flowData = pipeline.createFlowData();
+  const flowData = pipeline.createFlowData();
 
   // Add any information from the request (headers, cookies and additional client side provided information)
   flowData.evidence.addFromRequest(req);
@@ -167,9 +167,9 @@ const server = http.createServer((req, res) => {
   flowData.process().then(function () {
     // Send back JSON if requesting it from the client side via the JavaScriptBuilder
 
-    if (req.url.indexOf("/json") !== -1) {
+    if (req.url.indexOf('/json') !== -1) {
       res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
+      res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(flowData.jsonbundler.json));
 
       return;
@@ -177,25 +177,25 @@ const server = http.createServer((req, res) => {
 
     // Place JavaScript on the page that gets the user's location and saves the latitude in a cookie (for working out the hemisphere).
 
-    let js = flowData.javascriptbuilder.javascript;
+    const js = flowData.javascriptbuilder.javascript;
 
-    let output = `
+    const output = `
 
         <h1>Starsigns</h1>
 
         ${
           flowData.astrology.starSign
-            ? "<p>Your starsign is " + flowData.astrology.starSign + " </p>"
-            : "<p>Add your date of birth to get your starsign</p>"
+            ? '<p>Your starsign is ' + flowData.astrology.starSign + ' </p>'
+            : '<p>Add your date of birth to get your starsign</p>'
         }
 
         <div id="hemispheretext">
         ${
           flowData.astrology.hemisphere
-            ? "<p>Look at the " +
+            ? '<p>Look at the ' +
               flowData.astrology.hemisphere +
-              " hemisphere stars tonight</p>"
-            : ""
+              ' hemisphere stars tonight</p>'
+            : ''
         }
         </div>
 
@@ -237,12 +237,12 @@ const server = http.createServer((req, res) => {
         `;
 
     res.statusCode = 200;
-    res.setHeader("Content-Type", "text/html");
+    res.setHeader('Content-Type', 'text/html');
     res.end(output);
   });
 });
 
-let portNum = process.env.PORT || 3000;
-console.info("To test this example, browse to http://localhost:" + portNum);
+const portNum = process.env.PORT || 3000;
+console.info('To test this example, browse to http://localhost:' + portNum);
 server.listen(portNum);
 //! [usage]

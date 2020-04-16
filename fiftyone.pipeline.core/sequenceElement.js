@@ -20,33 +20,31 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const crypto = require("crypto");
+const crypto = require('crypto');
 
-const flowElement = require("./flowElement.js");
-const basicListEvidenceKeyFilter = require("./basicListEvidenceKeyFilter");
+const FlowElement = require('./flowElement.js');
+const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter');
 
-
-class SequenceElement extends flowElement {
-  constructor() {
+class SequenceElement extends FlowElement {
+  constructor () {
     super(...arguments);
 
-    this.dataKey = "sequence";
+    this.dataKey = 'sequence';
 
-    this.evidenceKeyFilter = new basicListEvidenceKeyFilter([]);
-
+    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter([]);
   }
 
   /**
    * The SequenceElement stores session data for requests for JavaScript
-   * @param {flowData} flowData
+   * @param {FlowData} flowData
    */
-  processInternal(flowData) {
+  processInternal (flowData) {
     // Check if session id is set in evidence
 
-    if (flowData.evidence.get("query.session-id")) {
+    if (flowData.evidence.get('query.session-id')) {
       // Get current sequence number
 
-      let sequence = flowData.evidence.get("query.sequence");
+      let sequence = flowData.evidence.get('query.sequence');
 
       if (sequence) {
         sequence = parseInt(sequence);
@@ -54,15 +52,14 @@ class SequenceElement extends flowElement {
         sequence = 1;
       }
 
-      flowData.evidence.add("query.sequence", sequence + 1);
-
+      flowData.evidence.add('query.sequence', sequence + 1);
     } else {
       flowData.evidence.add(
-        "query.session-id",
-        crypto.randomBytes(16).toString("hex")
+        'query.session-id',
+        crypto.randomBytes(16).toString('hex')
       );
 
-      flowData.evidence.add("query.sequence", 1);
+      flowData.evidence.add('query.sequence', 1);
     }
   }
 }

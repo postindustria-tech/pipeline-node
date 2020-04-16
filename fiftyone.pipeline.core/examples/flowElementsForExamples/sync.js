@@ -3,7 +3,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -13,65 +13,55 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 // This flowElement runs syncronously and checks the value of the async flowElement in order to demonstrate sync vs async pipelines
 
-// Note that this example is designed to be run from within the 
-// source repository. If this code has been copied to run standalone 
-// then you'll need to replace the require below with the commented 
+// Note that this example is designed to be run from within the
+// source repository. If this code has been copied to run standalone
+// then you'll need to replace the require below with the commented
 // out version below it.
-let pipelineCore = require("../../");
-//let pipelineCore = require("fiftyone.pipeline.core");
-let flowElement = pipelineCore.flowElement;
-let elementDataDictionary = pipelineCore.elementDataDictionary;
-let basicListEvidenceKeyFilter = pipelineCore.basicListEvidenceKeyFilter;
+const pipelineCore = require('../../');
+// let pipelineCore = require("fiftyone.pipeline.core");
+const FlowElement = pipelineCore.FlowElement;
+const ElementDataDictionary = pipelineCore.ElementDataDictionary;
+const BasicListEvidenceKeyFilter = pipelineCore.BasicListEvidenceKeyFilter;
 
-class sync extends flowElement {
+class Sync extends FlowElement {
+  constructor () {
+    super();
 
-    constructor() {
+    this.dataKey = 'sync';
+    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter(['header.user_agent']);
 
-        super();
+    this.properties = {
+      integer: {
+        type: 'int'
+      },
+      boolean: {
+        type: 'bool'
+      }
+    };
+  }
 
-        this.dataKey = "sync";
-        this.evidenceKeyFilter = new basicListEvidenceKeyFilter(["header.user_agent"]);
+  processInternal (flowData) {
+    const contents = { integer: 5 };
 
-        this.properties = {
-            integer: {
-                type: "int"
-            },
-            boolean: {
-                type: "bool"
-            }
-        }
-
+    try {
+      contents.boolean = flowData.get('async').get('string') === 'hello';
+    } catch (e) {
+      contents.boolean = false;
     }
 
-    processInternal(flowData) {
-        
-        let contents = { integer: 5 };
+    const data = new ElementDataDictionary({ flowElement: this, contents: contents });
 
-        try {
-
-            contents["boolean"] = flowData.get("async").get("string") === "hello";
-
-        } catch (e) {
-
-            contents["boolean"] = false;
-
-        }
-
-        let data = new elementDataDictionary({ flowElement: this, contents: contents });
-
-        flowData.setElementData(data);
-
-    }
-
+    flowData.setElementData(data);
+  }
 }
 
-module.exports = sync;
+module.exports = Sync;
