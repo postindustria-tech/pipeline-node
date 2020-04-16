@@ -11,9 +11,15 @@
   },
   "author": "51Degrees <support@51Degrees.com>",
   "dependencies": {
-    "fiftyone.pipeline.core": "^1.0.0"
+    "fiftyone.pipeline.core": "^4.1.0-beta"
   },
   "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0"
   },
   "contributors": [
@@ -22,5 +28,12 @@
     "Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
     "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
   ],
-  "license": "EUPL-1.2"
+  "license": "EUPL-1.2",
+  "bugs": { 
+    "url" : "https://github.com/51Degrees/pipeline-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/51Degrees/pipeline-node"
+  }
 }

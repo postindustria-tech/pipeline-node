@@ -3,7 +3,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -13,120 +13,133 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const pipeline = require("./pipeline");
-const fs = require("fs");
-const path = require("path");
+const Pipeline = require('./pipeline');
 
-class pipelineBuilder {
+const fs = require('fs');
+const path = require('path');
 
-    constructor() {
+class PipelineBuilder {
+  constructor (settings = {}) {
+    this.flowElements = [];
 
-        this.flowElements = [];
-
+    if (settings.addJavaScriptBuilder) {
+      this.addJavaScriptBuilder = settings.addJavascriptBuilder;
+    } else {
+      this.addJavaScriptBuilder = true;
     }
 
-    /**
-     * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
-     * @param {String} path path to a JSON configuration file
-    */
-    buildFromConfigurationFile(configPath) {
+    if (settings.javascriptBuilderSettings) {
+      this.javascriptBuilderSettings = settings.javascriptBuilderSettings;
+    }
+  }
 
-        let file = fs.readFileSync(configPath, "utf8");
+  /**
+   * Helper that loads a JSON configuration file from the filesystem and calls pipelineBuilder.buildFromConfiguration
+   * @param {String} path path to a JSON configuration file
+   */
+  buildFromConfigurationFile (configPath) {
+    const file = fs.readFileSync(configPath, 'utf8');
 
-        let parsedFile = JSON.parse(file);
+    const parsedFile = JSON.parse(file);
 
-        return this.buildFromConfiguration(parsedFile);
+    return this.buildFromConfiguration(parsedFile);
+  }
 
+  /**
+   * Create a pipeline from a JSON configuration
+   * @param {Object} config a JSON configuration object
+   */
+  buildFromConfiguration (config) {
+    let flowElements = [];
+
+    config.PipelineOptions.Elements.forEach(function (element) {
+      let FlowElement;
+
+      try {
+        FlowElement = require(element.elementName);
+      } catch (e) {
+        try {
+          const localPath = path.resolve(process.cwd(), element.elementName);
+
+          FlowElement = require(localPath);
+        } catch (e) {
+          throw "Can't find " + element.elementName;
+        }
+      }
+
+      if (!element.elementParameters) {
+        element.elementParameters = {};
+      }
+
+      flowElements.push(new FlowElement(element.elementParameters));
+    });
+
+    flowElements = flowElements.concat(this.getJavaScriptElements());
+
+    return new Pipeline(flowElements);
+  }
+
+  getJavaScriptElements () {
+    const flowElements = [];
+
+    if (this.addJavaScriptBuilder) {
+      // Add JavaScript elements
+
+      const JavascriptBuilder = require('./javascriptbuilder');
+      const JsonBundler = require('./jsonbundler');
+      const SequenceElement = require('./sequenceElement');
+
+      flowElements.push(new SequenceElement());
+      flowElements.push(new JsonBundler());
+
+      if (this.javascriptBuilderSettings) {
+        flowElements.push(
+          new JavascriptBuilder(this.javascriptBuilderSettings)
+        );
+      } else {
+        flowElements.push(new JavascriptBuilder({}));
+      }
     }
 
-    /**
-     * Create a pipeline from a JSON configuration
-     * @param {Object} config a JSON configuration object
-    */
-    buildFromConfiguration(config) {
+    return flowElements;
+  }
 
-        let flowElements = [];
+  /**
+   * Add a single flowElement to be executed in series
+   * @param {FlowElement} flowElement
+   */
+  add (flowElement) {
+    this.flowElements.push(flowElement);
 
-        config.PipelineOptions.Elements.forEach(function (element) {
+    return this;
+  }
 
-            let flowElement;
+  /**
+   * Add an array of flowElements to be executed in parallel
+   * @param {FlowElement[]} flowElements
+   */
+  addParallel (flowElements) {
+    this.flowElements.push(flowElements);
 
-            try {
+    return this;
+  }
 
-                flowElement = require(element.elementName);
+  /**
+   * Build the pipeline from the flowElements that have been added
+   * @returns {Pipeline}
+   */
+  build () {
+    this.flowElements = this.flowElements.concat(this.getJavaScriptElements());
 
-            } catch (e) {
-
-                try {
-
-                    let localPath = path.resolve(process.cwd(), element.elementName);
-
-                    flowElement = require(localPath);
-
-                } catch (e) {
-
-                    throw "Can't find " + element.elementName;
-
-                }
-
-            }
-
-            if (!element.elementParameters) {
-
-                element.elementParameters = {};
-
-            }
-
-            flowElements.push(new flowElement(element.elementParameters));
-
-        })
-
-        return new pipeline(flowElements);
-
-
-    }
-
-    /**
-     * Add a single flowElement to be executed in series
-     * @param {flowElement} flowElement
-    */
-    add(flowElement) {
-
-        this.flowElements.push(flowElement);
-
-        return this;
-
-    }
-
-    /**
-     * Add an array of flowElements to be executed in parallel
-     * @param {flowElement[]} flowElements
-    */
-    addParallel(flowElements) {
-
-        this.flowElements.push(flowElements);
-
-        return this;
-
-    }
-
-    /**
-     * Build the pipeline from the flowElements that have been added
-     * @returns {pipeline}
-    */
-    build() {
-
-        return new pipeline(this.flowElements);
-
-    }
-
+    return new Pipeline(this.flowElements);
+  }
 }
 
-module.exports = pipelineBuilder;
+module.exports = PipelineBuilder;

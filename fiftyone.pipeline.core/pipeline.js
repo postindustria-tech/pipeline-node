@@ -3,7 +3,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -13,316 +13,265 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const flowData = require("./flowData");
-const EventEmitter = require("events");
+const FlowData = require('./flowData');
+const EventEmitter = require('events');
 
 (function () {
+  const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
+  const isEnumerable = Function.bind.call(
+    Function.call,
+    Object.prototype.propertyIsEnumerable
+  );
+  const concat = Function.bind.call(Function.call, Array.prototype.concat);
+  const keys = Reflect.ownKeys;
 
-    const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
-    const isEnumerable = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
-    const concat = Function.bind.call(Function.call, Array.prototype.concat);
-    const keys = Reflect.ownKeys;
+  if (!Object.values) {
+    Object.values = function values (O) {
+      return reduce(
+        keys(O),
+        (v, k) =>
+          concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []),
+        []
+      );
+    };
+  }
 
-    if (!Object.values) {
-        Object.values = function values(O) {
-            return reduce(keys(O), (v, k) => concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []), []);
-        };
-    }
+  if (!Object.entries) {
+    Object.entries = function entries (O) {
+      return reduce(
+        keys(O),
+        (e, k) =>
+          concat(
+            e,
+            typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []
+          ),
+        []
+      );
+    };
+  }
+})();
 
-    if (!Object.entries) {
-        Object.entries = function entries(O) {
-            return reduce(keys(O), (e, k) => concat(e, typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []), []);
-        };
-    }
+class Pipeline {
+  /**
+   * Pipeline holding a list of flowElements for processing, can create flowData that will be passed through these, collecting elementData
+   * Should be constructed through the pipelineBuilder class
+   * @param {FlowElements[]}
+   */
+  constructor (flowElements = []) {
+    const pipeline = this;
 
-}());
+    // The chain of flowElements to run, including arrays of parallel elements
+    this.flowElementsChain = flowElements;
 
-class pipeline {
+    // A logger for emitting messages
+    this.eventEmitter = new EventEmitter();
 
-    /**
-     * Pipeline holding a list of flowElements for processing, can create flowData that will be passed through these, collecting elementData
-     * Should be constructed through the pipelineBuilder class
-     * @param {flowElements[]}
-    */
-    constructor(flowElements = []) {
+    // Flattened dictionary of flowElements the pipeline contains
+    this.flowElements = {};
 
-        let pipeline = this;
+    // Run through flowElements and store them by dataKey in the pipeline.flowElements object. Recursive function so it can handle parallel elements which are passed in as arrays
+    const storeInFlowElementList = function (flowElemmentList) {
+      flowElemmentList.forEach(function (slot) {
+        if (Array.isArray(slot)) {
+          storeInFlowElementList(slot);
+        } else {
+          // Run registration function
+          slot.onRegistration(pipeline, slot);
 
+          pipeline.flowElements[slot.dataKey] = slot;
 
-        // The chain of flowElements to run, including arrays of parallel elements
-        this.flowElementsChain = flowElements;
+          // Register link between flowElement and a pipeline it's been added to
+          slot.pipelines.push(pipeline);
+        }
+      });
+    };
 
-        // A logger for emitting messages
-        this.eventEmitter = new EventEmitter();
+    storeInFlowElementList(flowElements);
 
-        // Flattened dictionary of flowElements the pipeline contains
-        this.flowElements = {};
+    // Empty property database, later populated and possibly updated by flowElements' property lists
+    this.propertyDatabase = {};
 
-        // Run through flowElements and store them by dataKey in the pipeline.flowElements object. Recursive function so it can handle parallel elements which are passed in as arrays
-        let storeInFlowElementList = function (flowElemmentList) {
+    // Update property list - Note that some of these could be async so the property list might not be updated straight away. When this happens, getWhere calls will simply return empty for those specific properties
+    Object.values(this.flowElements).forEach(function (flowElement) {
+      pipeline.updatePropertyDataBaseForElement(flowElement);
+    });
 
-            flowElemmentList.forEach(function (slot) {
+    // Create the flowData process function here to save having to do it each time the flowData is processed. This requestedPackages up all the logic for generating promises, sync / async and others
+    const processMethod = function () {
+      const promiseChain = [];
 
-                if (Array.isArray(slot)) {
+      const makeProcessPromise = function (flowElement) {
+        return function (flowData) {
+          if (flowData.stopped) {
+            return Promise.resolve(flowData);
+          }
 
-                    storeInFlowElementList(slot);
+          pipeline.eventEmitter.emit(
+            'info',
+            'processing ' + flowElement.dataKey
+          );
 
-                } else {
+          return new Promise(function (resolve) {
+            const setError = function (error) {
+              flowData.setError(error, flowElement);
 
-                    // Run registration function
-                    slot.onRegistration(pipeline, slot);
-
-                    pipeline.flowElements[slot.dataKey] = slot;
-
-                    // Register link between flowElement and a pipeline it's been added to
-                    slot.pipelines.push(pipeline);
-
-                }
-
-            });
-
-        };
-
-        storeInFlowElementList(flowElements);
-
-        // Empty property database, later populated and possibly updated by flowElements' property lists
-        this.propertyDatabase = {};
-
-        // Update property list - Note that some of these could be async so the property list might not be updated straight away. When this happens, getWhere calls will simply return empty for those specific properties
-        Object.values(this.flowElements).forEach(function (flowElement) {
-
-            pipeline.updatePropertyDataBaseForElement(flowElement)
-
-        });
-
-        // Create the flowData process function here to save having to do it each time the flowData is processed. This requestedPackages up all the logic for generating promises, sync / async and others
-        let processMethod = function () {
-
-            let promiseChain = [];
-
-            let makeProcessPromise = function (flowElement) {
-
-                return function (flowData) {
-
-                    if (flowData.stopped) {
-
-                        return Promise.resolve(flowData);
-
-                    }
-
-                    pipeline.eventEmitter.emit("info", "processing " + flowElement.dataKey);
-
-                    return new Promise(function (resolve) {
-
-                        let setError = function (error) {
-
-                            flowData.setError(error, flowElement);
-
-                            return resolve(flowData);
-
-                        };
-
-                        let local = {};
-
-                        let process;
-
-                        try {
-
-                            process = Promise.resolve(flowElement.process(flowData, local));
-
-                        } catch (e) {
-
-                            return setError(e);
-
-                        }
-
-                        process.then(function () {
-
-                            resolve(flowData);
-
-                        }).catch(setError);
-
-                    });
-
-                };
+              return resolve(flowData);
             };
 
-            pipeline.flowElementsChain.forEach(function (item) {
+            const local = {};
 
-                if (Array.isArray(item)) {
+            let process;
 
-                    promiseChain.push(function (flowData) {
+            try {
+              process = Promise.resolve(flowElement.process(flowData, local));
+            } catch (e) {
+              return setError(e);
+            }
 
-                        let promises = [];
-
-                        item.forEach(function (flowElement) {
-
-                            let promise = makeProcessPromise(flowElement)(flowData);
-
-                            promises.push(promise);
-
-                        });
-
-                        return Promise.all(promises.map(p => p.catch(e => e)))
-                            .then(results => flowData)
-                            .catch(e => console.log(e));
-
-                    });
-
-                } else {
-
-                    promiseChain.push(makeProcessPromise(item));
-
-                }
-
-            });
-
-            return function (flowData) {
-
-                return promiseChain.reduce(function (cur, next) {
-
-                    return cur.then(next);
-
-                }, Promise.resolve(flowData));
-
-            };
-
+            process
+              .then(function () {
+                resolve(flowData);
+              })
+              .catch(setError);
+          });
         };
+      };
 
-        this.processMethod = processMethod();
+      pipeline.flowElementsChain.forEach(function (item) {
+        if (Array.isArray(item)) {
+          promiseChain.push(function (flowData) {
+            const promises = [];
 
-    }
+            item.forEach(function (flowElement) {
+              const promise = makeProcessPromise(flowElement)(flowData);
 
-    /**
-     * get a flowElement by its dataKey
-     * @param {String} dataKey
-    */
-    getElement(key) {
-
-        return this.flowElements[key];
-
-    }
-
-
-    /**
-     * Method to attach listeners to the logger
-     * Shorthand access to the enclosed event emitter
-     * @param {String} listener type of message to listen to
-     * @param {Function} callback  
-    */
-    on(listener, callback) {
-
-        this.eventEmitter.on(listener, callback);
-
-    }
-
-    /**
-     * Shorthand to trigger a message on the pipeline's eventEmitter
-     * @param {String} type type of message to listen to
-     * @param message
-    */
-    log(type, message) {
-
-        this.eventEmitter.emit(type, message);
-
-    }
-
-    /**
-     * create a flowData element from the pipeline
-     * @returns {flowData}
-    */
-    createFlowData() {
-
-        let pipelineFlowData = new flowData(this);
-
-        // Create getters for flowElements by key so users can use flowData.elementDataKey instead of flowData.get(elementDataKey)
-
-        Object.keys(this.flowElements).forEach(function (element) {
-
-            Object.defineProperty(pipelineFlowData, element, { get: function () { return this.get(element) } });
-
-        });
-
-        return pipelineFlowData;
-
-    }
-
-    updatePropertyDataBaseForElement(flowElement) {
-
-        let pipeline = this;
-
-        return new Promise(function (resolve) {
-
-            // First delete any instances of properties for this element
-
-            Object.keys(pipeline.propertyDatabase).forEach(function (metaKey) {
-
-                Object.entries(pipeline.propertyDatabase[metaKey]).forEach(function ([metaValue, list]) {
-
-                    Object.entries(list).forEach(function ([key, value]) {
-
-                        if (value.flowElementKey === flowElement.dataKey) {
-
-                            delete pipeline.propertyDatabase[metaKey][metaValue][key];
-
-                        }
-
-                    })
-
-                })
-
+              promises.push(promise);
             });
 
-            Promise.resolve(flowElement.getProperties()).then(function (properties) {
+            return Promise.all(promises.map((p) => p.catch((e) => e)))
+              .then((results) => flowData)
+              .catch((e) => console.log(e));
+          });
+        } else {
+          promiseChain.push(makeProcessPromise(item));
+        }
+      });
 
-                let flowElementDataKey = flowElement.dataKey;
+      return function (flowData) {
+        return promiseChain.reduce(function (cur, next) {
+          return cur.then(next);
+        }, Promise.resolve(flowData));
+      };
+    };
 
-                Object.entries(properties).forEach(function ([propertyKey, propertyMeta]) {
+    this.processMethod = processMethod();
+  }
 
-                    let propertyName = propertyKey;
+  /**
+   * get a flowElement by its dataKey
+   * @param {String} dataKey
+   */
+  getElement (key) {
+    return this.flowElements[key];
+  }
 
-                    Object.entries(propertyMeta).forEach(function ([metaKey, metaValue]) {
+  /**
+   * Method to attach listeners to the logger
+   * Shorthand access to the enclosed event emitter
+   * @param {String} listener type of message to listen to
+   * @param {Function} callback
+   */
+  on (listener, callback) {
+    this.eventEmitter.on(listener, callback);
+  }
 
-                        metaKey = metaKey.toLowerCase();
-                        metaValue = metaValue.toString().toLowerCase();
+  /**
+   * Shorthand to trigger a message on the pipeline's eventEmitter
+   * @param {String} type type of message to listen to
+   * @param message
+   */
+  log (type, message) {
+    this.eventEmitter.emit(type, message);
+  }
 
-                        if (!pipeline.propertyDatabase[metaKey]) {
+  /**
+   * create a flowData element from the pipeline
+   * @returns {FlowData}
+   */
+  createFlowData () {
+    const pipelineFlowData = new FlowData(this);
 
-                            pipeline.propertyDatabase[metaKey] = {};
+    // Create getters for flowElements by key so users can use flowData.elementDataKey instead of flowData.get(elementDataKey)
 
-                        }
+    Object.keys(this.flowElements).forEach(function (element) {
+      Object.defineProperty(pipelineFlowData, element, {
+        get: function () {
+          return this.get(element);
+        }
+      });
+    });
 
-                        if (!pipeline.propertyDatabase[metaKey][metaValue]) {
+    return pipelineFlowData;
+  }
 
-                            pipeline.propertyDatabase[metaKey][metaValue] = {};
+  updatePropertyDataBaseForElement (flowElement) {
+    const pipeline = this;
 
-                        }
+    return new Promise(function (resolve) {
+      // First delete any instances of properties for this element
 
-                        pipeline.propertyDatabase[metaKey][metaValue][propertyKey] = {
-                            propertyName: propertyName,
-                            flowElementKey: flowElementDataKey
-                        }
+      Object.keys(pipeline.propertyDatabase).forEach(function (metaKey) {
+        Object.entries(pipeline.propertyDatabase[metaKey]).forEach(function ([
+          metaValue,
+          list
+        ]) {
+          Object.entries(list).forEach(function ([key, value]) {
+            if (value.flowElementKey === flowElement.dataKey) {
+              delete pipeline.propertyDatabase[metaKey][metaValue][key];
+            }
+          });
+        });
+      });
 
-                    });
+      Promise.resolve(flowElement.getProperties()).then(function (properties) {
+        const flowElementDataKey = flowElement.dataKey;
 
-                });
+        Object.entries(properties).forEach(function ([
+          propertyKey,
+          propertyMeta
+        ]) {
+          const propertyName = propertyKey;
 
-                resolve();
+          Object.entries(propertyMeta).forEach(function ([metaKey, metaValue]) {
+            metaKey = metaKey.toLowerCase();
+            metaValue = metaValue.toString().toLowerCase();
 
-            })
+            if (!pipeline.propertyDatabase[metaKey]) {
+              pipeline.propertyDatabase[metaKey] = {};
+            }
 
+            if (!pipeline.propertyDatabase[metaKey][metaValue]) {
+              pipeline.propertyDatabase[metaKey][metaValue] = {};
+            }
 
+            pipeline.propertyDatabase[metaKey][metaValue][propertyKey] = {
+              propertyName: propertyName,
+              flowElementKey: flowElementDataKey
+            };
+          });
         });
 
-    }
-
+        resolve();
+      });
+    });
+  }
 }
 
-module.exports = pipeline;
+module.exports = Pipeline;

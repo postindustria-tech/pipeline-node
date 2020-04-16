@@ -20,16 +20,48 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-module.exports = {
+const crypto = require('crypto');
 
-  AspectData: require('./aspectData'),
-  AspectDataDictionary: require('./aspectDataDictionary'),
-  DataFile: require('./dataFile'),
-  DataKeyedCache: require('./dataKeyedCache'),
-  Engine: require('./engine'),
-  Lru: require('./lru'),
-  LruCache: require('./lruCache'),
-  MissingPropertyService: require('./missingPropertyService'),
-  Tracker: require('./tracker')
+const FlowElement = require('./flowElement.js');
+const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter');
 
-};
+class SequenceElement extends FlowElement {
+  constructor () {
+    super(...arguments);
+
+    this.dataKey = 'sequence';
+
+    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter([]);
+  }
+
+  /**
+   * The SequenceElement stores session data for requests for JavaScript
+   * @param {FlowData} flowData
+   */
+  processInternal (flowData) {
+    // Check if session id is set in evidence
+
+    if (flowData.evidence.get('query.session-id')) {
+      // Get current sequence number
+
+      let sequence = flowData.evidence.get('query.sequence');
+
+      if (sequence) {
+        sequence = parseInt(sequence);
+      } else {
+        sequence = 1;
+      }
+
+      flowData.evidence.add('query.sequence', sequence + 1);
+    } else {
+      flowData.evidence.add(
+        'query.session-id',
+        crypto.randomBytes(16).toString('hex')
+      );
+
+      flowData.evidence.add('query.sequence', 1);
+    }
+  }
+}
+
+module.exports = SequenceElement;
