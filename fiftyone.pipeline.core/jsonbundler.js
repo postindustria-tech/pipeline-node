@@ -54,7 +54,7 @@ class JSONBundlerElement extends FlowElement {
       }
 
       // Create empty area for flowElement properties to go
-      output[flowElement] = {};
+      output[flowElement.toLowerCase()] = {};
 
       const flowElementObject = flowData.pipeline.flowElements[flowElement];
 
@@ -91,9 +91,9 @@ class JSONBundlerElement extends FlowElement {
           continue;
         }
 
-        output[flowElement][property] = value;
+        output[flowElement.toLowerCase()][property.toLowerCase()] = value;
         if (value == null) {
-          output[flowElement][property + 'nullreason'] = nullReason;
+          output[flowElement.toLowerCase()][property.toLowerCase() + 'nullreason'] = nullReason;
         }
 
         const propertyObject = properties[property];
@@ -111,7 +111,7 @@ class JSONBundlerElement extends FlowElement {
 
           if (type && type.toLowerCase() === 'javascript') {
             if (value) {
-              output.javascriptProperties.push(flowElement + '.' + property);
+              output.javascriptProperties.push(flowElement.toLowerCase() + '.' + property.toLowerCase());
             }
           }
         }
