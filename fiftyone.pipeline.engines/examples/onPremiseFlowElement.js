@@ -29,7 +29,7 @@ This lookup table is stored in a JSON file which is registered using the
 datafile update service. In this case the file has a simple watcher which
 checks if the file has changed.
 
-*/
+ */
 
 // Require the filesystem module for datafile reading
 const fs = require('fs');
@@ -38,7 +38,8 @@ const fs = require('fs');
 const FiftyOnePipelineCore = require('fiftyone.pipeline.core');
 
 // Next require the engines extension that extends flowElements to support
-// functionality such as auto updating datafiles, caches and missing property services
+// functionality such as auto updating datafiles,
+// caches and missing property services
 
 // Note that this example is designed to be run from within the
 // source repository. If this code has been copied to run standalone
@@ -57,26 +58,33 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
     // Create a datafile including a filesystem watcher that checks if
     // the datafile has changed. Test by changing the names of the
     // starsigns to see it update
-    this.dataFile = new FiftyOnePipelineEngines.DataFile({ flowElement: this, path: datafile, autoUpdate: false, fileSystemWatcher: true });
+    this.dataFile = new FiftyOnePipelineEngines
+      .DataFile(
+        {
+          flowElement: this,
+          path: datafile,
+          autoUpdate: false,
+          fileSystemWatcher: true
+        }
+      );
 
     this.registerDataFile(this.dataFile);
 
-    // datakey used to categorise data coming back from this flowElement in a pipeline
+    // datakey used to categorise data coming back from
+    // this flowElement in a pipeline
     this.dataKey = 'astrology';
 
     // A filter (in this case a basic list) stating which evidence the
     // flowElement is interested in, in this case a query string
-    this.evidenceKeyFilter = new FiftyOnePipelineCore.BasicListEvidenceKeyFilter(['query.dateOfBirth']);
+    this.evidenceKeyFilter = new FiftyOnePipelineCore
+      .BasicListEvidenceKeyFilter(['query.dateOfBirth']);
 
     // Update the datafile
     this.refresh();
   }
-  //! [constructor]
 
   // A function called when the datafile is updated / refreshed. In this
   // case it simply loads the JSON from the file into the engine's memory.
-
-  //! [refresh]
   refresh () {
     const engine = this;
 
@@ -87,18 +95,24 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
 
       data = JSON.parse(data);
 
-      // Load the datafile into memory and parse it to make it more easily readable
+      // Load the datafile into memory and parse it to make it
+      // more easily readable
       data = data.map(function (e) {
         const start = e[1].split('/');
         const end = e[2].split('/');
 
-        return { starsign: e[0], startMonth: parseInt(start[1]), startDate: parseInt(start[0]), endMonth: parseInt(end[1]), endDate: parseInt(end[0]) };
+        return {
+          starsign: e[0],
+          startMonth: parseInt(start[1]),
+          startDate: parseInt(start[0]),
+          endMonth: parseInt(end[1]),
+          endDate: parseInt(end[0])
+        };
       });
 
       engine.data = data;
     });
   }
-  //! [refresh]
 
   // Internal processing function
   processInternal (flowData) {
@@ -139,7 +153,8 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
       })[0].starsign;
     };
 
-    // Save the data into an extension of the elementData class (in this case a simple dictionary subclass)
+    // Save the data into an extension of the elementData class
+    // (in this case a simple dictionary subclass)
     const data = new FiftyOnePipelineCore.ElementDataDictionary({
       flowElement: this, contents: result
     });
@@ -148,10 +163,10 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
     flowData.setElementData(data);
   }
 }
-//! [class]
 
-//! [usage]
-const astrologyElement = new Astrology({ datafile: (process.env.directory || __dirname) + '/astrology.json' });
+const astrologyElement = new Astrology(
+  { datafile: (process.env.directory || __dirname) + '/astrology.json' }
+);
 
 const http = require('http');
 
@@ -162,7 +177,8 @@ const pipeline = new FiftyOnePipelineCore.PipelineBuilder()
 const server = http.createServer((req, res) => {
   const flowData = pipeline.createFlowData();
 
-  // Add any information from the request (headers, cookies and additional client side provided information)
+  // Add any information from the request
+  // (headers, cookies and additional client side provided information)
   flowData.evidence.addFromRequest(req);
 
   flowData.process().then(function () {
@@ -172,9 +188,17 @@ const server = http.createServer((req, res) => {
 
         <h1>Starsigns</h1>
 
-        ${flowData.astrology.starSign ? '<p>Your starsign is ' + flowData.astrology.starSign + ' </p>' : '<p>Add your date of birth to get your starsign</p>'}
+        ${flowData.astrology.starSign
+          ? '<p>Your starsign is ' +
+          flowData.astrology.starSign + ' </p>'
+          : '<p>Add your date of birth to get your starsign</p>'
+        }
 
-        <form><label for='dateOfBirth'>Date of birth</label><input type='date' name='dateOfBirth' id='dateOfBirth'><input type='submit'></form>
+        <form>
+          <label for='dateOfBirth'>Date of birth</label>
+          <input type='date' name='dateOfBirth' id='dateOfBirth'>
+          <input type='submit'>
+        </form>
         
         `;
 
@@ -187,4 +211,3 @@ const server = http.createServer((req, res) => {
 const portNum = process.env.PORT || 3000;
 console.info('To test this example, browse to http://localhost:' + portNum);
 server.listen(portNum);
-//! [usage]

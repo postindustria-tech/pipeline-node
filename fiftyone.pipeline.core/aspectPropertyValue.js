@@ -20,15 +20,33 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/**
+ * An AspectPropertyValue is a wrapper for a value
+ * It lets you check this wrapper has a value inside it
+ * If not value is set, a specific no value message is returned
+ */
 class AspectPropertyValue {
-  constructor (noValueMessage = 'No value has been set.') {
-    this.noValueMessage = noValueMessage;
-    this.value = undefined;
+  /**
+   * Constructor for AspectPropertyValue
+   *
+   * @param {string} noValueMessage The message to show when no value is set
+   * @param {Mixed} value The value inside the wrapper
+   */
+  constructor (noValueMessage = 'No value has been set.', value) {
+    if (typeof value !== 'undefined') {
+      this.noValueMessage = null;
+      this._value = value;
+      this.hasValue = true;
+    } else {
+      this.noValueMessage = noValueMessage;
+      this.hasValue = false;
+    }
   }
 
   /**
    * Get the value of this instance.
-   * @returns {Mixed}
+   *
+   * @returns {Mixed} The value of the property
    * @throws Will throw error if 'hasValue' is false.
    */
   get value () {
@@ -41,10 +59,11 @@ class AspectPropertyValue {
 
   /**
    * Set the value of this instance.
-   * @param {Mixed} value
+   *
+   * @param {Mixed} value the value to set
    */
   set value (value) {
-    if (typeof value !== 'undefined' && value !== null) {
+    if (typeof value !== 'undefined') {
       this._value = value;
       this.hasValue = true;
     } else {

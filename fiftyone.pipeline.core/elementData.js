@@ -20,11 +20,17 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/**
+ * Stores information created by a flowElement based on flowData.
+ * Stored in flowData
+ */
 class ElementData {
   /**
-   * constructor for elementData, stores information created by a flowElement based on flowData. Stored (keyed by flowElement and searchable via meta data properties) in flowData
-   * @param {Object} options
-   * @param {flowElement} options.flowElement
+   * Constructor for elementData
+   *
+   * @param {object} options the options object
+   * @param {flowElement} options.flowElement the FlowElement this data
+   * is part of
    */
   constructor ({ flowElement }) {
     if (!flowElement.dataKey) {
@@ -33,6 +39,8 @@ class ElementData {
 
     this.flowElement = flowElement;
 
+    // Returns a proxy so that we can use flowData.flowElementDataKey
+    // As a shortcut to flowData.get("flowElementDataKey")
     return new Proxy(this, {
       get: (data, key) => {
         try {
@@ -47,16 +55,20 @@ class ElementData {
   /**
    * Internal get method for elementData to retrieve an element from it
    * called via the elementData's get method
-   * @param {String} key
+   * This method is overriden by classes inheriting from elementData
+   *
+   * @param {string} key the key to retrieve a property value for
    */
   getInternal (key) {
 
   }
 
   /**
-   * A wrapper that performs actions before passing on processing (or skipping) the getInternal method
-   * @param {String} key
-   * @return {mixed} value
+   * A wrapper that performs actions before passing on processing
+   * (or skipping) the getInternal method
+   *
+   * @param {string} key the key to retreive a property value for
+   * @returns {mixed} value
    */
   get (key) {
     return this.getInternal(key);
@@ -64,8 +76,9 @@ class ElementData {
 
   /**
    * Return string value of property
-   * @param {String} key
-   * @return {string} value
+   *
+   * @param {string} key the key to retreive a property value for
+   * @returns {string} value
    */
   getAsString (key) {
     const result = this.get(key);
@@ -77,8 +90,9 @@ class ElementData {
 
   /**
    * Return float value of property
-   * @param {String} key
-   * @return {float} value
+   *
+   * @param {string} key the key to retreive a property value for
+   * @returns {float} value
    */
   getAsFloat (key) {
     const result = this.get(key);
@@ -90,8 +104,9 @@ class ElementData {
 
   /**
    * Return int value of property
-   * @param {String} key
-   * @return {int} value
+   *
+   * @param {string} key the key to retreive a property value for
+   * @returns {int} value
    */
   getAsInteger (key) {
     const result = this.get(key);

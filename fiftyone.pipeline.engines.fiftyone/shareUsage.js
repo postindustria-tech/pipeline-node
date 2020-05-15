@@ -38,23 +38,42 @@ const https = require('https');
 
 const os = require('os');
 
+/**
+ * The ShareUsage element sends usage data to 51Degrees in zipped batches
+ */
 class ShareUsage extends Engine {
   /**
-     * Constructor for shareUsage element which sends usage data to 51Degrees in zipped batches
-     * @param {Object} options
-     * @param {Number} options.interval
-     * @param {Number} options.requestedPackageSize
-     * @param {String} options.cookie // session tracking cookie
-     * @param {Array} options.queryWhitelist // list of query string whitelist evidence to keep
-     * @param {Array} options.headerBlacklist // list of header evidence to exclude
-     * @param {Number} options.sharePercentage // percentage of requests to share
-    */
-  constructor ({ interval = 100, requestedPackageSize = 10, cookie, queryWhitelist, headerBlacklist, sharePercentage = 100 } = {}) {
+   * Constructor for ShareUsage engine
+   *
+   * @param {object} options settings object for shareusage
+   * @param {number} options.interval how often to send
+   * @param {number} options.requestedPackageSize how many items
+   * in one zipped packaged
+   * @param {string} options.cookie which cookie is used to track evidence
+   * @param {Array} options.queryWhitelist list of query string
+   * whitelist evidence to keep
+   * @param {Array} options.headerBlacklist list of header evidence to exclude
+   * @param {number} options.sharePercentage percentage of requests to share
+   */
+  constructor (
+    {
+      interval = 100,
+      requestedPackageSize = 10,
+      cookie,
+      queryWhitelist,
+      headerBlacklist,
+      sharePercentage = 100
+    } = {}) {
     super(...arguments);
 
     this.trackingCookie = cookie;
 
-    this.evidenceKeyFilter = new ShareUsageEvidenceKeyFilter({ cookie: cookie, queryWhitelist: queryWhitelist, headerBlacklist: headerBlacklist });
+    this.evidenceKeyFilter = new ShareUsageEvidenceKeyFilter(
+      {
+        cookie: cookie,
+        queryWhitelist: queryWhitelist,
+        headerBlacklist: headerBlacklist
+      });
 
     this.dataKey = 'shareUsage';
 
@@ -69,6 +88,12 @@ class ShareUsage extends Engine {
     this.shareData = [];
   }
 
+  /**
+   * Internal process method which uses the ShareUsageTracker
+   * to determine whether to add usage data to a batch and adds it if necessary.
+   *
+   * @param {FlowData} flowData flowData to process
+   */
   processInternal (flowData) {
     this.sharePercentageCounter += 1;
 
@@ -80,7 +105,8 @@ class ShareUsage extends Engine {
       return;
     }
 
-    const cacheKey = this.evidenceKeyFilter.filterEvidence(flowData.evidence.getAll());
+    const cacheKey = this.evidenceKeyFilter
+      .filterEvidence(flowData.evidence.getAll());
 
     const share = this.tracker.track(cacheKey);
 
@@ -91,6 +117,12 @@ class ShareUsage extends Engine {
     }
   }
 
+  /**
+   * Internal method which adds to the share usage bundle (generating XML)
+   *
+   * @param {object} key key value store of current
+   * evidence in FlowData (filtered by the ShareUsageEvidenceKeyFilter)
+   */
   addToShareUsage (key) {
     let xml = '';
 
@@ -114,7 +146,12 @@ class ShareUsage extends Engine {
       xml += `<${prefix} name="${name}">${value}</${prefix}>`;
     }
 
-    const date = new Date().toISOString().substr(0, 19).replace('T', ' ').split(' ').join(':');
+    const date = new Date()
+      .toISOString()
+      .substr(0, 19)
+      .replace('T', ' ')
+      .split(' ')
+      .join(':');
 
     xml += '<dateSent>' + date + '</dateSent>';
 
@@ -127,6 +164,9 @@ class ShareUsage extends Engine {
     }
   }
 
+  /**
+   * Internal method to send the share usage bundle to the 51Degrees servers
+   */
   sendShareUsage () {
     const data = '<devices>' + this.shareData.join() + '</devices>';
 

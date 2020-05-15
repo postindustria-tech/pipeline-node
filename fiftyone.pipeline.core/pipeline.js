@@ -23,46 +23,17 @@
 const FlowData = require('./flowData');
 const EventEmitter = require('events');
 
-(function () {
-  const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
-  const isEnumerable = Function.bind.call(
-    Function.call,
-    Object.prototype.propertyIsEnumerable
-  );
-  const concat = Function.bind.call(Function.call, Array.prototype.concat);
-  const keys = Reflect.ownKeys;
-
-  if (!Object.values) {
-    Object.values = function values (O) {
-      return reduce(
-        keys(O),
-        (v, k) =>
-          concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []),
-        []
-      );
-    };
-  }
-
-  if (!Object.entries) {
-    Object.entries = function entries (O) {
-      return reduce(
-        keys(O),
-        (e, k) =>
-          concat(
-            e,
-            typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []
-          ),
-        []
-      );
-    };
-  }
-})();
-
+/**
+ * Pipeline holding a list of flowElements for processing, can create
+ * flowData that will be passed through these, collecting elementData
+ * Should be constructed through the PipelineBuilder class
+ */
 class Pipeline {
   /**
-   * Pipeline holding a list of flowElements for processing, can create flowData that will be passed through these, collecting elementData
-   * Should be constructed through the pipelineBuilder class
-   * @param {FlowElements[]}
+   * Constructor for Pipeline
+   *
+   * @param {FlowElements[]} flowElements list of FlowElements to
+   * add to the Pipeline
    */
   constructor (flowElements = []) {
     const pipeline = this;
@@ -76,7 +47,10 @@ class Pipeline {
     // Flattened dictionary of flowElements the pipeline contains
     this.flowElements = {};
 
-    // Run through flowElements and store them by dataKey in the pipeline.flowElements object. Recursive function so it can handle parallel elements which are passed in as arrays
+    // Run through flowElements and store them by dataKey
+    // in the pipeline.flowElements object.
+    // Recursive function so it can handle parallel elements
+    // which are passed in as arrays
     const storeInFlowElementList = function (flowElemmentList) {
       flowElemmentList.forEach(function (slot) {
         if (Array.isArray(slot)) {
@@ -95,15 +69,23 @@ class Pipeline {
 
     storeInFlowElementList(flowElements);
 
-    // Empty property database, later populated and possibly updated by flowElements' property lists
+    // Empty property database, later populated and possibly
+    // updated by flowElements' property lists
     this.propertyDatabase = {};
 
-    // Update property list - Note that some of these could be async so the property list might not be updated straight away. When this happens, getWhere calls will simply return empty for those specific properties
-    Object.values(this.flowElements).forEach(function (flowElement) {
+    // Update property list - Note that some of these could be async
+    // so the property list might not be updated straight away.
+    // When this happens, getWhere calls will return
+    // empty for those specific properties
+    Object.keys(pipeline.flowElements).forEach(function (key) {
+      const flowElement = pipeline.flowElements[key];
       pipeline.updatePropertyDataBaseForElement(flowElement);
     });
 
-    // Create the flowData process function here to save having to do it each time the flowData is processed. This requestedPackages up all the logic for generating promises, sync / async and others
+    // Create the FlowData process function here to save
+    // having to do it each time the FlowData is processed.
+    // This packages up all the logic for generating promises,
+    // sync / async and others
     const processMethod = function () {
       const promiseChain = [];
 
@@ -175,8 +157,10 @@ class Pipeline {
   }
 
   /**
-   * get a flowElement by its dataKey
-   * @param {String} dataKey
+   * get a FlowElement by its dataKey
+   *
+   * @param {string} key the datakey of the FlowElement
+   * @returns {FlowElement} the FlowElement for the datakey
    */
   getElement (key) {
     return this.flowElements[key];
@@ -185,8 +169,9 @@ class Pipeline {
   /**
    * Method to attach listeners to the logger
    * Shorthand access to the enclosed event emitter
-   * @param {String} listener type of message to listen to
-   * @param {Function} callback
+   *
+   * @param {string} listener type of message to listen to
+   * @param {Function} callback a callback to react to the log
    */
   on (listener, callback) {
     this.eventEmitter.on(listener, callback);
@@ -194,21 +179,27 @@ class Pipeline {
 
   /**
    * Shorthand to trigger a message on the pipeline's eventEmitter
-   * @param {String} type type of message to listen to
-   * @param message
+   *
+   * @param {string} type type of message
+   * @param {mixed} message message to store in the log
    */
   log (type, message) {
     this.eventEmitter.emit(type, message);
   }
 
   /**
-   * create a flowData element from the pipeline
-   * @returns {FlowData}
+   * Create a FlowData element from the pipeline
+   *
+   * @returns {FlowData} a FlowData object for the Pipeline
+   * containing methods for adding evidence and processing via
+   * the FlowElements in the Pipleine.
    */
   createFlowData () {
     const pipelineFlowData = new FlowData(this);
 
-    // Create getters for flowElements by key so users can use flowData.elementDataKey instead of flowData.get(elementDataKey)
+    // Create getters for flowElements by key so users
+    // can use flowData.elementDataKey instead of
+    // flowData.get(elementDataKey)
 
     Object.keys(this.flowElements).forEach(function (element) {
       Object.defineProperty(pipelineFlowData, element, {
@@ -228,11 +219,12 @@ class Pipeline {
       // First delete any instances of properties for this element
 
       Object.keys(pipeline.propertyDatabase).forEach(function (metaKey) {
-        Object.entries(pipeline.propertyDatabase[metaKey]).forEach(function ([
-          metaValue,
-          list
-        ]) {
-          Object.entries(list).forEach(function ([key, value]) {
+        Object.keys(pipeline.propertyDatabase[metaKey]).forEach(function (
+          metaValue
+        ) {
+          const list = pipeline.propertyDatabase[metaKey][metaValue];
+          Object.keys(list).forEach(function (key) {
+            const value = list[key];
             if (value.flowElementKey === flowElement.dataKey) {
               delete pipeline.propertyDatabase[metaKey][metaValue][key];
             }
@@ -243,15 +235,15 @@ class Pipeline {
       Promise.resolve(flowElement.getProperties()).then(function (properties) {
         const flowElementDataKey = flowElement.dataKey;
 
-        Object.entries(properties).forEach(function ([
-          propertyKey,
-          propertyMeta
-        ]) {
+        Object.keys(properties).forEach(function (
+          propertyKey
+        ) {
+          const propertyMeta = properties[propertyKey];
           const propertyName = propertyKey;
 
-          Object.entries(propertyMeta).forEach(function ([metaKey, metaValue]) {
+          Object.keys(propertyMeta).forEach(function (metaKey) {
             metaKey = metaKey.toLowerCase();
-            metaValue = metaValue.toString().toLowerCase();
+            const metaValue = propertyMeta[metaKey].toString().toLowerCase();
 
             if (!pipeline.propertyDatabase[metaKey]) {
               pipeline.propertyDatabase[metaKey] = {};

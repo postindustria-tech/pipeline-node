@@ -22,20 +22,34 @@
 
 const AspectData = require('./aspectData');
 
+/**
+ * Extension of elementDataDictionary which stores a
+ * {key,value} dictionary of elements like elementDataDictionary
+ * but with the additional aspectData extensions
+ */
 class AspectDataDictionary extends AspectData {
   /**
-     * Extension of elementDataDictionary which stores a {key,value} dictionary of elements like elementDataDictionary but with the additional aspectData extensions
-     * @param {Object} options
-     * @param {FlowElement} options.flowElement
-     * @param {MissingPropertyService} options.missingPropertyService
-     * @param {Object} options.contents
-    */
+   * Constructor for AspectDataDictionary
+   *
+   * @param {object} options options object
+   * @param {FlowElement} options.flowElement FlowElement the data is for
+   * @param {MissingPropertyService} options.missingPropertyService
+   a missing property service to use when the property is in a
+   * FlowElement's property list but not in the data
+   * @param {object} options.contents the data to store
+   */
   constructor ({ flowElement, contents, missingPropertyService }) {
     super(...arguments);
 
     this.contents = contents;
   }
 
+  /**
+   * getInternal retrieves a value from the dictionary
+   *
+   * @param {string} key property key
+   * @returns {Mixed} property value
+   */
   getInternal (key) {
     return this.contents[key];
   }

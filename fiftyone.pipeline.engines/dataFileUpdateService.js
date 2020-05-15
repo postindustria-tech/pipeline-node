@@ -29,11 +29,28 @@ const url = require('url');
 
 const minToMs = (min) => min * 60000;
 
+/**
+ * Datafiles attached to FlowElements register with
+ * the dataFileUpdateService so the datafiles can receive
+ * automatic updates
+ **/
 class DataFileUpdateService {
+  /**
+   * Constructor for a DataFileUpdateService
+   *
+   * @param {Pipeline} pipeline
+   * pipeline the update service is attached to
+   **/
   constructor (pipeline) {
     this.pipeline = pipeline;
   }
 
+  /**
+   * Method that updates a datafile when it is due an update
+   *
+   * @param {DataFile} dataFile the datafile to update
+   * @returns {undefined}
+   */
   updateDataFile (dataFile) {
     const dataFileUpdateService = this;
 
@@ -73,20 +90,38 @@ class DataFileUpdateService {
 
         switch (response.statusCode) {
           case (429):
-            dataFileUpdateService.pipeline.log('error', "Too many requests to '" + dataFile.updateUrl + "' for engine '" +
-                            dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.pipeline.log(
+              'error',
+              "Too many requests to '" + dataFile.updateUrl +
+              "' for engine '" +
+              dataFile.flowElement.dataKey + "'"
+            );
             break;
           case (304):
-            dataFileUpdateService.pipeline.log('warn', 'No data update available from ' + dataFile.updateUrl + "' for engine '" +
-                            dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.pipeline.log(
+              'warn',
+              'No data update available from ' +
+              dataFile.updateUrl +
+              "' for engine '" +
+              dataFile.flowElement.dataKey + "'");
             break;
           case (403):
-            dataFileUpdateService.pipeline.log('error', 'Access denied from ' + dataFile.updateUrl + "' for engine '" +
-                            dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.pipeline.log('error',
+              'Access denied from ' +
+              dataFile.updateUrl +
+              "' for engine '" +
+              dataFile.flowElement.dataKey + "'"
+            );
             break;
           default:
-            dataFileUpdateService.pipeline.log('error', 'Error' + response.statusCode + ' from ' + dataFile.updateUrl + "' for engine '" +
-                            dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.pipeline.log(
+              'error',
+              'Error' + response.statusCode +
+              ' from ' +
+              dataFile.updateUrl +
+              "' for engine '" +
+              dataFile.flowElement.dataKey + "'"
+            );
             break;
         }
 
@@ -95,7 +130,9 @@ class DataFileUpdateService {
         return false;
       }
 
-      const filename = dataFile.tempDataDirectory + '/' + dataFile.identifier + Date.now();
+      const filename = dataFile.tempDataDirectory +
+        '/' + dataFile.identifier +
+        Date.now();
 
       response.pipe(fs.createWriteStream(filename));
 
@@ -113,7 +150,13 @@ class DataFileUpdateService {
           fd.on('end', function () {
             hash.end();
             if (hash.read() !== headerMD5) {
-              dataFileUpdateService.pipeline.log('error', "MD5 doesn't match from '" + dataFile.updateUrl + "' for engine '" + dataFile.flowElement.dataKey + "'");
+              dataFileUpdateService.pipeline.log(
+                'error',
+                "MD5 doesn't match from '" +
+                dataFile.updateUrl +
+                "' for engine '" +
+                dataFile.flowElement.dataKey +
+                "'");
 
               dataFile.updating = false;
               dataFileUpdateService.checkNextUpdate(dataFile);
@@ -130,6 +173,14 @@ class DataFileUpdateService {
     });
   }
 
+  /**
+   * Internal method called when the datafile has
+   * been downloaded and is ready after an update
+   *
+   * @param {DataFile} dataFile the datafile that is ready
+   * @param {string} filename the filename of the updated datafile
+   * @returns {undefined}
+   */
   fileReady (dataFile, filename) {
     const dataFileUpdateService = this;
 
@@ -159,6 +210,13 @@ class DataFileUpdateService {
     });
   }
 
+  /**
+   * Internal method to process the datafile has been downloaded
+   * Including unzipping if needed
+   *
+   * @param {DataFile} dataFile the datafile to processs
+   * @param {string} filename the filename of the downloaded data
+   */
   processFile (dataFile, filename) {
     const dataFileUpdateService = this;
 
@@ -185,11 +243,22 @@ class DataFileUpdateService {
     }
   }
 
+  /**
+   * Internal method to check the next update of a
+   * datafile at a polling interval set on the datafile
+   *
+   * @param {DataFile} dataFile the datafile to check updates for
+   */
   checkNextUpdate (dataFile) {
     try {
       const dataFileUpdateService = this;
 
-      let interval = minToMs((Math.floor(Math.random() * dataFile.updateTimeMaximumRandomisation) + 1) + dataFile.pollingInterval);
+      let interval = minToMs(
+        (Math.floor(Math.random() *
+        dataFile.updateTimeMaximumRandomisation) +
+        1) +
+        dataFile.pollingInterval
+      );
 
       interval += dataFile.getNextUpdate().getMilliseconds();
 
@@ -208,6 +277,11 @@ class DataFileUpdateService {
     }
   }
 
+  /**
+   * Method that registers a datafile with the update service
+   *
+   * @param {DataFile} dataFile the datafile to register
+   */
   registerDataFile (dataFile) {
     dataFile.registered = true;
 

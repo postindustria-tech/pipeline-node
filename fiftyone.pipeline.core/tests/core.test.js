@@ -17,110 +17,20 @@
  * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
  * in the end user terms of the application under an appropriate heading,
- * such notice(s) shall fulfill the requirements of that article.
+such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const FlowElement = require('../flowElement');
+const setup = require(__dirname + '/coreTestSetup.js');
 const PipelineBuilder = require('../pipelineBuilder');
-const ElementDataDictionary = require('../elementDataDictionary');
-const BasicListEvidenceKeyFilter = require('../basicListEvidenceKeyFilter');
 
-const sync = new FlowElement({
-  dataKey: 'sync',
-  evidenceKeyFilter: new BasicListEvidenceKeyFilter(['header.user_agent']),
-  processInternal: function (flowData) {
-    const contents = { integer: 5 };
-
-    try {
-      contents.boolean = flowData.get('async').get('string') === 'hello';
-    } catch (e) {
-      contents.boolean = false;
-    }
-
-    const data = new ElementDataDictionary({ flowElement: this, contents: contents });
-
-    flowData.setElementData(data);
-  },
-  properties: {
-    integer: {
-      type: 'int'
-    },
-    boolean: {
-      type: 'bool'
-    }
-  }
-});
-
-const async = new FlowElement({
-  dataKey: 'async',
-  processInternal: function (flowData) {
-    const flowElement = this;
-
-    return new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        const contents = { string: 'hello' };
-
-        const data = new ElementDataDictionary({ flowElement: flowElement, contents: contents });
-
-        flowData.setElementData(data);
-
-        resolve();
-      }, 500);
-    });
-  },
-  properties: {
-    string: {
-      type: 'string'
-    }
-  }
-});
-
-const error = new FlowElement({
-  dataKey: 'error',
-  processInternal: function (flowData) {
-    throw 'Something went wrong';
-  }
-});
-
-const stop = new FlowElement({
-  dataKey: 'stopElement',
-  processInternal: function (flowData) {
-    flowData.stop();
-  }
-});
-
-const neverRun = new FlowElement({
-  dataKey: 'neverRun',
-  processInternal: function (flowData) {
-    const data = new ElementDataDictionary({ flowElement: this, contents: { no: false } });
-
-    flowData.setElementData(data);
-  }
-});
-
-const syncPipeline = new PipelineBuilder().add(async).add(sync).add(error).add(stop).add(neverRun).build();
+const syncPipeline = new PipelineBuilder()
+  .add(setup.async)
+  .add(setup.sync)
+  .build();
 
 const syncFlowData = syncPipeline.createFlowData();
 
-syncFlowData.evidence.add('header.user_agent', 'test');
-syncFlowData.evidence.add('header.other', 'no');
-syncFlowData.evidence.addObject({ test: 'testing' });
-
-test('evidence add', () => {
-  expect(syncFlowData.evidence.get('header.user_agent')).toBe('test');
-});
-
-test('evidence addObject', () => {
-  expect(syncFlowData.evidence.get('test')).toBe('testing');
-});
-
-test('evidenceKeyFilter', () => {
-  const allEvidence = syncFlowData.evidence.getAll();
-
-  expect(Object.keys(sync.evidenceKeyFilter.filterEvidence(allEvidence))[0]).toBe('header.user_agent');
-});
-
-sync.properties = {
+setup.sync.properties = {
   integer: {
     type: 'int',
     extra: 'test'
@@ -133,7 +43,7 @@ sync.properties = {
 const newPropertyFlowData = syncPipeline.createFlowData();
 
 test('Update property list on flowElement', done => {
-  sync.updateProperties().then(function () {
+  setup.sync.updateProperties().then(function () {
     newPropertyFlowData.process().then(function (flowData) {
       expect(flowData.getWhere('extra', 'test').integer).toBe(5);
 
@@ -168,7 +78,7 @@ test('get from flowElement property as property', done => {
 
 test('getFromElement', done => {
   syncFlowData.process().then(function () {
-    expect(syncFlowData.getFromElement(sync).get('integer')).toBe(5);
+    expect(syncFlowData.getFromElement(setup.sync).get('integer')).toBe(5);
 
     done();
   });
@@ -200,37 +110,8 @@ test('engines run in series', done => {
   });
 });
 
-test('error data is populated', done => {
-  syncFlowData.process().then(function () {
-    expect(syncFlowData.errors.error[0]).toBe('Something went wrong');
-
-    done();
-  });
-});
-
-let log;
-
-syncPipeline.on('error', function (error) {
-  log = error.message;
-});
-
-test('logging', done => {
-  syncFlowData.process().then(function () {
-    expect(log).toBe('Something went wrong');
-
-    done();
-  });
-});
-
-test('stop flag works', done => {
-  syncFlowData.process().then(function () {
-    expect(typeof syncFlowData.get('neverRun')).toBe('undefined');
-
-    done();
-  });
-});
-
-const asyncPipeline = new PipelineBuilder().addParallel([sync, async]).build();
+const asyncPipeline = new PipelineBuilder()
+  .addParallel([setup.sync, setup.async]).build();
 const asyncFlowData = asyncPipeline.createFlowData();
 
 test('engines run in parallel', done => {
@@ -241,13 +122,41 @@ test('engines run in parallel', done => {
   });
 });
 
-const configPipeline = new PipelineBuilder().buildFromConfigurationFile(__dirname + '/config.json');
+const configPipeline = new PipelineBuilder()
+  .buildFromConfigurationFile(__dirname + '/config.json');
 
 const configPipelineFlowData = configPipeline.createFlowData();
 
 test('build from config', done => {
   configPipelineFlowData.process().then(function () {
-    expect(configPipelineFlowData.get('configTest').get('built')).toBe('hello_world');
+    expect(configPipelineFlowData.get('configTest')
+      .get('built')).toBe('hello_world');
+
+    done();
+  });
+});
+
+test('aspectPropertyValue', done => {
+  const apvPipeline = new PipelineBuilder().add(setup.apvTest).build();
+
+  const flowData = apvPipeline.createFlowData();
+
+  flowData.process().then(function () {
+    expect(flowData.apv.get('yes').hasValue).toBe(true);
+    expect(flowData.apv.get('yes').value).toBe('success');
+
+    expect(flowData.apv.get('no').hasValue).toBe(false);
+    expect(expect(flowData.apv.no.noValueMessage).toBe('Value missing'));
+
+    let error = '';
+
+    try {
+      console.log(flowData.apv.no.value);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(expect(error).toBe('Value missing'));
 
     done();
   });

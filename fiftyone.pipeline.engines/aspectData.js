@@ -31,13 +31,22 @@ const require51 = (requestedPackage) => {
 const ElementData = require51('fiftyone.pipeline.core').ElementData;
 const MissingPropertyServiceBase = require('./missingPropertyService');
 
+/**
+ * Extension of elementData which allows for a missing property service
+ * to be called when an accessed property isn't available.
+ * Engines, an extension of flowElements also allow a restricted
+ * property list so certain properties can be excluded
+ **/
 class AspectData extends ElementData {
   /**
-     * Extension of elementData which allows for a missing property service to be called when an accessed property isn't available. engines, an extension of flowElements also allow a restricted property list so certain properties can be excluded
-     * @param {Object} options
-     * @param {FlowElement} options.flowElement
-     * @param {MissingPropertyService} options.missingPropertyService
-    */
+   * Constructor for AspectData
+   *
+   * @param {object} options options object
+   * @param {FlowElement} options.flowElement FlowElement the data is for
+   * @param {MissingPropertyService} options.missingPropertyService
+   * a missing property service to use when the property is in a
+   * FlowElement's property list but not in the data
+   */
   constructor (
     {
       flowElement, missingPropertyService = new MissingPropertyServiceBase()
@@ -50,9 +59,17 @@ class AspectData extends ElementData {
   }
 
   /**
-     * The aspectData getter runs a series of actions if a property has / has not been found. If it hasn't been found it runs the missing property service if the property is referenced by the flowElement/engine. If the property is found a further check to see if it is restricted by a list passed into the flowElement/engine.
-     * @param {String} key
-    */
+   * The aspectData getter runs a series of actions
+   * if a property has / has not been found.
+   * If it hasn't been found it runs the missing property
+   * service if the property is referenced by the
+   * flowElement/engine. If the property is found a further
+   * check to see if it is restricted by a list passed
+   * into the flowElement/engine.
+   *
+   * @param {string} key the property key to lookup
+   * @returns {mixed} result
+   */
   get (key) {
     let result;
 
@@ -68,7 +85,7 @@ class AspectData extends ElementData {
 
     if (this.flowElement.restrictedProperties) {
       if (!this.flowElement.restrictedProperties.includes(key)) {
-        throw 'Property ' + key + ' was excluded from ' + this.flowElement.dataKey;
+        throw `Property ${key} was excluded from ${this.flowElement.dataKey}`;
       }
     }
 

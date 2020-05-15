@@ -20,7 +20,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-// This flowElement is a dummy for putting in a pipeline after the stopElement (demonstrating that it will never process)
+// This flowElement is a dummy for putting in a pipeline
+// after the stopElement (demonstrating that it will never process)
 
 // Note that this example is designed to be run from within the
 // source repository. If this code has been copied to run standalone
@@ -39,7 +40,9 @@ class NeverRun extends FlowElement {
   }
 
   processInternal (flowData) {
-    const data = new ElementDataDictionary({ flowElement: this, contents: { no: false } });
+    const data = new ElementDataDictionary(
+      { flowElement: this, contents: { no: false } }
+    );
 
     flowData.setElementData(data);
   }

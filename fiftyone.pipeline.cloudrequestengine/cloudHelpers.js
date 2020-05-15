@@ -23,9 +23,13 @@
 module.exports = {
 
   /**
-     * Helper to make an HTTP/HTTPS get request and return a promise with the result
-     * @param {String} url
-    */
+   * Helper to make an HTTP/HTTPS get request and return a
+   * promise with the result
+   *
+   * @param {string} url url to make request to
+   * @returns {Promise} promise resolving to data,
+   * or rejecting with error
+   */
   makeHTTPRequest: function (url) {
     let httpModule;
 

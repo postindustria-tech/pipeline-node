@@ -24,6 +24,15 @@ const FlowElement = require('./flowElement.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
 const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter.js');
 
+/**
+ * The JSONBundler aggregates all properties from FlowElements
+ * into a JSON object
+ * It is used for retrieving via an endpoint from the client
+ * side via the JavaScriptBuilder and also used inside the
+ * JavaScriptBuilder itself to pass properties to the client side.
+ * Both this and the JavaScriptBuilder element are automatically
+ * added to a pipeline unless specifically ommited in the PipelineBuilder
+ */
 class JSONBundlerElement extends FlowElement {
   constructor () {
     super(...arguments);
@@ -34,7 +43,8 @@ class JSONBundlerElement extends FlowElement {
 
   /**
    * The JSON Builder extracts all properties and serializes them into JSON
-   * @param {FlowData} flowData
+   *
+   * @param {FlowData} flowData the FlowData being processed
    */
   processInternal (flowData) {
     // Get every property on every flowElement

@@ -51,7 +51,9 @@ class Async extends FlowElement {
       setTimeout(function () {
         const contents = { string: 'hello' };
 
-        const data = new ElementDataDictionary({ flowElement: flowElement, contents: contents });
+        const data = new ElementDataDictionary(
+          { flowElement: flowElement, contents: contents }
+        );
 
         flowData.setElementData(data);
 
