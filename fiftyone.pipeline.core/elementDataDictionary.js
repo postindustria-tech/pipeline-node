@@ -40,6 +40,12 @@ class ElementDataDictionary extends ElementData {
     this.contents = contents;
   }
 
+  * [Symbol.iterator] () {
+    for (let i = 0; i < Object.keys(this.contents).length; i += 1) {
+      yield Object.keys(this.contents)[i];
+    }
+  }
+
   /**
    * Return value from elementData dictionary
    *

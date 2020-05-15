@@ -84,6 +84,17 @@ test('getFromElement', done => {
   });
 });
 
+test('for of', done => {
+  syncFlowData.process().then(function () {
+    const keys = [];
+    for (const key of syncFlowData.sync) {
+      keys.push(key);
+    }
+    expect(JSON.stringify(keys)).toBe(JSON.stringify(['integer', 'boolean']));
+    done();
+  });
+});
+
 test('getWhere', done => {
   syncFlowData.process().then(function () {
     expect(syncFlowData.getWhere('type', 'int').integer).toBe(5);

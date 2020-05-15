@@ -44,6 +44,12 @@ class AspectDataDictionary extends AspectData {
     this.contents = contents;
   }
 
+  * [Symbol.iterator] () {
+    for (let i = 0; i < Object.keys(this.contents).length; i += 1) {
+      yield Object.keys(this.contents)[i];
+    }
+  }
+
   /**
    * getInternal retrieves a value from the dictionary
    *
