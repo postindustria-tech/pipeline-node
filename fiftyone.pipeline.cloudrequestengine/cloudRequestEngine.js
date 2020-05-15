@@ -67,8 +67,35 @@ class CloudRequestEngine extends Engine {
     this.baseURL = baseURL;
     this.evidenceKeys = [];
 
-    // Trigger get and store of evidence keys on init
-    this.getEvidenceKeys();
+    // Properties of connected FlowElements
+    this.flowElementProperties = {};
+
+    const self = this;
+
+    Promise.all([this.getEvidenceKeys(), this.fetchProperties()]).then(function () {
+      self.initialised = true;
+    });
+  }
+
+  /**
+     * Function for testing if the cloud engine is ready
+     * Checks to see if properties and evidence keys have been fetched
+     * @returns {Promise} whether ready
+  */
+  ready () {
+    const self = this;
+    return new Promise(function (resolve) {
+      if (self.initialised) {
+        resolve(self);
+      } else {
+        const readyCheck = setInterval(function () {
+          if (self.initialised) {
+            clearInterval(readyCheck);
+            resolve(self);
+          }
+        });
+      }
+    });
   }
 
   /**
@@ -80,18 +107,7 @@ class CloudRequestEngine extends Engine {
    */
   processInternal (flowData) {
     const engine = this;
-
-    // Check if properties list exists, if not fetch it
-
-    if (!Object.keys(this.properties).length) {
-      return this.fetchProperties().then(function (properties) {
-        engine.properties = properties;
-
-        return engine.getData(flowData);
-      });
-    } else {
-      return engine.getData(flowData);
-    }
+    return engine.getData(flowData);
   }
 
   /**
@@ -131,7 +147,7 @@ class CloudRequestEngine extends Engine {
                 .toLowerCase()] = productProperty;
             });
         }
-
+        engine.flowElementProperties = propertiesOutput;
         resolve(propertiesOutput);
       }).catch(reject);
     });
@@ -191,7 +207,7 @@ class CloudRequestEngine extends Engine {
   getEvidenceKeys () {
     const engine = this;
     const url = this.baseURL + 'evidencekeys';
-    cloudHelpers.makeHTTPRequest(url)
+    return cloudHelpers.makeHTTPRequest(url)
       .then(function (body) {
         engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
           JSON.parse(body)

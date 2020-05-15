@@ -82,6 +82,15 @@ class FlowElement {
   }
 
   /**
+   * Function called to check if a FlowElement is ready
+   * Used when there are asynchronous initialisation steps
+   * @returns {Promise}
+   * */
+  ready () {
+    return Promise.resolve(this);
+  }
+
+  /**
    * Internal process function for a particular flowElement called
    * (via the flowElement.process() method) when flowData generated
    * by a pipleline is processsed. Overriden by instances of this base class
