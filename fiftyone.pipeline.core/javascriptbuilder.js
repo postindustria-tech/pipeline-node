@@ -63,35 +63,35 @@ class JavaScriptBuilderElement extends FlowElement {
    * Constructor for JavaScriptBuilder.
    *
    * @param {object} options options object
-   * @param {string} options._objName the name of the client
+   * @param {string} options.objName the name of the client
    * side object with the JavaScript properties in it
-   * @param {string} options._protocol The protocol ("http" or "https")
+   * @param {string} options.protocol The protocol ("http" or "https")
    * used by the client side callback url.
    * This can be overriden with header.protocol evidence
-   * @param {string} options._host The host of the client side
+   * @param {string} options.host The host of the client side
    * callback url. This can be overriden with header.host evidence.
-   * @param {string} options._endPoint The endpoint of the client side
+   * @param {string} options.endPoint The endpoint of the client side
    * callback url
-   * @param {boolean} options._enableCookies whether cookies should be enabled
-   * @param {boolean} options._minify Whether to minify the JavaScript
+   * @param {boolean} options.enableCookies whether cookies should be enabled
+   * @param {boolean} options.minify Whether to minify the JavaScript
    */
   constructor ({
-    _objName = 'fod',
-    _protocol = '',
-    _host = '',
-    _endPoint = '',
-    _enableCookies = true,
-    _minify = true
+    objName = 'fod',
+    protocol = '',
+    host = '',
+    endPoint = '',
+    enableCookies = true,
+    minify = true
   } = {}) {
     super(...arguments);
 
     this.settings = {
-      _objName: _objName,
-      _protocol: _protocol,
-      _host: _host,
-      _endPoint: _endPoint,
-      _enableCookies: _enableCookies,
-      _minify: _minify
+      objName: objName,
+      protocol: protocol,
+      host: host,
+      endPoint: endPoint,
+      enableCookies: enableCookies,
+      minify: minify
     };
 
     this.dataKey = 'javascriptbuilder';
@@ -114,12 +114,12 @@ class JavaScriptBuilderElement extends FlowElement {
     const settings = { _jsonObject: JSON.stringify(json) };
 
     for (const setting in this.settings) {
-      settings[setting] = this.settings[setting];
+      settings["_" + setting] = this.settings[setting];
     }
 
     // Generate url from parts
-    let protocol = this.settings._protocol;
-    let host = this.settings._host;
+    let protocol = this.settings.protocol;
+    let host = this.settings.host;
 
     if (!protocol) {
       // Check if protocol is provided in evidence

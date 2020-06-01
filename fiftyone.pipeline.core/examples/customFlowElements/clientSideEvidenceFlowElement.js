@@ -175,7 +175,7 @@ const http = require('http');
 
 const pipeline = new FiftyOnePipelineCore.PipelineBuilder({
   javascriptBuilderSettings: {
-    _endPoint: '/json'
+    endPoint: '/json'
   }
 })
   .add(element)
@@ -247,6 +247,7 @@ const server = http.createServer((req, res) => {
         // fires the onChange callback below.
         window.onload = function() {
             fod.complete(function (data) {  
+              console.log(data);
                 if(data.astrology.hemisphere) {          
                     var para = document.createElement("p");
                     var text = document.createTextNode("Look at the " + 

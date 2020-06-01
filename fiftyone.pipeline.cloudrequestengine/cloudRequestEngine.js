@@ -144,7 +144,12 @@ class CloudRequestEngine extends Engine {
             .forEach(function (productProperty) {
               propertiesOutput[product][productProperty
                 .Name
-                .toLowerCase()] = productProperty;
+                .toLowerCase()] = {};
+              for (const metaKey in productProperty) {
+                propertiesOutput[product][productProperty
+                  .Name
+                  .toLowerCase()][metaKey.toLowerCase()] = productProperty[metaKey];
+              }
             });
         }
         engine.flowElementProperties = propertiesOutput;

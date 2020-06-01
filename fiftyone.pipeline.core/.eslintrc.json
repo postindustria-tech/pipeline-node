@@ -21,7 +21,6 @@
         "ecmaVersion": 2018
     },
     "rules": {
-        "max-len": ["error", { "comments": 80 }],
         "node/no-deprecated-api": "off",
         "no-throw-literal": "off",
         "no-path-concat": "off",
