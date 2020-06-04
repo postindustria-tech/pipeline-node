@@ -20,40 +20,33 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const DataKeyedCache = require('./dataKeyedCache');
+const setup = require(__dirname + '/coreTestSetup.js');
+const PipelineBuilder = require('../pipelineBuilder');
 
-/**
- * A tracker is an instance of datakeyed cache which,
- * if a result is found in the cache, calls an additional
- * boolean match method
- */
-class Tracker extends DataKeyedCache {
-  /**
-   * The track method calls the dataKeyedCache get method,
-   * if it receives a result it sends it onto a match function
-   *
-   * @param {mixed} key cache key to run through tracker
-   * @returns {boolean} result of tracking
-   */
-  track (key) {
-    const result = this.get(key);
+const syncPipeline = new PipelineBuilder()
+  .add(setup.async)
+  .add(setup.sync)
+  .build();
 
-    if (!result) {
-      return true;
-    } else {
-      return this.match(key, result);
-    }
-  }
+const syncFlowData = syncPipeline.createFlowData();
 
-  /**
-   * If object is found in cache, the match function is called
-   *
-   * @param {object} result of the track function
-   * @returns {Boolen} whether a match has been made
-   */
-  match (result) {
-    return true;
-  }
-}
+syncFlowData.evidence.add('header.user_agent', 'test');
+syncFlowData.evidence.add('header.other', 'no');
+syncFlowData.evidence.addObject({ test: 'testing' });
 
-module.exports = Tracker;
+test('evidence add', () => {
+  expect(syncFlowData.evidence.get('header.user_agent')).toBe('test');
+});
+
+test('evidence addObject', () => {
+  expect(syncFlowData.evidence.get('test')).toBe('testing');
+});
+
+test('evidenceKeyFilter', () => {
+  const allEvidence = syncFlowData.evidence.getAll();
+
+  expect(Object.keys(
+    setup.sync.evidenceKeyFilter.filterEvidence(allEvidence))[0]
+  )
+    .toBe('header.user_agent');
+});

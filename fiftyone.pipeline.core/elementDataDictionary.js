@@ -22,11 +22,16 @@
 
 const ElementData = require('./elementData');
 
+/**
+ * A basic extension of elementData with dictionary object storage / lookup
+ **/
 class ElementDataDictionary extends ElementData {
   /**
-   * a basic extension of elementData with dictionary object storage / lookup
-   * @param {Object} options
-   * @param {flowElement} options.flowElement
+   * Constructor for ElementDataDictionary
+   *
+   * @param {object} options options object
+   * @param {FlowElement} options.flowElement FlowElement the options are
+   * added to
    * @param {contents} options.contents // key value dictionary
    */
   constructor ({ flowElement, contents }) {
@@ -35,10 +40,17 @@ class ElementDataDictionary extends ElementData {
     this.contents = contents;
   }
 
+  * [Symbol.iterator] () {
+    for (let i = 0; i < Object.keys(this.contents).length; i += 1) {
+      yield Object.keys(this.contents)[i];
+    }
+  }
+
   /**
    * Return value from elementData dictionary
-   * @param {String} key
-   * @return {int} value
+   *
+   * @param {string} key the property key to retrieve
+   * @returns {int} value
    */
   getInternal (key) {
     return this.contents[key];

@@ -33,7 +33,19 @@ const engines = require51('fiftyone.pipeline.engines');
 const Tracker = engines.Tracker;
 const LRU = engines.Lru;
 
+/**
+ * The ShareUsageTracker is used by the ShareUsageElement to determine
+ * whether to put evidence into a bundle to be sent to the 51Degrees
+ * Share Usage service.
+ **/
 class ShareUsageTracker extends Tracker {
+  /**
+   * Constructor for ShareUsageTracker
+   *
+   * @param {object} options options for share usage tracker
+   * @param {number} options.size size of the share usage lru cache
+   * @param {number} options.interval how often to put evidence into the cache
+   **/
   constructor ({ size = 100, interval = 1000 } = {}) {
     super(...arguments);
 
@@ -42,6 +54,13 @@ class ShareUsageTracker extends Tracker {
     this.interval = interval;
   }
 
+  /**
+   * Function to check if we should put the evidence in the cache
+   *
+   * @param {string} key key of piece of evidence
+   * @param {mixed} value value of piece of evidence
+   * @returns {boolean} whether put in cache
+   **/
   match (key, value) {
     const difference = Date.now() - value;
 
@@ -54,10 +73,22 @@ class ShareUsageTracker extends Tracker {
     }
   }
 
+  /**
+   * Retreive entry from cache
+   *
+   * @param {object} cacheKey key value store of evidence to lookup
+   * @returns {mixed} value stored in cache
+   **/
   get (cacheKey) {
     return this.cache.read(cacheKey);
   }
 
+  /**
+   * Put entry in cache
+   *
+   * @param {object} cacheKey key value store of evidence
+   * to place in cache
+   **/
   put (cacheKey) {
     this.cache.write(cacheKey, Date.now());
   }

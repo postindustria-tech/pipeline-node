@@ -29,6 +29,7 @@ const EvidenceKeyFilter = require('./evidenceKeyFilter');
 class BasicListEvidenceKeyFilter extends EvidenceKeyFilter {
   /**
    * constructor for basicListEvidenceKeyFilter
+   *
    * @param {Array} list items to keep when filtering
    */
   constructor (list) {
@@ -38,8 +39,10 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter {
   }
 
   /**
+   * Check if a specific evidence key should be filtered
+   *
    * @param {string} key to check in the filter
-   * @return {boolean} is this key in the filter's keys list?
+   * @returns {boolean} is this key in the filter's keys list?
    */
   filterEvidenceKey (key) {
     let keep;

@@ -32,7 +32,9 @@ class ConfigTestFlowElement extends FlowElement {
   }
 
   processInternal (flowData) {
-    const data = new ElementDataDictionary({ flowElement: this, contents: { built: this.prefix + '_world' } });
+    const data = new ElementDataDictionary(
+      { flowElement: this, contents: { built: this.prefix + '_world' } }
+    );
 
     flowData.setElementData(data);
   }

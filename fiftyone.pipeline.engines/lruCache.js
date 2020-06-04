@@ -23,7 +23,16 @@
 const DataKeyedCache = require('./dataKeyedCache');
 const LRU = require('./lru');
 
+/**
+ * An instance of DataKeyed cache using a least recently used (LRU) method
+ **/
 class LRUcache extends DataKeyedCache {
+  /**
+   * Constructor for LRUcache
+   *
+   * @param {object} options options for the lru cache
+   * @param {number} options.size maximum entries in the cache
+   */
   constructor ({ size = 100 }) {
     super(...arguments);
 

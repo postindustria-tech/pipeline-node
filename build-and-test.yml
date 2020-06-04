@@ -43,7 +43,8 @@ steps:
           "eslint-plugin-import": "^2.20.2",
           "eslint-plugin-node": "^11.1.0",
           "eslint-plugin-promise": "^4.2.1",
-          "eslint-plugin-standard": "^4.0.1"
+          "eslint-plugin-standard": "^4.0.1",
+          "eslint-plugin-jsdoc": "^25.4.0"
           },
         "jest-junit": {
             "outputName": "'"$NODE_VERSION"'.xml"    
@@ -87,15 +88,32 @@ steps:
               "semi": [
                   2,
                   "always"
-              ]
-          }
+              ],
+              "jsdoc/check-alignment": 1,
+              "jsdoc/check-param-names": 1,
+              "jsdoc/check-tag-names": 1,
+              "jsdoc/check-types": 1,
+              "jsdoc/implements-on-classes": 1,
+              "jsdoc/newline-after-description": 1,
+              "jsdoc/require-description": 1,
+              "jsdoc/require-jsdoc": 1,
+              "jsdoc/require-param": 1,
+              "jsdoc/require-param-description": 1,
+              "jsdoc/require-param-name": 1,
+              "jsdoc/require-param-type": 1,
+              "jsdoc/require-returns": 1,
+              "jsdoc/require-returns-check": 1,
+              "jsdoc/require-returns-description": 1,
+              "jsdoc/require-returns-type": 1,
+              "jsdoc/valid-types": 1
+            }
         }'
       echo $eslint
       echo $eslint > .eslintrc
       npm install -g eslint
-      eslint **/*.js
+      eslint . --ext .js
     displayName: "Set up and run eslint"
-    condition: ne(variables['node_version'], '6.x')
+    condition: gt(variables['node_version'], '9')
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()

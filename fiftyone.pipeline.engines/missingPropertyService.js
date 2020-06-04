@@ -20,12 +20,20 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/**
+ * Base class for a missing property service that throws
+ * an error if the property is not available for some reason
+ **/
 class MissingPropertyService {
   /**
-     * Simple base class for a missing property service that returns an error if the property is not available for some reason
-     * @param {String} elementData key
-     * @param {flowElement} flowElement
-    */
+   * Check is called if a property is requested that exists
+   * in the FlowElement property list but is not available
+   * in the AspectData returned by the FlowElement
+   *
+   * @param {string} key property key
+   * @param {flowElement} flowElement flowelement the data
+   * was requested in
+   */
   check (key, flowElement) {
     throw 'Property ' + key + ' not found in ' + flowElement.dataKey;
   }

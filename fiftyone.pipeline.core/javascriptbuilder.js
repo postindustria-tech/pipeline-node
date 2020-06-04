@@ -34,30 +34,64 @@ const EvidenceKeyFilter = require('./evidenceKeyFilter.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
 var uglifyJS = require('uglify-js');
 
+/**
+ * An instance of EvidenceKeyFilter which removes all but header
+ * and query evidence as that is all that is used by
+ * the JavaScript builder
+ **/
 class JSEvidenceKeyFilter extends EvidenceKeyFilter {
   filterEvidenceKey (key) {
     return key.indexOf('query.') !== -1 || key.indexOf('header.') !== -1;
   }
 }
 
+/**
+ * The JavaScriptBuilder aggregates JavaScript properties
+ * from FlowElements in the pipeline. This JavaScript also
+ * (when needed) generates a fetch request to retrieve additional properties
+ * populated with data from the client side
+ * It depends on the JSON Bundler element
+ * (both are automatically added to a pipeline unless
+ * specifically removed) for its list of properties.
+ * The results of the JSON Bundler should also be used in a
+ * user-specified endpoint which retrieves the JSON from the
+ * client side. The JavaScriptBuilder is constructed with a
+ * url for this endpoint.
+ */
 class JavaScriptBuilderElement extends FlowElement {
+  /**
+   * Constructor for JavaScriptBuilder.
+   *
+   * @param {object} options options object
+   * @param {string} options.objName the name of the client
+   * side object with the JavaScript properties in it
+   * @param {string} options.protocol The protocol ("http" or "https")
+   * used by the client side callback url.
+   * This can be overriden with header.protocol evidence
+   * @param {string} options.host The host of the client side
+   * callback url. This can be overriden with header.host evidence.
+   * @param {string} options.endPoint The endpoint of the client side
+   * callback url
+   * @param {boolean} options.enableCookies whether cookies should be enabled
+   * @param {boolean} options.minify Whether to minify the JavaScript
+   */
   constructor ({
-    _objName = 'fod',
-    _protocol = '',
-    _host = '',
-    _endPoint = '',
-    _enableCookies = true,
-    _minify = true
+    objName = 'fod',
+    protocol = '',
+    host = '',
+    endPoint = '',
+    enableCookies = true,
+    minify = true
   } = {}) {
     super(...arguments);
 
     this.settings = {
-      _objName: _objName,
-      _protocol: _protocol,
-      _host: _host,
-      _endPoint: _endPoint,
-      _enableCookies: _enableCookies,
-      _minify: _minify
+      objName: objName,
+      protocol: protocol,
+      host: host,
+      endPoint: endPoint,
+      enableCookies: enableCookies,
+      minify: minify
     };
 
     this.dataKey = 'javascriptbuilder';
@@ -65,8 +99,12 @@ class JavaScriptBuilderElement extends FlowElement {
   }
 
   /**
-   * The JavaScriptBuilder serves JavaScript properties and allows for a fetch request to retrieve additional properties populated with data from the client side
-   * @param {flowData} flowData
+   * Internal process function of the JavaScript builder
+   * Gets JSON from the JSONBundler and constructs JavaScript
+   * to place on the client side
+   *
+   * @param {FlowData} flowData to process
+   * @returns {undefined}
    */
   processInternal (flowData) {
     // Get output of jsonbuilder
@@ -76,12 +114,12 @@ class JavaScriptBuilderElement extends FlowElement {
     const settings = { _jsonObject: JSON.stringify(json) };
 
     for (const setting in this.settings) {
-      settings[setting] = this.settings[setting];
+      settings["_" + setting] = this.settings[setting];
     }
 
     // Generate url from parts
-    let protocol = this.settings._protocol;
-    let host = this.settings._host;
+    let protocol = this.settings.protocol;
+    let host = this.settings.host;
 
     if (!protocol) {
       // Check if protocol is provided in evidence

@@ -50,22 +50,19 @@ test('jsonbuilder contents', done => {
     expect(json).toBe(
       JSON.stringify({
         javascriptProperties: ['testengine.three'],
-        testengine: { one: 1, two: 2, three: "console.log('ok')", four: null, fournullreason: 'This property is not available' }
+        testengine: {
+          one: 1,
+          two: 2,
+          three: "console.log('ok')",
+          four: null,
+          fournullreason: 'This property is not available'
+        }
       })
     );
 
     done();
   });
 });
-
-// test("javascript output", () =>
-// {
-
-//   // Uncomment this to refresh the jsoutput.js file
-//   // fs.writeFileSync(__dirname + "/jsoutput.js", flowData.javascriptbuilder.javascript);
-
-//   expect(flowData.javascriptbuilder.javascript).toBe(fs.readFileSync(__dirname + "/jsoutput.js", "utf8"));
-// });
 
 test('sequence gives a session id', () => {
   expect(flowData.evidence.get('query.session-id')).toBeTruthy();

@@ -25,6 +25,13 @@ const crypto = require('crypto');
 const FlowElement = require('./flowElement.js');
 const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter');
 
+/**
+ * The SequenceElement stores session data regarding requests
+ * for client side JavaScript from the JavaScript created by a
+ * Pipeline's JavaScriptBuilder
+ * If a Pipeline is constructed with the JavaScript elements enabled
+ * this is added automatically along with the JavaScriptBuilder and JSONBundler.
+ **/
 class SequenceElement extends FlowElement {
   constructor () {
     super(...arguments);
@@ -35,8 +42,12 @@ class SequenceElement extends FlowElement {
   }
 
   /**
-   * The SequenceElement stores session data for requests for JavaScript
-   * @param {FlowData} flowData
+   * Internal process function for the sequence element
+   * Checks if there is a session id and sequence number set
+   * if there is it increments the sequence number for that session
+   * if not it initialises both
+   *
+   * @param {FlowData} flowData flowData with the evidence in it
    */
   processInternal (flowData) {
     // Check if session id is set in evidence

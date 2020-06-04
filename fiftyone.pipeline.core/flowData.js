@@ -22,57 +22,31 @@
 
 const Evidence = require('./evidence');
 
-(function () {
-  const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
-  const isEnumerable = Function.bind.call(
-    Function.call,
-    Object.prototype.propertyIsEnumerable
-  );
-  const concat = Function.bind.call(Function.call, Array.prototype.concat);
-  const keys = Reflect.ownKeys;
-
-  if (!Object.values) {
-    Object.values = function values (O) {
-      return reduce(
-        keys(O),
-        (v, k) =>
-          concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []),
-        []
-      );
-    };
-  }
-
-  if (!Object.entries) {
-    Object.entries = function entries (O) {
-      return reduce(
-        keys(O),
-        (e, k) =>
-          concat(
-            e,
-            typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []
-          ),
-        []
-      );
-    };
-  }
-})();
-
+/**
+ * FlowData is created by a specific pipeline
+ * It collects evidence set by the user
+ * It passes evidence to flowElements in the pipeline
+ * These elements can return ElementData or populate an errors object
+ */
 class FlowData {
   /**
    * constructor for flowData created by a pipeline.
    * Called by a pipeline's createFlowData() method
-   * @param {Pipeline} pipeline
+   *
+   * @param {Pipeline} pipeline the pipeline to add the FlowData to
    */
   constructor (pipeline) {
     this.pipeline = pipeline;
 
-    // All evidence added to a flowData is stored in a special collection class for easy retrieval and searching
+    // All evidence added to a flowData is stored in a special
+    // collection class for easy retrieval and searching
     this.evidence = new Evidence(this);
 
     // Errors object, keyed by flowElement that caused the error
     this.errors = {};
 
-    // Stop flag, if the flowData is stopped, no further flowElements are processed
+    // Stop flag, if the flowData is stopped, no further
+    // flowElements are processed
     this.stopped = false;
 
     // Store of data by flowElement dataKey
@@ -80,16 +54,20 @@ class FlowData {
   }
 
   /**
-   * Get back an object that lists all evidence that will be used by any flowElements in the flowData's parent pipeline
+   * Get back an object that lists all evidence that will be
+   * used by any flowElements in the flowData's parent pipeline
+   *
+   * @returns {object} Evidence that is requested by flowElements
    */
   getEvidenceDataKey () {
     // Get all evidence in flowData
     const evidence = this.evidence.getAll();
 
-    // Keep list of evidence that is requested by flowElements
+    // Evidence that is requested by flowElements
     let keep = {};
 
-    Object.values(this.pipeline.flowElements).forEach(function (flowElement) {
+    Object.keys(this.pipeline.flowElements).forEach(function (key) {
+      const flowElement = this.pipeline.flowElements[key];
       // merge in the filtered evidence for the flowElement
       keep = Object.assign(
         keep,
@@ -110,7 +88,11 @@ class FlowData {
   }
 
   /**
-   * Set an error on the flowData (usually triggered by something going wrong in a flowElement's process function)
+   * Set an error on the flowData (usually triggered by
+   * something going wrong in a flowElement's process function)
+   *
+   * @param {mixed} error the error to throw
+   * @param {FlowElement} flowElement the FlowElement the error is thrown on
    */
   setError (error, flowElement) {
     let errorKey;
@@ -133,7 +115,8 @@ class FlowData {
 
   /**
    * Processes the flowData (running the process methods on all connected)
-   * @returns {Promise}
+   *
+   * @returns {Promise} result of processing
    */
   process () {
     this.pipeline.log('info', 'Pipeline processing started');
@@ -142,9 +125,11 @@ class FlowData {
   }
 
   /**
-   * Add to the flowData object with a class derived from elementData
-   * @param {elementData}
-   * @returns {FlowData}
+   * Add to the flowData object with a class derived from ElementData
+   *
+   * @param {ElementData} data instance of ElementData to
+   * set for the FlowElement's datakey
+   * @returns {FlowData} the FlowData object
    */
   setElementData (data) {
     this.data[data.flowElement.dataKey] = data;
@@ -153,8 +138,10 @@ class FlowData {
   }
 
   /**
-   * Get elementData by flowElementDataKey
-   * @param {string} flowElementDataKey
+   * Get ElementData by a flowElement's data key
+   *
+   * @param {string} flowElementDataKey the datakey of a FlowElement
+   * @returns {ElementData} data from the FlowElement
    */
   get (flowElementDataKey) {
     this.pipeline.log('debug', 'Getting flowElement ' + flowElementDataKey);
@@ -163,8 +150,10 @@ class FlowData {
   }
 
   /**
-   * get elementData by a flowElement object
-   * @param {FlowElement}
+   * get ElementData by a FlowElement object
+   *
+   * @param {FlowElement} flowElement The FlowElement to fetch data for
+   * @returns {ElementData} data from the FlowElement
    */
   getFromElement (flowElement) {
     const key = flowElement.dataKey;
@@ -173,9 +162,14 @@ class FlowData {
   }
 
   /**
-   * get an object ({key:value} store) of elementData based on a metadata key and value, alternatively pass in a filtering function to manually filter available propeties
-   * @param {String} metaKey
-   * @param {String|Function} metaValueorFuncton value or a filter function which receives the value of the metaKey and returns a boolean
+   * get an object ({key:value} store) of elementData
+   * based on a metadata key and value, alternatively
+   * pass in a filtering function to manually filter available propeties
+   *
+   * @param {string} metaKey a metakey such as "category"
+   * @param {string|Function} metaValueorFuncton value or a filter
+   * function which receives the value of the metaKey and returns a boolean
+   * @returns {object} key value pair of matching properties and values
    */
   getWhere (metaKey, metaValueorFuncton) {
     const flowData = this;
@@ -202,16 +196,16 @@ class FlowData {
 
     const output = {};
 
-    Object.entries(filteredProperties).forEach(function ([
-      propertyName,
-      property
-    ]) {
+    Object.keys(filteredProperties).forEach(function (propertyName) {
+      const property = filteredProperties[propertyName];
       const flowElementKey = property.flowElementKey;
 
       try {
         output[propertyName] = flowData.get(flowElementKey).get(propertyName);
       } catch (e) {
-        // Ignore errors when fetching a property as getWhere would often crash to an exception if properties are not available, they should just be excluded
+        // Ignore errors when fetching a property
+        // as getWhere would often crash to an exception
+        // if properties are not available, they should be excluded
       }
     });
 

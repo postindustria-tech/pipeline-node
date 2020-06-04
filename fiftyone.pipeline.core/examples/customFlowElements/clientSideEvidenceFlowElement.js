@@ -23,16 +23,25 @@
 /**
 @example 2-clientSideEvidenceFlowElement.js
 
-This example demonstrates the creation of a custom flow element which takes the results of a client side form collecting date of birth, setting this as evidence on a flowData object to calculate a person's starsign. The flowElement also serves additional JavaScript which gets a user's geolocation and saves the latitude as a cookie. This latitude is also then passed in to the flowData to calculate if a person is in the northern or southern hemispheres.
+This example demonstrates the creation of a custom flow element
+which takes the results of a client side form collecting
+date of birth, setting this as evidence on a flowData object
+to calculate a person's starsign.
+The flowElement also serves additional JavaScript which gets a
+user's geolocation and saves the latitude as a cookie.
+This latitude is also then passed in to the flowData to
+calculate if a person is in the northern or southern hemispheres.
 
-*/
+ */
 
 // First require the core Pipeline
 // Note that this example is designed to be run from within the
 // source repository. If this code has been copied to run standalone
 // then you'll need to replace the require below with the commented
 // out version below it.
-const FiftyOnePipelineCore = require((process.env.directory || __dirname) + '/../../');
+const FiftyOnePipelineCore = require(
+  (process.env.directory || __dirname) + '/../../'
+);
 // const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 
 // Function to get star sign from month and day
@@ -71,15 +80,19 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
   constructor () {
     super(...arguments);
 
-    // datakey used to categorise data coming back from this flowElement in a pipeline
+    // datakey used to categorise data coming back from this
+    // flowElement in a pipeline
     this.dataKey = 'astrology';
 
-    // A filter (in this case a basic list) stating which evidence the flowElement is interested in
-    this.evidenceKeyFilter = new FiftyOnePipelineCore.BasicListEvidenceKeyFilter(
-      ['cookie.latitude', 'query.dateOfBirth']
-    );
+    // A filter (in this case a basic list) stating which
+    // evidence the flowElement is interested in
+    this.evidenceKeyFilter = new FiftyOnePipelineCore
+      .BasicListEvidenceKeyFilter(
+        ['cookie.latitude', 'query.dateOfBirth']
+      );
 
-    // The properties list includes extra information about the properties available from a flowElement
+    // The properties list includes extra information about
+    // the properties available from a flowElement
     this.properties = {
       hemisphere: {
         type: 'string',
@@ -97,11 +110,13 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
   }
   //! [constructor]
 
-  // The processInternal function is the core working of a flowElement. It takes flowData, reads evidence and returns data.
+  // The processInternal function is the core working of a
+  // flowElement. It takes flowData, reads evidence and returns data.
   processInternal (flowData) {
     const result = {};
 
-    // Get the date of birth from the query string (submitted through a form on the client side)
+    // Get the date of birth from the query string
+    // (submitted through a form on the client side)
     let dateOfBirth = flowData.evidence.get('query.dateOfBirth');
 
     if (dateOfBirth) {
@@ -113,25 +128,33 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
       result.starSign = getStarSign(month, day);
     }
 
-    // Get the latitude from the a cookie if client side JavaScript to set the user's latitude has run
+    // Get the latitude from the a cookie if client side
+    // JavaScript to set the user's latitude has run
     const latitude = flowData.evidence.get('cookie.latitude');
 
     if (!latitude) {
       // If no cookie set, add client side javascript to set the cookie with
       // the user's latitude.
-      // Note that the text '// 51D replace this comment with callback function.'
+      // Note that the text '// 51D replace this comment
+      // with callback function.'
       // will be replaced with a callback to indicate once the value has
       // been set.
       // This can trigger another request to the web server with the additional
       // information, which can then be processed and used to update the
       // JSON data on the client.
-      result.getLatitude = 'navigator.geolocation.getCurrentPosition(function(position) { document.cookie = \'latitude=\' + position.coords.latitude; // 51D replace this comment with callback function. });';
+      result.getLatitude = `
+      navigator.geolocation.getCurrentPosition(function(position)
+      { document.cookie = 'latitude=' + position.coords.latitude; 
+      // 51D replace this comment with callback function. 
+      });
+      `;
     } else {
       // Calculate the hemisphere
       result.hemisphere = latitude > 0 ? 'Northern' : 'Southern';
     }
 
-    // Save the data into an extension of the elementData class (in this case a simple dictionary subclass)
+    // Save the data into an extension of the
+    // elementData class (in this case a simple dictionary subclass)
 
     const data = new FiftyOnePipelineCore.ElementDataDictionary({
       flowElement: this,
@@ -152,7 +175,7 @@ const http = require('http');
 
 const pipeline = new FiftyOnePipelineCore.PipelineBuilder({
   javascriptBuilderSettings: {
-    _endPoint: '/json'
+    endPoint: '/json'
   }
 })
   .add(element)
@@ -161,11 +184,14 @@ const pipeline = new FiftyOnePipelineCore.PipelineBuilder({
 const server = http.createServer((req, res) => {
   const flowData = pipeline.createFlowData();
 
-  // Add any information from the request (headers, cookies and additional client side provided information)
+  // Add any information from the request
+  // (headers, cookies and additional client side
+  // provided information)
   flowData.evidence.addFromRequest(req);
 
   flowData.process().then(function () {
-    // Send back JSON if requesting it from the client side via the JavaScriptBuilder
+    // Send back JSON if requesting it from the client side
+    // via the JavaScriptBuilder
 
     if (req.url.indexOf('/json') !== -1) {
       res.statusCode = 200;
@@ -175,7 +201,8 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    // Place JavaScript on the page that gets the user's location and saves the latitude in a cookie (for working out the hemisphere).
+    // Place JavaScript on the page that gets the user's location
+    // and saves the latitude in a cookie (for working out the hemisphere).
 
     const js = flowData.javascriptbuilder.javascript;
 
@@ -199,7 +226,9 @@ const server = http.createServer((req, res) => {
         }
         </div>
 
-        <form><label for='dateOfBirth'>Date of birth</label><input type='date' name='dateOfBirth' id='dateOfBirth'><input type='submit'></form>
+        <form><label for='dateOfBirth'>Date of birth</label>
+        <input type='date' name='dateOfBirth' id='dateOfBirth'>
+        <input type='submit'></form>
         
         <script>
 
@@ -208,16 +237,21 @@ const server = http.createServer((req, res) => {
         // This function will fire when the JSON data object is updated 
         // with information from the server.
         // The sequence is:
-        // 1. Response contains JavaScript property 'getLatitude' that gets executed on the client
-        // 2. This triggers another call to the webserver that passes the location as evidence
-        // 3. The web server responds with new JSON data that contains the hemisphere based on the location.
-        // 4. The JavaScript integrates the new JSON data and fires the onChange callback below.
+        // 1. Response contains JavaScript property 'getLatitude' 
+        // that gets executed on the client
+        // 2. This triggers another call to the webserver 
+        // that passes the location as evidence
+        // 3. The web server responds with new JSON data 
+        // that contains the hemisphere based on the location.
+        // 4. The JavaScript integrates the new JSON data and 
+        // fires the onChange callback below.
         window.onload = function() {
             fod.complete(function (data) {  
+              console.log(data);
                 if(data.astrology.hemisphere) {          
                     var para = document.createElement("p");
                     var text = document.createTextNode("Look at the " + 
-                        data.astrology.hemisphere + " hemisphere stars tonight");
+                        data.astrology.hemisphere + " hemisphere tonight");
                     para.appendChild(text);
 
                     var element = document.getElementById("hemispheretext");

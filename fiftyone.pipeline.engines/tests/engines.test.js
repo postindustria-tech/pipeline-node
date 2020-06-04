@@ -21,9 +21,15 @@
  * ********************************************************************* */
 
 const Engine = require(__dirname + '/../engine');
-const PipelineBuilder = require(__dirname + '/../../fiftyone.pipeline.core/pipelineBuilder');
-const AspectDataDictionary = require(__dirname + '/../aspectDataDictionary');
-const BasicListEvidenceKeyFilter = require(__dirname + '/../../fiftyone.pipeline.core/basicListEvidenceKeyFilter');
+const PipelineBuilder = require(
+  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
+);
+const AspectDataDictionary = require(
+  __dirname + '/../aspectDataDictionary'
+);
+const BasicListEvidenceKeyFilter = require(
+  __dirname + '/../../fiftyone.pipeline.core/basicListEvidenceKeyFilter'
+);
 const LruCache = require(__dirname + '/../lruCache');
 
 const cache = new LruCache({ size: 1 });
@@ -57,7 +63,9 @@ const testEngine = new Engine(
 
       contents.noCache = hasRun;
 
-      const data = new AspectDataDictionary({ flowElement: this, contents: contents });
+      const data = new AspectDataDictionary(
+        { flowElement: this, contents: contents }
+      );
 
       flowData.setElementData(data);
 

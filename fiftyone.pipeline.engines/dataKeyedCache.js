@@ -20,20 +20,26 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/**
+ * A simple cache getter that takes a cache key and
+ * returns an element if it is found in the cache
+ */
 class DataKeyedCache {
   /**
-     *  A simple cache getter that takes a cache key and returns an element if it is found in the cache
-     * @param {Object} cachekey
-    */
+   * Get data out of the cache
+   *
+   * @param {Mixed} cachekey key to lookup in the cache
+   */
   get (cachekey) {
 
   }
 
   /**
-     *  Add an element to the cache
-     * @param {Object} cachekey
-     * @param {any} value
-    */
+   *  Add an element to the cache
+   *
+   * @param {Mixed} cachekey key for the cache entry
+   * @param {any} value value for the cache entry
+   */
   put (cachekey, value) {
 
   }

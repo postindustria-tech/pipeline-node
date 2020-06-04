@@ -23,16 +23,20 @@
 /**
 @example 1-simpleEvidenceFlowElement.js
 
-This example demonstrates the creation of a custom flow element which takes a birth date as evidence and uses it to check a lookup table for a starsign.
+This example demonstrates the creation of a custom flowElement
+which takes a birth date as evidence and uses it to check a
+lookup table for a starsign.
 
-*/
+ */
 
 // First require the core Pipeline
 // Note that this example is designed to be run from within the
 // source repository. If this code has been copied to run standalone
 // then you'll need to replace the require below with the commented
 // out version below it.
-const FiftyOnePipelineCore = require((process.env.directory || __dirname) + '/../../');
+const FiftyOnePipelineCore = require(
+  (process.env.directory || __dirname) + '/../../'
+);
 // const FiftyOnePipelineCore = require("fiftyone.pipeline.core");
 
 // Function to get star sign from month and day
@@ -71,14 +75,17 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
   constructor () {
     super(...arguments);
 
-    // datakey used to categorise data coming back from this flowElement in a pipeline
+    // datakey used to categorise data coming back from
+    // this flowElement in a pipeline
     this.dataKey = 'astrology';
 
     // A filter (in this case a basic list) stating which evidence the
     // flowElement is interested in, in this case a query string
-    this.evidenceKeyFilter = new FiftyOnePipelineCore.BasicListEvidenceKeyFilter(['query.dateOfBirth']);
+    this.evidenceKeyFilter = new FiftyOnePipelineCore
+      .BasicListEvidenceKeyFilter(['query.dateOfBirth']);
 
-    // The properties list includes extra information about the properties available from a flowElement
+    // The properties list includes extra information about
+    // the properties available from a flowElement
     this.properties = {
       starSign: {
         type: 'string',
@@ -92,7 +99,8 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
   processInternal (flowData) {
     const result = {};
 
-    // Get the date of birth from the query string (submitted through a form on the client side)
+    // Get the date of birth from the query string
+    // (submitted through a form on the client side)
     let dateOfBirth = flowData.evidence.get('query.dateOfBirth');
 
     if (dateOfBirth) {
@@ -104,7 +112,8 @@ class Astrology extends FiftyOnePipelineCore.FlowElement {
       result.starSign = getStarSign(month, day);
     }
 
-    // Save the data into an extension of the elementData class (in this case a simple dictionary subclass)
+    // Save the data into an extension of the elementData class
+    // (in this case a simple dictionary subclass)
     const data = new FiftyOnePipelineCore.ElementDataDictionary({
       flowElement: this, contents: result
     });

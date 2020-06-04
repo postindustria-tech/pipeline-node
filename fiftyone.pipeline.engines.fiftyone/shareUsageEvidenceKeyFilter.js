@@ -30,7 +30,21 @@ const require51 = (requestedPackage) => {
 
 const EvidenceKeyFilter = require51('fiftyone.pipeline.core').EvidenceKeyFilter;
 
+/**
+ * The ShareUsageEvidenceKeyFilter filters out all evidence
+ * not needed by the 51Degrees ShareUsage service.
+ * It allows for a specific whitelist of query strings,
+ * a blacklist of headers and a specific cookie used for session information
+ */
 class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
+  /**
+   * Constructor for ShareUsageEvidenceKeyFilter
+   *
+   * @param {object} options options for filter
+   * @param {string} options.cookie cookie used for session data
+   * @param {Array} options.queryWhitelist whitelist of query string data
+   * @param {Array} options.headerBlacklist blacklist of headers to remove
+   */
   constructor ({ cookie, queryWhitelist = [], headerBlacklist = [] }) {
     super(...arguments);
 
@@ -39,6 +53,12 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
     this.cookie = cookie;
   }
 
+  /**
+   * Check if a specific key should be filtered
+   *
+   * @param {string} key evidence key to filter
+   * @returns {boolean} whether to keep the evidence
+   **/
   filterEvidenceKey (key) {
     const prefix = key.toLowerCase().split('.')[0];
     const suffix = key.toLowerCase().split('.')[1];
@@ -50,9 +70,13 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
     if (!allowed.includes(prefix)) {
       return false;
     } else {
-      // Filter out all cookies that aren't either 51D prefixed or the tracking cookie
+      // Filter out all cookies that aren't either 51D prefixed
+      // or the tracking cookie
 
-      if (prefix === 'cookie' && (prefix.indexOf('51D') !== 0 || suffix === this.cookie)) {
+      if (prefix === 'cookie' && (
+        prefix.indexOf('51D') !== 0 || suffix === this.cookie
+      )
+      ) {
         return false;
       }
 

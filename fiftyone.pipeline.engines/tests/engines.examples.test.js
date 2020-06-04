@@ -52,9 +52,15 @@ const testExample = function ({ file, portNumber }) {
 };
 
 test('caching example', () => {
-  testExample({ file: __dirname + '/../examples/caching.js' });
+  testExample(
+    { file: __dirname + '/../examples/caching.js' }
+  );
 });
 
 test('on premise flow element example', () => {
-  testExample({ file: __dirname + '/../examples/onPremiseFlowElement.js', portNumber: 3002 });
+  testExample(
+    {
+      file: __dirname + '/../examples/onPremiseFlowElement.js',
+      portNumber: 3002
+    });
 });

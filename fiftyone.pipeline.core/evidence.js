@@ -22,45 +22,14 @@
 
 const url = require('url');
 
-(function () {
-  const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
-  const isEnumerable = Function.bind.call(
-    Function.call,
-    Object.prototype.propertyIsEnumerable
-  );
-  const concat = Function.bind.call(Function.call, Array.prototype.concat);
-  const keys = Reflect.ownKeys;
-
-  if (!Object.values) {
-    Object.values = function values (O) {
-      return reduce(
-        keys(O),
-        (v, k) =>
-          concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []),
-        []
-      );
-    };
-  }
-
-  if (!Object.entries) {
-    Object.entries = function entries (O) {
-      return reduce(
-        keys(O),
-        (e, k) =>
-          concat(
-            e,
-            typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []
-          ),
-        []
-      );
-    };
-  }
-})();
-
+/**
+ * Storage of evidence on a flowData object
+ */
 class Evidence {
   /**
-   * Storage of evidence on a flowData object
-   * @param {FlowData} flowData
+   * Constructor for evidence
+   *
+   * @param {FlowData} flowData FlowData to add the evidence to
    */
   constructor (flowData) {
     this.flowData = flowData;
@@ -69,8 +38,9 @@ class Evidence {
 
   /**
    * Add a piece of evidence to flowData
-   * @param {String} key
-   * @param {Mixed} value
+   *
+   * @param {string} key evidence key to add
+   * @param {Mixed} value value of evidence key
    */
   add (key, value) {
     // Filter out any evidence that isn't needed in the pipeline
@@ -99,28 +69,34 @@ class Evidence {
 
   /**
    * Add a piece of evidence to flowData as an object
-   * @param {Object} evidenceObject
-   * @param {String} evidenceObject.key
-   * @param {Mixed} evidenceObject.value
+   *
+   * @param {object} evidenceObject key value map of evidence
+   * @param {string} evidenceObject.key evidencekey
+   * @param {Mixed} evidenceObject.value evidence value
    */
   addObject (evidenceObject) {
     const evidenceContainer = this;
 
-    Object.entries(evidenceObject).forEach(function ([key, value]) {
-      evidenceContainer.add(key, value);
+    Object.keys(evidenceObject).forEach(function (key) {
+      evidenceContainer.add(key, evidenceObject[key]);
     });
   }
 
   /**
-   * Add a piece of evidence to flowData from an HTTP request
-   * @param {Object} request
+   * Add evidence to flowData from an HTTP request
+   * This helper automatically adds evidence:
+   * headers, cookies, protocol, IP and query params
+   *
+   * @param {object} request an HTTP request object
+   * @returns {undefined}
    */
   addFromRequest (request) {
     // Process headers
 
     const evidence = this;
 
-    Object.entries(request.headers).forEach(([key, value]) => {
+    Object.keys(request.headers).forEach(key => {
+      const value = request.headers[key];
       let requestHeaderKey;
       let requestHeaderValue;
 
@@ -174,7 +150,8 @@ class Evidence {
 
     const query = params.query;
 
-    Object.entries(query).forEach(function ([key, value]) {
+    Object.keys(query).forEach(function (key) {
+      const value = query[key];
       evidence.add('query.' + key, value);
     });
 
@@ -183,8 +160,9 @@ class Evidence {
 
   /**
    * Get a piece of evidence
-   * @param {String} key
-   * @returns {Mixed}
+   *
+   * @param {string} key evidence key to retreive
+   * @returns {mixed} the evidence value
    */
   get (key) {
     return this.evidenceStore[key];
@@ -192,7 +170,8 @@ class Evidence {
 
   /**
    * Get all evidence
-   * @returns {Object} all evidence
+   *
+   * @returns {object} all evidence
    */
   getAll () {
     return this.evidenceStore;

@@ -28,40 +28,32 @@ const require51 = (requestedPackage) => {
   }
 };
 
-(function () {
-  const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
-  const isEnumerable = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
-  const concat = Function.bind.call(Function.call, Array.prototype.concat);
-  const keys = Reflect.ownKeys;
-
-  if (!Object.values) {
-    Object.values = function values (O) {
-      return reduce(keys(O), (v, k) => concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []), []);
-    };
-  }
-
-  if (!Object.entries) {
-    Object.entries = function entries (O) {
-      return reduce(keys(O), (e, k) => concat(e, typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []), []);
-    };
-  }
-}());
-
 const Engine = require51('fiftyone.pipeline.engines').Engine;
 const querystring = require('querystring');
 const cloudHelpers = require('./cloudHelpers');
-const AspectDataDictionary = require51('fiftyone.pipeline.engines').AspectDataDictionary;
-const BasicListEvidenceKeyFilter = require51('fiftyone.pipeline.core').BasicListEvidenceKeyFilter;
+const AspectDataDictionary = require51('fiftyone.pipeline.engines')
+  .AspectDataDictionary;
+const BasicListEvidenceKeyFilter = require51('fiftyone.pipeline.core')
+  .BasicListEvidenceKeyFilter;
 
+// Engine that makes a call to the 51Degrees cloud service
+// Returns raw JSON as a "cloud" property under "cloud" dataKey
 class CloudRequestEngine extends Engine {
   /**
-     * Constructor for engine that makes a call to the 51Degrees cloud service
-     * Returns raw JSON as a "cloud" property in "cloud"
-     * @param {Object} options
-     * @param {String} options.resourceKey
-     * @param {String} options.licenseKey
-    */
-  constructor ({ resourceKey, licenseKey, baseURL = 'https://cloud.51degrees.com/api/v4/' }) {
+   * Constructor for CloudRequestEngine
+   *
+   * @param {object} options options object
+   * @param {string} options.resourceKey resourcekey for cloud service
+   * @param {string} options.licenseKey licensekey for cloud service
+   * @param {string} options.baseURL url the cloud service is located at
+   * if overriding default
+   */
+  constructor (
+    {
+      resourceKey,
+      licenseKey,
+      baseURL = 'https://cloud.51degrees.com/api/v4/'
+    }) {
     super(...arguments);
 
     this.dataKey = 'cloud';
@@ -75,36 +67,62 @@ class CloudRequestEngine extends Engine {
     this.baseURL = baseURL;
     this.evidenceKeys = [];
 
-    // Trigger get and store of evidence keys on init
-    this.getEvidenceKeys();
+    // Properties of connected FlowElements
+    this.flowElementProperties = {};
+
+    const self = this;
+
+    Promise.all([this.getEvidenceKeys(), this.fetchProperties()]).then(function () {
+      self.initialised = true;
+    });
   }
 
   /**
-    * Interanal process for cloud engine
-    * Returns raw JSON as a "cloud" property in "cloud"
-    * @param {FlowData} flowData
+     * Function for testing if the cloud engine is ready
+     * Checks to see if properties and evidence keys have been fetched
+     * @returns {Promise} whether ready
+  */
+  ready () {
+    const self = this;
+    return new Promise(function (resolve) {
+      if (self.initialised) {
+        resolve(self);
+      } else {
+        const readyCheck = setInterval(function () {
+          if (self.initialised) {
+            clearInterval(readyCheck);
+            resolve(self);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Internal process for cloud engine
+   * Returns raw JSON as a "cloud" property in "cloud"
+   *
+   * @param {FlowData} flowData flowData to process
+   * @returns {Promise} data from cloud service
    */
   processInternal (flowData) {
     const engine = this;
-
-    // Check if properties list exists, if not fetch it
-
-    if (!Object.keys(this.properties).length) {
-      return this.fetchProperties().then(function (properties) {
-        engine.properties = properties;
-
-        return engine.getData(flowData);
-      });
-    } else {
-      return engine.getData(flowData);
-    }
+    return engine.getData(flowData);
   }
 
+  /**
+   * Internal process to fetch all the properties available under a resourcekey
+   *
+   * @returns {Promise} properties from the cloud server
+   */
   fetchProperties () {
     const engine = this;
 
     return new Promise(function (resolve, reject) {
-      let url = engine.baseURL + 'accessibleproperties?resource=' + engine.resourceKey;
+      let url = engine
+        .baseURL +
+      'accessibleproperties?resource=' +
+      engine.resourceKey;
 
       // licenseKey is optional
       if (engine.licenseKey) {
@@ -121,16 +139,33 @@ class CloudRequestEngine extends Engine {
         for (const product in products) {
           propertiesOutput[product] = {};
 
-          products[product].Properties.forEach(function (productProperty) {
-            propertiesOutput[product][productProperty.Name.toLowerCase()] = productProperty;
-          });
+          products[product]
+            .Properties
+            .forEach(function (productProperty) {
+              propertiesOutput[product][productProperty
+                .Name
+                .toLowerCase()] = {};
+              for (const metaKey in productProperty) {
+                propertiesOutput[product][productProperty
+                  .Name
+                  .toLowerCase()][metaKey.toLowerCase()] = productProperty[metaKey];
+              }
+            });
         }
-
+        engine.flowElementProperties = propertiesOutput;
         resolve(propertiesOutput);
       }).catch(reject);
     });
   }
 
+  /**
+   * Internal function to get data from cloud service
+   *
+   * @param {FlowData} flowData
+   * FlowData used to extract evidence and send to cloud service
+   * for processing
+   * @returns {Promise} result of processing
+   */
   getData (flowData) {
     const engine = this;
 
@@ -138,13 +173,16 @@ class CloudRequestEngine extends Engine {
 
     const evidenceRequest = {};
 
-    Object.entries(evidence).forEach(function ([key, value]) {
+    Object.keys(evidence).forEach(function (key) {
+      const value = evidence[key];
       const keyWithoutPrefix = key.split('.')[1];
 
       evidenceRequest[keyWithoutPrefix] = value;
     });
 
-    let url = this.baseURL + this.resourceKey + '.json?' + querystring.stringify(evidenceRequest);
+    let url = this.baseURL +
+    this.resourceKey + '.json?' +
+    querystring.stringify(evidenceRequest);
 
     // licensekey is optional
     if (this.licenseKey) {
@@ -152,22 +190,34 @@ class CloudRequestEngine extends Engine {
     }
 
     return new Promise(function (resolve, reject) {
-      cloudHelpers.makeHTTPRequest(url).then(function (body) {
-        const data = new AspectDataDictionary({ flowElement: engine, contents: { cloud: body, properties: engine.properties } });
+      cloudHelpers
+        .makeHTTPRequest(url)
+        .then(function (body) {
+          const data = new AspectDataDictionary(
+            {
+              flowElement: engine,
+              contents: { cloud: body, properties: engine.properties }
+            });
 
-        flowData.setElementData(data);
+          flowData.setElementData(data);
 
-        resolve();
-      }).catch(reject);
+          resolve();
+        }).catch(reject);
     });
   }
 
+  /**
+   * Internal function to get evidenceKeys used by cloud resourceky
+   */
   getEvidenceKeys () {
     const engine = this;
     const url = this.baseURL + 'evidencekeys';
-    cloudHelpers.makeHTTPRequest(url).then(function (body) {
-      engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(JSON.parse(body));
-    });
+    return cloudHelpers.makeHTTPRequest(url)
+      .then(function (body) {
+        engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
+          JSON.parse(body)
+        );
+      });
   }
 }
 

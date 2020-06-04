@@ -32,20 +32,33 @@ const FlowElement = require51('fiftyone.pipeline.core').FlowElement;
 
 const DataFileUpdateService = require('./dataFileUpdateService');
 
+/**
+ * An Engine is an extension of a FlowElement which adds
+ * options such as restricting to a subset of properties
+ * and a cache and the ability to load property data
+ * from a datafile of the DataFile class
+ */
 class Engine extends FlowElement {
   /**
-     * Constructor for engine class, extends flowElement with extra options
-     *
-     * @param {Object} options
-     * @param {Cache} options.cache instance of a dataKeyedCache
-     * @param {Array} options.restrictedProperties specific list of properties to fetch elementData for
-    */
+   * Constructor for an Engine
+   *
+   * @param {object} options options for the engine
+   * @param {Datafile} options.dataFile an optional datafile
+   * to add to the engine
+   * @param {Cache} options.cache instance of a DataKeyedCache
+   * @param {Array} options.restrictedProperties specific list
+   * of properties to fetch elementData for
+   */
   constructor (
     {
-      cache, restrictedProperties
+      cache, restrictedProperties, dataFile
     } = {}
   ) {
     super(...arguments);
+
+    if (dataFile) {
+      this.registerDataFile(dataFile);
+    }
 
     if (cache) {
       this.cache = cache;
@@ -57,11 +70,15 @@ class Engine extends FlowElement {
   }
 
   /**
-     * Checks cache and returns cached result if found.
-     * @param {FlowData} flowData
-    */
+   * Checks cache and returns cached result if found.
+   *
+   * @param {FlowData} flowData checks if a FlowData's evidence
+   * is already in the cache and processing can be bypassed
+   * @returns {boolean} whether in cache
+   */
   inCache (flowData) {
-    let keys = this.evidenceKeyFilter.filterEvidence(flowData.evidence.getAll());
+    let keys = this.evidenceKeyFilter
+      .filterEvidence(flowData.evidence.getAll());
 
     keys = JSON.stringify(keys);
 
@@ -77,11 +94,15 @@ class Engine extends FlowElement {
   }
 
   /**
-     * An engine's process function checks cache for an item (calling inCache)
-     * If found it returns the cached object
-     * If not found it runs the standard processInternal function and adds it to the cache (if a cache is present)
-     * @param {FlowData} flowData
-    */
+   * An engine's process function checks cache for an item
+   * (calling inCache)
+   * If found it returns the cached object
+   * If not found it runs the standard processInternal function
+   * and adds it to the cache (if a cache is present)
+   *
+   * @param {FlowData} flowData FlowData to process
+   * @returns {undefined} result of processing
+   */
   process (flowData) {
     const engine = this;
 
@@ -93,7 +114,8 @@ class Engine extends FlowElement {
 
     return Promise.resolve(this.processInternal(flowData)).then(function () {
       if (engine.cache) {
-        let keys = engine.evidenceKeyFilter.filterEvidence(flowData.evidence.getAll());
+        let keys = engine.evidenceKeyFilter
+          .filterEvidence(flowData.evidence.getAll());
 
         keys = JSON.stringify(keys);
 
@@ -102,10 +124,22 @@ class Engine extends FlowElement {
     });
   }
 
+  /**
+   * Callback which runs when an attached DataFile is updated
+   * Needs to be overriden by a specific engine to do anything
+   *
+   * @returns {void}
+   */
   refresh () {
     return true;
   }
 
+  /**
+   * Function to attach a DataFile to the engine and
+   * register it with a DataFileUpdateService if needed
+   *
+   * @param {Datafile} dataFile the datafile to register
+   */
   registerDataFile (dataFile) {
     this.registrationCallbacks.push(function (pipeline) {
       // Create datafile update service if not already created

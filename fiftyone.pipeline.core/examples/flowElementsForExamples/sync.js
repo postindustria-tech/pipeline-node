@@ -20,7 +20,9 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-// This flowElement runs syncronously and checks the value of the async flowElement in order to demonstrate sync vs async pipelines
+// This flowElement runs syncronously and checks the
+// value of the async flowElement in order to demonstrate
+// sync vs async pipelines
 
 // Note that this example is designed to be run from within the
 // source repository. If this code has been copied to run standalone
@@ -37,7 +39,9 @@ class Sync extends FlowElement {
     super();
 
     this.dataKey = 'sync';
-    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter(['header.user_agent']);
+    this.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
+      ['header.user_agent']
+    );
 
     this.properties = {
       integer: {
@@ -58,7 +62,9 @@ class Sync extends FlowElement {
       contents.boolean = false;
     }
 
-    const data = new ElementDataDictionary({ flowElement: this, contents: contents });
+    const data = new ElementDataDictionary(
+      { flowElement: this, contents: contents }
+    );
 
     flowData.setElementData(data);
   }

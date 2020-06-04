@@ -56,9 +56,16 @@ test('pipeline functionality example', () => {
 });
 
 test('custom flowElements 1', () => {
-  testExample({ file: __dirname + '/customFlowElements/1-simpleEvidenceFlowElement.js' });
+  testExample(
+    { file: __dirname + '/customFlowElements/simpleEvidenceFlowElement.js' }
+  );
 });
 
 test('custom flowElements 2', () => {
-  testExample({ file: __dirname + '/customFlowElements/2-clientSideEvidenceFlowElement.js', port: 3001 });
+  testExample(
+    {
+      file: __dirname + '/customFlowElements/clientSideEvidenceFlowElement.js',
+      port: 3001
+    }
+  );
 });
