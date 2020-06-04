@@ -40,6 +40,8 @@ class CloudEngine extends Engine {
 
     this.dataKey = 'CloudEngineBase'; // This should be overriden
 
+    const engine = this;
+
     this.registrationCallbacks.push(function (pipeline, flowElement) {
       const cloudRequestEngine = pipeline.flowElements.cloud;
 
@@ -49,42 +51,71 @@ class CloudEngine extends Engine {
 
       cloudRequestEngine.ready().then(function () {
         flowElement.properties = cloudRequestEngine.flowElementProperties[flowElement.dataKey];
+        engine.updateProperties();
         flowElement.evidenceKeyFilter = new BasicListEvidenceKeyFilter(cloudRequestEngine.evidenceKeys);
+        engine.initialised = true;
       });
     });
   }
 
   /**
-     * Internal process method for all cloud engines
-     * @param {FlowData} flowData
-*/
-  processInternal (flowData) {
-    const engine = this;
-    let cloudData = flowData.get('cloud').get('cloud');
-
-    cloudData = JSON.parse(cloudData);
-
-    // Loop over cloudData.device properties to check if they have a value
-
-    const result = {};
-
-    Object.entries(cloudData[engine.dataKey]).forEach(function ([key, value]) {
-      result[key] = new AspectPropertyValue();
-
-      if (cloudData[engine.dataKey][key + 'nullreason']) {
-        result[key].noValueMessage = cloudData[engine.dataKey][key + 'nullreason'];
+   * Function for testing if the cloud engine is ready
+   * Checks to see if properties and evidence keys have been fetched
+   *
+   * @returns {Promise} whether ready
+   */
+  ready () {
+    const self = this;
+    return new Promise(function (resolve) {
+      if (self.initialised) {
+        resolve(self);
       } else {
-        result[key].value = value;
+        const readyCheck = setInterval(function () {
+          if (self.initialised) {
+            clearInterval(readyCheck);
+            resolve(self);
+          }
+        });
       }
     });
+  }
 
-    const data = new AspectDataDictionary(
-      {
-        flowElement: engine,
-        contents: result
+  /**
+   * Internal process method for all cloud engines
+   *
+   * @param {FlowData} flowData FlowData to process
+   * @returns {void}
+   */
+  processInternal (flowData) {
+    const engine = this;
+
+    return engine.ready().then(function () {
+      let cloudData = flowData.get('cloud').get('cloud');
+
+      cloudData = JSON.parse(cloudData);
+
+      // Loop over cloudData.device properties to check if they have a value
+
+      const result = {};
+
+      Object.entries(cloudData[engine.dataKey]).forEach(function ([key, value]) {
+        result[key] = new AspectPropertyValue();
+
+        if (cloudData[engine.dataKey][key + 'nullreason']) {
+          result[key].noValueMessage = cloudData[engine.dataKey][key + 'nullreason'];
+        } else {
+          result[key].value = value;
+        }
       });
 
-    flowData.setElementData(data);
+      const data = new AspectDataDictionary(
+        {
+          flowElement: engine,
+          contents: result
+        });
+
+      flowData.setElementData(data);
+    });
   }
 }
 

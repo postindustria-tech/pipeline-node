@@ -20,4 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-module.exports = require('./cloudRequestEngine');
+module.exports = {
+    CloudRequestEngine: require('./cloudRequestEngine'),
+    CloudEngine: require("./cloudEngine")
+}
