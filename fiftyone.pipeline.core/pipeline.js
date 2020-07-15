@@ -235,6 +235,10 @@ class Pipeline {
       Promise.resolve(flowElement.getProperties()).then(function (properties) {
         const flowElementDataKey = flowElement.dataKey;
 
+        if (!properties) {
+          return;
+        }
+
         Object.keys(properties).forEach(function (
           propertyKey
         ) {

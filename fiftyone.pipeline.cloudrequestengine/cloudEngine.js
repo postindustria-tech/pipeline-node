@@ -54,6 +54,12 @@ class CloudEngine extends Engine {
         engine.updateProperties();
         flowElement.evidenceKeyFilter = new BasicListEvidenceKeyFilter(cloudRequestEngine.evidenceKeys);
         engine.initialised = true;
+      }).catch(function (error) {
+        // throw error;
+
+        engine.errors = error;
+
+        engine.initialised = false;
       });
     });
   }
@@ -66,14 +72,17 @@ class CloudEngine extends Engine {
    */
   ready () {
     const self = this;
-    return new Promise(function (resolve) {
-      if (self.initialised) {
+    return new Promise(function (resolve, reject) {
+      if (self.initialised === true) {
         resolve(self);
       } else {
         const readyCheck = setInterval(function () {
-          if (self.initialised) {
+          if (self.initialised === true) {
             clearInterval(readyCheck);
             resolve(self);
+          } else if (self.initialised === false) {
+            clearInterval(readyCheck);
+            reject(self.errors);
           }
         });
       }

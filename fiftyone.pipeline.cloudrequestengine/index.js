@@ -21,6 +21,6 @@
  * ********************************************************************* */
 
 module.exports = {
-    CloudRequestEngine: require('./cloudRequestEngine'),
-    CloudEngine: require("./cloudEngine")
-}
+  CloudRequestEngine: require('./cloudRequestEngine'),
+  CloudEngine: require('./cloudEngine')
+};

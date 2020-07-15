@@ -77,24 +77,45 @@ class CloudRequestEngine extends Engine {
 
     Promise.all([this.getEvidenceKeys(), this.fetchProperties()]).then(function () {
       self.initialised = true;
+    }).catch(function (error) {
+      self.initialised = false;
+
+      self.errors = JSON.parse(error).errors;
+
+      if (self.pipelines) {
+        // Log error on all pipelines engine is attached to
+
+        self.pipelines.map(function (pipeline) {
+          pipeline.log('error', {
+            source: 'CloudRequestEngine',
+            message: self.errors
+          });
+        });
+      }
     });
   }
 
   /**
-     * Function for testing if the cloud engine is ready
-     * Checks to see if properties and evidence keys have been fetched
-     * @returns {Promise} whether ready
-  */
+   * Function for testing if the cloud engine is ready
+   * Checks to see if properties and evidence keys have been fetched
+   *
+   * @returns {Promise} whether ready
+   */
   ready () {
     const self = this;
-    return new Promise(function (resolve) {
-      if (self.initialised) {
+    return new Promise(function (resolve, reject) {
+      if (self.initialised === true) {
         resolve(self);
+      } else if (self.initialised === false) {
+        reject(self.errors);
       } else {
         const readyCheck = setInterval(function () {
-          if (self.initialised) {
+          if (self.initialised === true) {
             clearInterval(readyCheck);
             resolve(self);
+          } else if (self.initialised === false) {
+            reject(self.errors);
+            clearInterval(readyCheck);
           }
         });
       }
@@ -124,8 +145,8 @@ class CloudRequestEngine extends Engine {
     return new Promise(function (resolve, reject) {
       let url = engine
         .baseURL +
-      'accessibleproperties?resource=' +
-      engine.resourceKey;
+        'accessibleproperties?resource=' +
+        engine.resourceKey;
 
       // licenseKey is optional
       if (engine.licenseKey) {
@@ -147,11 +168,13 @@ class CloudRequestEngine extends Engine {
             .forEach(function (productProperty) {
               propertiesOutput[product][productProperty
                 .Name
-                .toLowerCase()] = {};
+                .toLowerCase()
+              ] = {};
               for (const metaKey in productProperty) {
                 propertiesOutput[product][productProperty
                   .Name
-                  .toLowerCase()][metaKey.toLowerCase()] = productProperty[metaKey];
+                  .toLowerCase()
+                ][metaKey.toLowerCase()] = productProperty[metaKey];
               }
             });
         }
@@ -184,33 +207,43 @@ class CloudRequestEngine extends Engine {
     });
 
     let url = this.baseURL +
-    this.resourceKey + '.json?' +
-    querystring.stringify(evidenceRequest);
+      this.resourceKey + '.json?' +
+      querystring.stringify(evidenceRequest);
 
     // licensekey is optional
     if (this.licenseKey) {
       url += '&license=' + this.licenseKey;
     }
 
+    const self = this;
+
     return new Promise(function (resolve, reject) {
       cloudHelpers
         .makeHTTPRequest(url)
         .then(function (body) {
-          const data = new AspectDataDictionary(
-            {
-              flowElement: engine,
-              contents: { cloud: body, properties: engine.properties }
-            });
+          const data = new AspectDataDictionary({
+            flowElement: engine,
+            contents: {
+              cloud: body,
+              properties: engine.properties
+            }
+          });
 
           flowData.setElementData(data);
 
           resolve();
-        }).catch(reject);
+        }).catch(function (error) {
+          self.errors = JSON.parse(error).errors;
+
+          reject(self.errors);
+        });
     });
   }
 
   /**
    * Internal function to get evidenceKeys used by cloud resourceky
+   *
+   * @returns {Array} evidence key list
    */
   getEvidenceKeys () {
     const engine = this;
