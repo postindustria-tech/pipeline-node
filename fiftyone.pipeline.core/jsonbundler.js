@@ -39,6 +39,7 @@ class JSONBundlerElement extends FlowElement {
 
     this.dataKey = 'jsonbundler';
     this.evidenceKeyFilter = new BasicListEvidenceKeyFilter([]);
+    this.propertyCache = null;
   }
 
   /**
@@ -53,6 +54,17 @@ class JSONBundlerElement extends FlowElement {
     const output = {
       javascriptProperties: []
     };
+
+    // Check if property cache has already been set
+
+    let propertyCacheSet;
+
+    if (this.propertyCache) {
+      propertyCacheSet = true;
+    } else {
+      propertyCacheSet = false;
+      this.propertyCache = {};
+    }
 
     for (const flowElement in flowData.pipeline.flowElements) {
       if (
@@ -70,7 +82,60 @@ class JSONBundlerElement extends FlowElement {
 
       const properties = flowElementObject.getProperties();
 
+      if (!propertyCacheSet) {
+        const delayExecutionList = [];
+        const delayedEvidenceProperties = {};
+
+        // Loop over all properties and see if any have delay execution set to true
+
+        for (const property in properties) {
+          const propertyInfo = properties[property];
+
+          if (propertyInfo.delayexecution) {
+            delayExecutionList.push(property);
+          }
+        }
+
+        // Loop over all properties again and see if any have evidenceproperties which
+        // have delayedExecution set to true
+
+        for (const property in properties) {
+          const propertyInfo = properties[property];
+
+          if (propertyInfo.evidenceproperties) {
+            const delayedEvidencePropertiesList = propertyInfo.evidenceproperties.filter(function (evidenceProperty) {
+              return delayExecutionList.indexOf(evidenceProperty) !== -1;
+            });
+
+            if (delayedEvidencePropertiesList.length) {
+              delayedEvidenceProperties[property] = delayedEvidencePropertiesList.map(function (property) {
+                return flowElement + '.' + property;
+              });
+            }
+          }
+        }
+
+        this.propertyCache[flowElement.dataKey] = {
+          delayExecutionList: delayExecutionList,
+          evidenceProperties: delayedEvidenceProperties
+        };
+      }
+
+      const propertyCache = this.propertyCache[flowElement.dataKey];
+
       for (const property in properties) {
+        // Check if property has delayed execution and set in JSON if yes
+
+        if (propertyCache.delayExecutionList.indexOf(property) !== -1) {
+          output[flowElement.toLowerCase()][property.toLowerCase() + 'delayexecution'] = true;
+        }
+
+        // Check if property has any delayed execution evidence properties and set in JSON if yes
+
+        if (propertyCache.evidenceProperties[property]) {
+          output[flowElement.toLowerCase()][property.toLowerCase() + 'evidenceproperties'] = propertyCache.evidenceProperties[property];
+        }
+
         // Get the value
 
         let value;

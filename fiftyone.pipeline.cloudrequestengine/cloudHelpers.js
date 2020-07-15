@@ -48,7 +48,13 @@ module.exports = {
         });
 
         resp.on('end', () => {
-          resolve(data);
+          // If response from cloud is not 2**, reject with error
+
+          if (resp.statusCode > 399) {
+            reject(data);
+          } else {
+            resolve(data);
+          }
         });
       }).on('error', (err) => {
         reject(err.message);
