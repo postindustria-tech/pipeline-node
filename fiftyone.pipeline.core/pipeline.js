@@ -242,8 +242,8 @@ class Pipeline {
           const propertyName = propertyKey;
 
           Object.keys(propertyMeta).forEach(function (metaKey) {
-            metaKey = metaKey.toLowerCase();
             const metaValue = propertyMeta[metaKey].toString().toLowerCase();
+            metaKey = metaKey.toLowerCase();
 
             if (!pipeline.propertyDatabase[metaKey]) {
               pipeline.propertyDatabase[metaKey] = {};

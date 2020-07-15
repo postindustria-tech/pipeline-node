@@ -88,3 +88,131 @@ test('sequence number for same session id increments', (done) => {
 test('no javascriptProperties when sequence cap met', () => {
   expect(flowData2.jsonbundler.json.javascriptProperties.length).toBe(0);
 });
+
+test('JSON bundler - Verify output where delayed execution = false', (done) => {
+  const delayExecutionEngine1 = new core.FlowElement({
+    dataKey: 'jsontestengine',
+    properties: {
+      one: {
+        delayJavaScriptExecution: false,
+        type: 'javascript'
+      },
+      two: {
+        evidenceProperties: ['jsontestengine.one']
+      }
+    },
+    processInternal: function (flowData) {
+      const contents = { one: 1, two: 2 };
+
+      const data = new core.ElementDataDictionary({
+        flowElement: this,
+        contents: contents
+      });
+
+      flowData.setElementData(data);
+    }
+  });
+
+  const delayExecutionpipeline1 = new core.PipelineBuilder()
+    .add(delayExecutionEngine1)
+    .build();
+
+  const delayExecutionflowData = delayExecutionpipeline1.createFlowData();
+
+  delayExecutionflowData.process().then(function () {
+    const expected = JSON.stringify({ one: 1, two: 2 });
+    const actual = JSON.stringify(delayExecutionflowData.jsonbundler.json.jsontestengine);
+    expect(actual).toBe(expected);
+    done();
+  });
+});
+
+test('JSON bundler - Verify output where delayed execution = true', (done) => {
+  const delayExecutionEngine1 = new core.FlowElement({
+    dataKey: 'jsontestengine',
+    properties: {
+      one: {
+        delayJavaScriptExecution: true,
+        type: 'javascript'
+      },
+      two: {
+        evidenceProperties: ['jsontestengine.one']
+      }
+    },
+    processInternal: function (flowData) {
+      const contents = { one: 1, two: 2 };
+
+      const data = new core.ElementDataDictionary({
+        flowElement: this,
+        contents: contents
+      });
+
+      flowData.setElementData(data);
+    }
+  });
+
+  const delayExecutionpipeline1 = new core.PipelineBuilder()
+    .add(delayExecutionEngine1)
+    .build();
+
+  const delayExecutionflowData = delayExecutionpipeline1.createFlowData();
+
+  delayExecutionflowData.process().then(function () {
+    const expected = JSON.stringify({
+      onedelayedexecution: true,
+      one: 1,
+      twoevidenceproperties: ['jsontestengine.one'],
+      two: 2
+    });
+    const actual = JSON.stringify(delayExecutionflowData.jsonbundler.json.jsontestengine);
+    expect(actual).toBe(expected);
+    done();
+  });
+});
+
+test('JSON bundler - Verify output where a property has multiple evidence properties', (done) => {
+  const delayExecutionEngine1 = new core.FlowElement({
+    dataKey: 'jsontestengine',
+    properties: {
+      one: {
+        evidenceProperties: ['jsontestengine.two', 'jsontestengine.three']
+      },
+      two: {
+        delayJavaScriptExecution: true
+      },
+      three: {
+        delayJavaScriptExecution: false
+      }
+    },
+    processInternal: function (flowData) {
+      const contents = { one: 1, two: 2, three: 3 };
+
+      const data = new core.ElementDataDictionary({
+        flowElement: this,
+        contents: contents
+      });
+
+      flowData.setElementData(data);
+    }
+  });
+
+  const delayExecutionpipeline1 = new core.PipelineBuilder()
+    .add(delayExecutionEngine1)
+    .build();
+
+  const delayExecutionflowData = delayExecutionpipeline1.createFlowData();
+
+  delayExecutionflowData.process().then(function () {
+    const expected = JSON.stringify({
+      oneevidenceproperties: ['jsontestengine.two'],
+      one: 1,
+      twodelayedexecution: true,
+      two: 2,
+      three: 3
+    });
+
+    const actual = JSON.stringify(delayExecutionflowData.jsonbundler.json.jsontestengine);
+    expect(actual).toBe(expected);
+    done();
+  });
+});
