@@ -34,12 +34,12 @@ const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter.js');
  * added to a pipeline unless specifically ommited in the PipelineBuilder
  */
 class JSONBundlerElement extends FlowElement {
-  constructor() {
+  constructor () {
     super(...arguments);
 
     this.dataKey = 'jsonbundler';
     this.evidenceKeyFilter = new BasicListEvidenceKeyFilter([]);
-    this.propertyCache = {};
+    this.propertyCache = null;
   }
 
   /**
@@ -47,13 +47,24 @@ class JSONBundlerElement extends FlowElement {
    *
    * @param {FlowData} flowData the FlowData being processed
    */
-  processInternal(flowData) {
+  processInternal (flowData) {
     // Get every property on every flowElement
     // Storing JavaScript properties in an extra section
 
     const output = {
       javascriptProperties: []
     };
+
+    // Check if property cache has already been set
+
+    let propertyCacheSet;
+
+    if (this.propertyCache) {
+      propertyCacheSet = true;
+    } else {
+      propertyCacheSet = false;
+      this.propertyCache = {};
+    }
 
     for (const flowElement in flowData.pipeline.flowElements) {
       if (
@@ -71,7 +82,7 @@ class JSONBundlerElement extends FlowElement {
 
       const properties = flowElementObject.getProperties();
 
-      if (!Object.keys(this.propertyCache).length) {
+      if (!propertyCacheSet) {
         const delayExecutionList = [];
         const delayedEvidenceProperties = {};
 
@@ -80,7 +91,7 @@ class JSONBundlerElement extends FlowElement {
         for (const property in properties) {
           const propertyInfo = properties[property];
 
-          if (propertyInfo.delayJavaScriptExecution) {
+          if (propertyInfo.delayexecution) {
             delayExecutionList.push(property);
           }
         }
@@ -91,13 +102,15 @@ class JSONBundlerElement extends FlowElement {
         for (const property in properties) {
           const propertyInfo = properties[property];
 
-          if (propertyInfo.evidenceProperties) {
-            const delayedEvidencePropertiesList = propertyInfo.evidenceProperties.filter(function (evidenceProperty) {
-              return delayExecutionList.indexOf(evidenceProperty.replace(flowElement + '.', '')) !== -1;
+          if (propertyInfo.evidenceproperties) {
+            const delayedEvidencePropertiesList = propertyInfo.evidenceproperties.filter(function (evidenceProperty) {
+              return delayExecutionList.indexOf(evidenceProperty) !== -1;
             });
 
             if (delayedEvidencePropertiesList.length) {
-              delayedEvidenceProperties[property] = delayedEvidencePropertiesList;
+              delayedEvidenceProperties[property] = delayedEvidencePropertiesList.map(function (property) {
+                return flowElement + '.' + property;
+              });
             }
           }
         }
@@ -166,9 +179,9 @@ class JSONBundlerElement extends FlowElement {
         ) {
           var type =
             propertyObject[
-            Object.keys(propertyObject).find(
-              (key) => key.toLowerCase() === 'type'
-            )
+              Object.keys(propertyObject).find(
+                (key) => key.toLowerCase() === 'type'
+              )
             ];
 
           if (type && type.toLowerCase() === 'javascript') {

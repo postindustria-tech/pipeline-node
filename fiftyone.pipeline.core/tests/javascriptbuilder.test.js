@@ -94,11 +94,11 @@ test('JSON bundler - Verify output where delayed execution = false', (done) => {
     dataKey: 'jsontestengine',
     properties: {
       one: {
-        delayJavaScriptExecution: false,
+        delayexecution: false,
         type: 'javascript'
       },
       two: {
-        evidenceProperties: ['jsontestengine.one']
+        evidenceproperties: ['jsontestengine']
       }
     },
     processInternal: function (flowData) {
@@ -132,11 +132,11 @@ test('JSON bundler - Verify output where delayed execution = true', (done) => {
     dataKey: 'jsontestengine',
     properties: {
       one: {
-        delayJavaScriptExecution: true,
+        delayexecution: true,
         type: 'javascript'
       },
       two: {
-        evidenceProperties: ['jsontestengine.one']
+        evidenceproperties: ['one']
       }
     },
     processInternal: function (flowData) {
@@ -175,13 +175,13 @@ test('JSON bundler - Verify output where a property has multiple evidence proper
     dataKey: 'jsontestengine',
     properties: {
       one: {
-        evidenceProperties: ['jsontestengine.two', 'jsontestengine.three']
+        evidenceproperties: ['two', 'three']
       },
       two: {
-        delayJavaScriptExecution: true
+        delayexecution: true
       },
       three: {
-        delayJavaScriptExecution: false
+        delayexecution: false
       }
     },
     processInternal: function (flowData) {
