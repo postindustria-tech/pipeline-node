@@ -159,7 +159,7 @@ test('JSON bundler - Verify output where delayed execution = true', (done) => {
 
   delayExecutionflowData.process().then(function () {
     const expected = JSON.stringify({
-      onedelayedexecution: true,
+      onedelayexecution: true,
       one: 1,
       twoevidenceproperties: ['jsontestengine.one'],
       two: 2
@@ -206,7 +206,7 @@ test('JSON bundler - Verify output where a property has multiple evidence proper
     const expected = JSON.stringify({
       oneevidenceproperties: ['jsontestengine.two'],
       one: 1,
-      twodelayedexecution: true,
+      twodelayexecution: true,
       two: 2,
       three: 3
     });

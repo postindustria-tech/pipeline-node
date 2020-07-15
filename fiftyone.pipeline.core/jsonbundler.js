@@ -127,7 +127,7 @@ class JSONBundlerElement extends FlowElement {
         // Check if property has delayed execution and set in JSON if yes
 
         if (propertyCache.delayExecutionList.indexOf(property) !== -1) {
-          output[flowElement.toLowerCase()][property.toLowerCase() + 'delayedexecution'] = true;
+          output[flowElement.toLowerCase()][property.toLowerCase() + 'delayexecution'] = true;
         }
 
         // Check if property has any delayed execution evidence properties and set in JSON if yes

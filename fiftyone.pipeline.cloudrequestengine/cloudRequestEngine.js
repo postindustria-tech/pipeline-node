@@ -64,6 +64,9 @@ class CloudRequestEngine extends Engine {
 
     this.resourceKey = resourceKey;
     this.licenseKey = licenseKey;
+    if(baseURL && baseURL.endsWith('/') === false) {
+      baseURL = baseURL + '/';
+    }
     this.baseURL = baseURL;
     this.evidenceKeys = [];
 

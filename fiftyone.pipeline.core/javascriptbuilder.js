@@ -187,6 +187,8 @@ class JavaScriptBuilderElement extends FlowElement {
       flowData.device.promise.value === true;
     settings._supportsPromises = promises;
 
+    settings._hasDelayedProperties = settings._jsonObject.includes('delayexecution');
+
     let output = mustache.render(template, settings);
 
     if (settings._minify) {
