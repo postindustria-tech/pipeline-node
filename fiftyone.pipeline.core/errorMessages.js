@@ -20,27 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const FlowElement = require('../flowElement');
-const ElementDataDictionary = require('../elementDataDictionary');
-
-/**
- * Implementation of FlowElement that is used for testing.
- */
-class ConfigTestFlowElement extends FlowElement {
-  constructor ({ prefix }) {
-    super(...arguments);
-
-    this.prefix = prefix;
-    this.dataKey = 'configTest';
-  }
-
-  processInternal (flowData) {
-    const data = new ElementDataDictionary(
-      { flowElement: this, contents: { built: this.prefix + '_world' } }
-    );
-
-    flowData.setElementData(data);
-  }
+module.exports = {
+  noElementData: 'There is no element data for "%s" against this flow ' +
+    'data. Available element data keys are: %s.'
 }
-
-module.exports = ConfigTestFlowElement;

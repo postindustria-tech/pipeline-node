@@ -20,6 +20,9 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+const util = require('util');
+const errorMessages = require('../fiftyone.pipeline.engines/errorMessages')
+
 /**
  * Stores information created by a flowElement based on flowData.
  * Stored in flowData
@@ -43,10 +46,23 @@ class ElementData {
     // As a shortcut to flowData.get("flowElementDataKey")
     return new Proxy(this, {
       get: (data, key) => {
-        try {
-          return data[key] || data.get(key);
-        } catch (e) {
-          // Skip missing property errors etc
+        // This proxy can end up getting called by anything that tries
+        // to access methods & properties on the object.
+        // This can include things like the inspector if you do something like
+        // console.log(flowData.location) 
+        // In future, this mechanism will be superseded by a less problematic 
+        // approach. For now, we work around this by only passing string keys
+        // to the data getters.
+        if (typeof(key) === 'string' || key == Symbol.iterator) {
+          try {
+            return data[key] || data.get(key);
+          } catch(e) {
+            // If the key was 'inspect' and an error was thrown then we 
+            // can ignore it. Otherwise, throw the error back up the stack.
+            if(key != 'inspect') {
+              throw(e);
+            }
+          }
         }
       }
     });
@@ -67,11 +83,18 @@ class ElementData {
    * A wrapper that performs actions before passing on processing
    * (or skipping) the getInternal method
    *
-   * @param {string} key the key to retreive a property value for
+   * @param {string} key the key to retrieve a property value for
    * @returns {mixed} value
    */
   get (key) {
-    return this.getInternal(key);
+    let value = this.getInternal(key);
+    if (typeof value === 'undefined') {
+      throw util.format(errorMessages.genericMissingProperties, key) + 
+        (typeof this.flowElement === 'undefined' ? '' : ' in data for element "' +
+          this.flowElement.dataKey) + '".' +
+        util.format(errorMessages.noReasonUnknown);
+    }
+    return value;
   }
 
   /**

@@ -35,7 +35,7 @@ checks if the file has changed.
 const fs = require('fs');
 
 // First require the core Pipeline
-const FiftyOnePipelineCore = require('fiftyone.pipeline.core');
+const FiftyOnePipelineCore = require(__dirname + '/../../fiftyone.pipeline.core');
 
 // Next require the engines extension that extends flowElements to support
 // functionality such as auto updating datafiles,
@@ -175,37 +175,39 @@ const pipeline = new FiftyOnePipelineCore.PipelineBuilder()
   .build();
 
 const server = http.createServer((req, res) => {
-  const flowData = pipeline.createFlowData();
-
-  // Add any information from the request
-  // (headers, cookies and additional client side provided information)
-  flowData.evidence.addFromRequest(req);
-
-  flowData.process().then(function () {
-    // Output the date of birth form with any results if they exist
-
-    const output = `
-
-        <h1>Starsigns</h1>
-
-        ${flowData.astrology.starSign
-          ? '<p>Your starsign is ' +
-          flowData.astrology.starSign + ' </p>'
-          : '<p>Add your date of birth to get your starsign</p>'
-        }
-
-        <form>
-          <label for='dateOfBirth'>Date of birth</label>
-          <input type='date' name='dateOfBirth' id='dateOfBirth'>
-          <input type='submit'>
-        </form>
-        
-        `;
-
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/html');
-    res.end(output);
-  });
+  if (req.url !== '/favicon.ico') {
+    const flowData = pipeline.createFlowData();
+  
+    // Add any information from the request
+    // (headers, cookies and additional client side provided information)
+    flowData.evidence.addFromRequest(req);
+  
+    flowData.process().then(function () {
+      // Output the date of birth form with any results if they exist
+  
+      const output = `
+  
+          <h1>Starsigns</h1>
+  
+          ${flowData.astrology.starSign
+            ? '<p>Your starsign is ' +
+            flowData.astrology.starSign + ' </p>'
+            : '<p>Add your date of birth to get your starsign</p>'
+          }
+  
+          <form>
+            <label for='dateOfBirth'>Date of birth</label>
+            <input type='date' name='dateOfBirth' id='dateOfBirth'>
+            <input type='submit'>
+          </form>
+          
+          `;
+  
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html');
+      res.end(output);
+    });
+  }
 });
 
 const portNum = process.env.PORT || 3000;

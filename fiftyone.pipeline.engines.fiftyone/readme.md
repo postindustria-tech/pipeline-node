@@ -1,0 +1,19 @@
+![51Degrees](https://51degrees.com/DesktopModules/FiftyOne/Distributor/Logo.ashx?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=node-open-source "Data rewards the curious") **51Degrees Pipeline Engines Fiftyone**
+
+[Developer Documentation](https://docs.51degrees.com?utm_source=github&utm_medium=repository&utm_content=documentation&utm_campaign=node-open-source "developer documentation")
+
+## Introduction
+
+The 51Degrees Pipeline API is a generic web request intelligence and data processing solution with the ability to add a range of 51Degrees and/or custom plug ins (Engines).
+
+## This package - fiftyone.pipeline.engines.fiftyone
+
+This package uses the `engines` class created by the `fiftyone.pipeline.engines`. It makes available:
+
+* A `share usage` engine that is used to send usage information to 51Degrees. 
+
+## Installation
+
+```
+npm install fiftyone.pipeline.engines.fiftyone
+```

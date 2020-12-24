@@ -21,30 +21,23 @@
  * ********************************************************************* */
 
 const util = require('util');
-const errorMessages = require('../errorMessages');
-const Engine = require(__dirname + '/../engine');
+const errorMessages = require(__dirname +
+  '/../../fiftyone.pipeline.engines/errorMessages');
+const Engine = require(__dirname + '/../../fiftyone.pipeline.engines/engine');
 const PipelineBuilder = require(
-  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
+  __dirname + '/../pipelineBuilder'
 );
-const AspectDataDictionary = require(
-  __dirname + '/../aspectDataDictionary'
+const ElementDataDictionary = require(
+  __dirname + '/../elementDataDictionary'
 );
 const BasicListEvidenceKeyFilter = require(
-  __dirname + '/../../fiftyone.pipeline.core/basicListEvidenceKeyFilter'
+  __dirname + '/../basicListEvidenceKeyFilter'
 );
-const LruCache = require(__dirname + '/../lruCache');
-
-const cache = new LruCache({ size: 1 });
-
-// Flag to test cache
-
-let hasRun = false;
 
 const testEngine = new Engine(
   {
     dataKey: 'testEngine',
-    cache: cache,
-    restrictedProperties: ['one', 'noCache'],
+    restrictedProperties: ['one'],
     evidenceKeyFilter: new BasicListEvidenceKeyFilter(['header.user-agent']),
     properties: {
       one: {
@@ -52,20 +45,13 @@ const testEngine = new Engine(
           type: 'int'
         }
       },
-      two: {
-        meta: {
-          type: 'int'
-        }
-      }
     },
     processInternal: function (flowData) {
-      const contents = { one: 1, two: 2 };
+      const contents = { one: 1 };
 
       // Check if flowData has been processed before (for cache test)
 
-      contents.noCache = hasRun;
-
-      const data = new AspectDataDictionary(
+      const data = new ElementDataDictionary(
         { flowElement: this, contents: contents }
       );
 
@@ -78,28 +64,9 @@ const testEngine = new Engine(
 
 const flowData = new PipelineBuilder().add(testEngine).build().createFlowData();
 
-test('engine process', done => {
-  flowData.process().then(function () {
-    expect(flowData.get('testEngine').get('one')).toBe(1);
-
-    done();
-  });
-});
-
-test('restricted properties', done => {
-  flowData.process().then(function () {
-    try {
-      flowData.get('testEngine').get('two');
-    } catch (e) {
-      expect(e.indexOf(
-        util.format(errorMessages.propertyExcluded, 'two')) !== -1).toBe(true);
-    }
-
-    done();
-  });
-});
-
-test('missing property service', done => {
+// Check that when accessing an invalid key, an error is thrown and a correct
+// error message is returned.
+test('missing property', done => {
   flowData.process().then(function () {
     try {
       flowData.get('testEngine').get('three');
@@ -109,14 +76,6 @@ test('missing property service', done => {
         ' in data for element "testEngine".' +
         util.format(errorMessages.noReasonUnknown)) !== -1).toBe(true);
     }
-
-    done();
-  });
-});
-
-test('cache', done => {
-  flowData.process().then(function () {
-    expect(flowData.get('testEngine').get('noCache')).toBe(false);
 
     done();
   });

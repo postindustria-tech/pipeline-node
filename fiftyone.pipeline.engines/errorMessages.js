@@ -20,27 +20,21 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const FlowElement = require('../flowElement');
-const ElementDataDictionary = require('../elementDataDictionary');
-
-/**
- * Implementation of FlowElement that is used for testing.
- */
-class ConfigTestFlowElement extends FlowElement {
-  constructor ({ prefix }) {
-    super(...arguments);
-
-    this.prefix = prefix;
-    this.dataKey = 'configTest';
-  }
-
-  processInternal (flowData) {
-    const data = new ElementDataDictionary(
-      { flowElement: this, contents: { built: this.prefix + '_world' } }
-    );
-
-    flowData.setElementData(data);
-  }
+module.exports = {
+  genericMissingProperties: 'Property "%s" not found',
+  cloudNoPropertiesAccess: ' This is because your resource key does not ' +
+    'include access to any properties under "%s". For more details, see our ' +
+    'resource key explainer: ' +
+    'https://51degrees.com/documentation/4.1/_info__resourcekeys.html',
+  cloudNoPropertyAccess: ' This is because your resource key does not ' +
+    'include access to this property. Properties that are included for this ' +
+    'key under "%s" are %s. For more details on resource keys, see our ' +
+    'explainer: ' +
+    'https://51degrees.com/documentation/4.1/_info__resourcekeys.html',
+  cloudReasonUnknown: ' The reason for this is unknown as the supplied ' +
+    'resource key does appear to allow access to this property.',
+  noReasonUnknown: ' Please check that the element and property names ' +
+    'are correct.',
+  propertyExcluded: 'Property "%s" is not present in the results. This ' +
+    'is because the property has been excluded when configuring the engine.'
 }
-
-module.exports = ConfigTestFlowElement;

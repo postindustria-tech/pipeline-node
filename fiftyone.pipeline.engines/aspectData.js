@@ -28,6 +28,8 @@ const require51 = (requestedPackage) => {
   }
 };
 
+const util = require('util');
+const errorMessages = require('./errorMessages');
 const ElementData = require51('fiftyone.pipeline.core').ElementData;
 const MissingPropertyServiceBase = require('./missingPropertyService');
 
@@ -85,7 +87,7 @@ class AspectData extends ElementData {
 
     if (this.flowElement.restrictedProperties) {
       if (!this.flowElement.restrictedProperties.includes(key)) {
-        throw `Property ${key} was excluded from ${this.flowElement.dataKey}`;
+        throw util.format(errorMessages.propertyExcluded, key);
       }
     }
 
