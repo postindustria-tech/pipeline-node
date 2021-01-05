@@ -64,7 +64,7 @@ class CloudRequestEngine extends Engine {
 
     this.resourceKey = resourceKey;
     this.licenseKey = licenseKey;
-    if(baseURL && baseURL.endsWith('/') === false) {
+    if (baseURL && baseURL.endsWith('/') === false) {
       baseURL = baseURL + '/';
     }
     this.baseURL = baseURL;
@@ -241,7 +241,7 @@ class CloudRequestEngine extends Engine {
   }
 
   /**
-   * Internal function to get evidenceKeys used by cloud resourceky
+   * Internal function to get evidenceKeys used by cloud resourcekey
    *
    * @returns {Array} evidence key list
    */

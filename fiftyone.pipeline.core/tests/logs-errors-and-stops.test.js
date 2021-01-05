@@ -20,6 +20,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+const util = require('util');
+const errorMessages = require('../errorMessages');
 const setup = require(__dirname + '/coreTestSetup.js');
 const PipelineBuilder = require('../pipelineBuilder');
 
@@ -56,8 +58,12 @@ test('logging', done => {
 
 test('stop flag works', done => {
   syncFlowData.process().then(function () {
-    expect(typeof syncFlowData.get('neverRun')).toBe('undefined');
-
+    try {
+      syncFlowData.get('neverRun');
+    } catch (e) {
+      expect(e.indexOf(util.format(errorMessages.noElementData,
+        'neverRun','async, sync')) !== -1).toBe(true);
+    }
     done();
   });
 });

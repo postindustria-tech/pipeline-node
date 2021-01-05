@@ -20,6 +20,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+const util = require('util');
+const errorMessages = require('./errorMessages');
 const Evidence = require('./evidence');
 
 /**
@@ -51,6 +53,34 @@ class FlowData {
 
     // Store of data by flowElement dataKey
     this.data = {};
+
+    return new Proxy(this, {
+      get: (data, key) => {
+        // This proxy can end up getting called by anything that tries
+        // to access methods & properties on the object.
+        // In future, this mechanism will be superseded by a less problematic
+        // approach. For now, we work around this by only passing string keys
+        // to the data getters.
+        if (typeof key === 'string' || key === Symbol.iterator) {
+          try {
+            let value = data[key]; 
+            if (typeof value === 'undefined') {
+              value = data.get(key);
+            }
+            return value;
+
+          } catch (e) {
+            // If the key was 'then' and an error was thrown then we
+            // can ignore it. Otherwise, throw the error back up the stack.
+            // The key can be 'then' when using 'Promise.then(flowData)'.
+            // if (key !== 'then' && key !== 'stopped') {
+            if (key !== 'then') {
+              throw e;
+            }
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -146,7 +176,13 @@ class FlowData {
   get (flowElementDataKey) {
     this.pipeline.log('debug', 'Getting flowElement ' + flowElementDataKey);
 
-    return this.data[flowElementDataKey];
+    const elementData = this.data[flowElementDataKey];
+    if (typeof elementData === 'undefined') {
+      var message = util.format(errorMessages.noElementData,
+        flowElementDataKey, Object.keys(this.data).join(', '));
+      throw message;
+    }
+    return elementData;
   }
 
   /**

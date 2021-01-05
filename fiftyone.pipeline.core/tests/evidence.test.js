@@ -34,14 +34,29 @@ syncFlowData.evidence.add('header.user_agent', 'test');
 syncFlowData.evidence.add('header.other', 'no');
 syncFlowData.evidence.addObject({ test: 'testing' });
 
+/**
+ * Check that a value that has been added to the evidence
+ * collection can be retrieved.
+ */
 test('evidence add', () => {
   expect(syncFlowData.evidence.get('header.user_agent')).toBe('test');
 });
 
+/**
+ * Check that a value that has been added to the evidence
+ * collection using the 'addObject' function can be retrieved.
+ */
 test('evidence addObject', () => {
   expect(syncFlowData.evidence.get('test')).toBe('testing');
 });
 
+/**
+ * Check that a value that the evidenceKeyFilter works
+ * as expected.
+ * In this case, the element only wants header.user_agent
+ * so this is the only key that is returned, even though
+ * other evidence values are present.
+ */
 test('evidenceKeyFilter', () => {
   const allEvidence = syncFlowData.evidence.getAll();
 

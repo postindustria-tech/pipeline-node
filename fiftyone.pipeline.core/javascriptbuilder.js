@@ -81,7 +81,7 @@ class JavaScriptBuilderElement extends FlowElement {
     host = '',
     endPoint = '',
     enableCookies = true,
-    minify = true
+    minify = false
   } = {}) {
     super(...arguments);
 
@@ -114,7 +114,7 @@ class JavaScriptBuilderElement extends FlowElement {
     const settings = { _jsonObject: JSON.stringify(json) };
 
     for (const setting in this.settings) {
-      settings["_" + setting] = this.settings[setting];
+      settings['_' + setting] = this.settings[setting];
     }
 
     // Generate url from parts
@@ -180,11 +180,16 @@ class JavaScriptBuilderElement extends FlowElement {
 
     // Use results from device detection if available to determine
     // if the browser supports promises.
-    const promises =
-      flowData.device !== undefined &&
-      flowData.device.promise !== undefined &&
-      flowData.device.promise.hasValue === true &&
-      flowData.device.promise.value === true;
+
+    let promises;
+    try {
+      promises = flowData.device !== undefined &&
+        flowData.device.promise !== undefined &&
+        flowData.device.promise.hasValue === true &&
+        flowData.device.promise.value === true;
+    } catch (e) {
+      promises = false;
+    }
     settings._supportsPromises = promises;
 
     settings._hasDelayedProperties = settings._jsonObject.includes('delayexecution');
