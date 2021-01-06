@@ -21,7 +21,7 @@
  * ********************************************************************* */
 
 /**
-@example 1-simpleEvidenceFlowElement.js
+@example simpleEvidenceFlowElement.js
 
 This example demonstrates the creation of a custom flowElement
 which takes a birth date as evidence and uses it to check a

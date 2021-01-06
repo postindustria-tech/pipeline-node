@@ -82,7 +82,9 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
     // Update the datafile
     this.refresh();
   }
+  //! [constructor]
 
+  //! [refresh]
   // A function called when the datafile is updated / refreshed. In this
   // case it simply loads the JSON from the file into the engine's memory.
   refresh () {
@@ -113,6 +115,7 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
       engine.data = data;
     });
   }
+  //! [refresh]
 
   // Internal processing function
   processInternal (flowData) {
@@ -163,7 +166,9 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
     flowData.setElementData(data);
   }
 }
+//! [class]
 
+//! [usage]
 const astrologyElement = new Astrology(
   { datafile: (process.env.directory || __dirname) + '/astrology.json' }
 );
@@ -213,3 +218,4 @@ const server = http.createServer((req, res) => {
 const portNum = process.env.PORT || 3000;
 console.info('To test this example, browse to http://localhost:' + portNum);
 server.listen(portNum);
+//! [usage]

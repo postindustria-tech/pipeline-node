@@ -21,7 +21,7 @@
  * ********************************************************************* */
 
 /**
-@example 2-clientSideEvidenceFlowElement.js
+@example clientSideEvidenceFlowElement.js
 
 This example demonstrates the creation of a custom flow element
 which takes the results of a client side form collecting
