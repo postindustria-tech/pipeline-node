@@ -239,8 +239,19 @@ test('JSON bundler - Verify output where a property has multiple evidence proper
   });
 });
 
+// Check that the addJavaScriptBuilder option is honoured
+test('JavaScriptBuilder - Verify minify default setting', (done) => {
+  const noJsPipelineBuilder = new core.PipelineBuilder({
+    addJavaScriptBuilder: false
+  });
+
+  expect(noJsPipelineBuilder.addJavaScriptBuilder).toBe(false);
+
+  done();
+});
+
 // Check that the default setting of minify is false
-test ('JavaScriptBuilder - Verify minify default setting', (done) => {
+test('JavaScriptBuilder - Verify minify default setting', (done) => {
   expect(flowData.pipeline.flowElements.javascriptbuilder.settings.minify)
     .toBe(false);
 
