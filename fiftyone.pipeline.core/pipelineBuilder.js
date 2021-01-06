@@ -49,7 +49,7 @@ class PipelineBuilder {
     this.flowElements = [];
 
     if (typeof settings.addJavaScriptBuilder !== 'undefined') {
-      this.addJavaScriptBuilder = settings.addJavascriptBuilder;
+      this.addJavaScriptBuilder = settings.addJavaScriptBuilder;
     } else {
       this.addJavaScriptBuilder = true;
     }
