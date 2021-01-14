@@ -1,5 +1,16 @@
 fiftyoneDegreesManager = function() {
     'use-strict';
+
+    // Data store for cookieless operation
+
+    this.dataStore = {};
+
+    this.setDataStoreValue = function(key, value){
+
+        this.dataStore[key] = value;
+
+    }
+
     var json = {{&_jsonObject}};
 
     // Log any errors returned in the JSON object.
@@ -32,29 +43,43 @@ fiftyoneDegreesManager = function() {
     // and return the data as key value pairs. This method is needed to extract
     // cookie values for inclusion in the GET or POST request for situations
     // where CORS will prevent cookies being sent to third parties.
-    var getFodCookies = function(){
+    // It also checks for any parameters that have been added via the setDataStoreValue
+    // function. These (if they have the same key) take priority over cookies. 
+    var getFodCookiesAndDataStore = function(){
+        
+        var params = {};
+
         var keyValuePairs = document.cookie.split(/; */);
-        var fodCookies = [];
         for(var i = 0; i < keyValuePairs.length; i++) {
             var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
             if(startsWith(name, "51D_")){
                 var value = keyValuePairs[i].substring(keyValuePairs[i].indexOf('=')+1);
-                fodCookies[name] = value;
+                params[name] = value;
             }
         }
-        return fodCookies;
+
+        for (var key in {{_objName}}.dataStore){
+
+            params[key] = {{_objName}}.dataStore[key];
+
+        }
+
+        return params;
+
     };
 
-    // Extract key value pairs from the '51D_' prefixed cookies and concatenates
-    // them to form a query string for the subsequent json refresh.
-    var getParametersFromCookies = function(){
-        var fodCookies = getFodCookies();
+    // Extract key value pairs from the '51D_' prefixed cookies and datastore
+    // items and concatenates them to form a query string for the subsequent json refresh.
+    var getParameters = function(){
+
+        var params = getFodCookiesAndDataStore();
         var keyValuePairs = [];
-        for (var key in fodCookies) {
-            if (fodCookies.hasOwnProperty(key)) {
-                keyValuePairs.push(key+"="+fodCookies[key]);
+        for (var key in params) {
+            if (params.hasOwnProperty(key)) {
+                keyValuePairs.push(key+"="+params[key]);
             }
         }
+
         return keyValuePairs;
     };
 
@@ -273,7 +298,7 @@ fiftyoneDegreesManager = function() {
                 fireChangeFuncs(json);
                 resolve(json);
 {{^_enableCookies}}
-                var fodCookies = getFodCookies();
+                var fodCookies = getParameters();
                 for (var key in fodCookies) {
                     if (fodCookies.hasOwnProperty(key)) {
                         deleteCookie(key);
@@ -292,7 +317,7 @@ fiftyoneDegreesManager = function() {
 
         // Get additional parameters from cookies in case they are not sent
         // by the browser.
-		var params = getParametersFromCookies();
+		var params = getParameters();
 
         // Send the cookie parameters as the POST body.
 		xhr.send(params.join('&').replace(/%20/g, '+'));
@@ -440,3 +465,5 @@ fiftyoneDegreesManager = function() {
 }
 
 var {{_objName}} = new fiftyoneDegreesManager();
+
+var fiftyoneDegreesManagerInstance = {{_objName}};
