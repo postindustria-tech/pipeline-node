@@ -1,4 +1,4 @@
-![51Degrees](https://51degrees.com/img/logo.png??utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=node-open-source "Data rewards the curious") **Node Pipeline**
+![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=node-open-source "Data rewards the curious") **Node Pipeline**
 
 [Developer Documentation](https://51degrees.com/pipeline-node/4.2/index.html?utm_source=github&utm_medium=repository&utm_content=documentation&utm_campaign=node-open-source "developer documentation")
 
