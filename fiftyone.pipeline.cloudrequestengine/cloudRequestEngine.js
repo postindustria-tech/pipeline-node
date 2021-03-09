@@ -35,6 +35,7 @@ const AspectDataDictionary = require51('fiftyone.pipeline.engines')
   .AspectDataDictionary;
 const BasicListEvidenceKeyFilter = require51('fiftyone.pipeline.core')
   .BasicListEvidenceKeyFilter;
+const sharedValues = require('./sharedValues');
 
 // Engine that makes a call to the 51Degrees cloud service
 // Returns raw JSON as a "cloud" property under "cloud" dataKey
@@ -52,7 +53,7 @@ class CloudRequestEngine extends Engine {
     {
       resourceKey,
       licenseKey,
-      baseURL = 'https://cloud.51degrees.com/api/v4/'
+      baseURL
     }) {
     super(...arguments);
 
@@ -64,6 +65,17 @@ class CloudRequestEngine extends Engine {
 
     this.resourceKey = resourceKey;
     this.licenseKey = licenseKey;
+
+    // Check if baseURL is set. If not try to set it the environment variable
+    // if presents, else set to default value
+    if (!baseURL) {
+      baseURL = process.env.FOD_CLOUD_API_URL;
+      if (!baseURL) {
+        baseURL = sharedValues.baseURLDefault;
+      }
+    }
+
+    // Check if the set baseURL ends with '/'
     if (baseURL && baseURL.endsWith('/') === false) {
       baseURL = baseURL + '/';
     }
