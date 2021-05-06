@@ -21,19 +21,5 @@
  * ********************************************************************* */
 
 module.exports = {
-  BasicListEvidenceKeyFilter: require('./basicListEvidenceKeyFilter'),
-  ElementData: require('./elementData'),
-  ElementDataDictionary: require('./elementDataDictionary'),
-  Evidence: require('./evidence'),
-  EvidenceKeyFilter: require('./evidenceKeyFilter'),
-  FlowData: require('./flowData'),
-  FlowElement: require('./flowElement'),
-  Pipeline: require('./pipeline'),
-  PipelineBuilder: require('./pipelineBuilder'),
-  AspectPropertyValue: require('./aspectPropertyValue'),
-  JsonBundler: require('./jsonbundler'),
-  JavascriptBuilder: require('./javascriptbuilder'),
-  SequenceElement: require('./sequenceElement'),
-  SetHeadersElement: require('./setHeadersElement'),
-  Helpers: require('./helpers')
-};
+  baseURLDefault: 'https://cloud.51degrees.com/api/v4/'
+}
