@@ -1,0 +1,20 @@
+parameters:
+- name: windowsImage
+- name: linuxImage
+- name: macImage
+
+stages:
+- template: shared-build-and-test-stage.yml
+  parameters:
+    stageName: Windows
+    imageName: ${{ parameters.windowsImage }}
+
+- template: shared-build-and-test-stage.yml
+  parameters:
+    stageName: Linux
+    imageName: ${{ parameters.linuxImage }}
+    
+- template: shared-build-and-test-stage.yml
+  parameters:
+    stageName: MacOS
+    imageName: ${{ parameters.macImage }}
