@@ -22,7 +22,7 @@
 
 const util = require('util');
 const errorMessages = require(__dirname +
-  '/../../fiftyone.pipeline.engines/errorMessages');
+  '/../errorMessages');
 const Engine = require(__dirname + '/../../fiftyone.pipeline.engines/engine');
 const PipelineBuilder = require(
   __dirname + '/../pipelineBuilder'

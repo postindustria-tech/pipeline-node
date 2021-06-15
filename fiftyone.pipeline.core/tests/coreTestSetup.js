@@ -117,5 +117,24 @@ module.exports = {
 
       flowData.setElementData(data);
     }
+  }),
+  
+  device: new FlowElement({
+    dataKey: 'device',
+    additionalValues: {},
+    processInternal: function (flowData) {
+      const data = new ElementDataDictionary({
+        flowElement: this,
+        contents: {
+          yes: new AspectPropertyValue(null, 'success'),
+          no: new AspectPropertyValue('Value missing')        
+        }
+      }
+      );
+      for (const [key, value] of Object.entries(this.additionalValues)) {
+        data.contents[key] = value;
+      }
+      flowData.setElementData(data);
+    }
   })
 };

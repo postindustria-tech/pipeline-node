@@ -62,8 +62,11 @@ test('missing property service - invalid resource key', done => {
   flowData.process().then(function () {
     var errorFound = false;
     flowData.errors.CloudEngineBase.forEach(function (errors) {
-      errorFound = errorFound || errors.includes(testResourceKey +
-        ' not a valid resource key');
+      errors.forEach(function (error) {
+        errorFound = errorFound ||
+        (error.includes(testResourceKey) &&
+        error.includes('not a valid resource key'));
+      });      
     });
     expect(errorFound).toBe(true);
 

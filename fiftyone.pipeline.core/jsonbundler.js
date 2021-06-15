@@ -24,6 +24,9 @@ const FlowElement = require('./flowElement.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
 const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter.js');
 
+const elementBlacklist = [ 'jsonbundler', 'javascriptbuilder', 'sequence', 'set-headers'];
+
+
 /**
  * The JSONBundler aggregates all properties from FlowElements
  * into a JSON object
@@ -67,11 +70,13 @@ class JSONBundlerElement extends FlowElement {
     }
 
     for (const flowElement in flowData.pipeline.flowElements) {
-      if (
-        flowElement === 'jsonbundler' ||
-        flowElement === 'javascriptbuilder' ||
-        flowElement === 'sequence'
-      ) {
+      let blacklisted = false;
+      elementBlacklist.forEach(name => {
+        if (name === flowElement) {
+          blacklisted = true;
+        }
+      });
+      if (blacklisted) {
         continue;
       }
 

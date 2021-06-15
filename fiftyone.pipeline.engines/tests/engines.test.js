@@ -21,6 +21,9 @@
  * ********************************************************************* */
 
 const util = require('util');
+const coreErrorMessages = require(
+  __dirname + '/../../fiftyone.pipeline.core/errorMessages'
+)
 const errorMessages = require('../errorMessages');
 const Engine = require(__dirname + '/../engine');
 const PipelineBuilder = require(
@@ -105,9 +108,9 @@ test('missing property service', done => {
       flowData.get('testEngine').get('three');
     } catch (e) {
       expect(e.indexOf(
-        util.format(errorMessages.genericMissingProperties, 'three') +
+        util.format(coreErrorMessages.genericMissingProperties, 'three') +
         ' in data for element "testEngine".' +
-        util.format(errorMessages.noReasonUnknown)) !== -1).toBe(true);
+        util.format(coreErrorMessages.noReasonUnknown)) !== -1).toBe(true);
     }
 
     done();

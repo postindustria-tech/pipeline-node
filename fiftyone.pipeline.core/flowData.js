@@ -25,6 +25,12 @@ const errorMessages = require('./errorMessages');
 const Evidence = require('./evidence');
 
 /**
+ * @typedef {import('./pipeline')} Pipeline
+ * @typedef {import('./flowElement')} FlowElement
+ * @typedef {import('./elementData')} ElementData
+ */
+
+/**
  * FlowData is created by a specific pipeline
  * It collects evidence set by the user
  * It passes evidence to flowElements in the pipeline

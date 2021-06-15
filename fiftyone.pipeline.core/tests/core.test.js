@@ -84,7 +84,7 @@ test('get invalid data key', done => {
       expect(e.indexOf(
         util.format(
           errorMessages.noElementData,
-          'invalid', 'async, sync, jsonbundler, javascriptbuilder')) !== -1)
+          'invalid', 'async, sync, jsonbundler, javascriptbuilder, set-headers')) !== -1)
         .toBe(true);
       
       done();

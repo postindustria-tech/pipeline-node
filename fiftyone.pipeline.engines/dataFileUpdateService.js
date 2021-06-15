@@ -30,6 +30,11 @@ const url = require('url');
 const minToMs = (min) => min * 60000;
 
 /**
+ * @typedef {import('fiftyone.pipeline.core').Pipeline} Pipeline
+ * @typedef {import('./dataFile')} DataFile
+ */
+
+/**
  * Datafiles attached to FlowElements register with
  * the dataFileUpdateService so the datafiles can receive
  * automatic updates

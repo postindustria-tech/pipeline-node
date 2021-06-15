@@ -24,6 +24,10 @@ const FlowData = require('./flowData');
 const EventEmitter = require('events');
 
 /**
+ * @typedef {import('./flowElement')} FlowElement
+ */
+
+/**
  * Pipeline holding a list of flowElements for processing, can create
  * flowData that will be passed through these, collecting elementData
  * Should be constructed through the PipelineBuilder class
@@ -32,7 +36,7 @@ class Pipeline {
   /**
    * Constructor for Pipeline
    *
-   * @param {FlowElements[]} flowElements list of FlowElements to
+   * @param {FlowElement[]} flowElements list of FlowElements to
    * add to the Pipeline
    */
   constructor (flowElements = []) {
@@ -198,6 +202,11 @@ class Pipeline {
     return new FlowData(this);
   }
 
+  /**
+   * 
+   * @param {FlowElement} flowElement 
+   * @returns {void}
+   */
   updatePropertyDataBaseForElement (flowElement) {
     const pipeline = this;
 

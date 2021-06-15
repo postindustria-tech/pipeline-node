@@ -30,8 +30,13 @@ const require51 = (requestedPackage) => {
 
 const util = require('util');
 const errorMessages = require('./errorMessages');
-const ElementData = require51('fiftyone.pipeline.core').ElementData;
+const ElementData = require('fiftyone.pipeline.core').ElementData;
 const MissingPropertyServiceBase = require('./missingPropertyService');
+
+/**
+ * @typedef {import('fiftyone.pipeline.core').FlowElement} FlowElement
+ * @typedef {import('./missingPropertyService')} MissingPropertyService
+ */
 
 /**
  * Extension of elementData which allows for a missing property service

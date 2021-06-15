@@ -23,6 +23,10 @@
 const os = require('os');
 
 /**
+ * @typedef {import('fiftyone.pipeline.core').FlowElement} FlowElement
+ */
+
+/**
  * A datafile used by a FlowElement / Engine to get calculate properties values
  *
  * @param {object} options

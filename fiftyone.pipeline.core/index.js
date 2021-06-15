@@ -24,6 +24,7 @@ module.exports = {
   BasicListEvidenceKeyFilter: require('./basicListEvidenceKeyFilter'),
   ElementData: require('./elementData'),
   ElementDataDictionary: require('./elementDataDictionary'),
+  ErrorMessages: require('./errorMessages'),
   Evidence: require('./evidence'),
   EvidenceKeyFilter: require('./evidenceKeyFilter'),
   FlowData: require('./flowData'),
@@ -33,5 +34,7 @@ module.exports = {
   AspectPropertyValue: require('./aspectPropertyValue'),
   JsonBundler: require('./jsonbundler'),
   JavascriptBuilder: require('./javascriptbuilder'),
-  SequenceElement: require('./sequenceElement')
+  SequenceElement: require('./sequenceElement'),
+  SetHeadersElement: require('./setHeadersElement'),
+  Helpers: require('./helpers')
 };

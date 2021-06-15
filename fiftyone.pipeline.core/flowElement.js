@@ -23,6 +23,11 @@
 const EvidenceKeyFilterBase = require('./evidenceKeyFilter');
 
 /**
+ * @typedef {import('./flowData')} FlowData
+ * @typedef {import('./pipeline')} Pipeline
+ */
+
+/**
  * A FlowElement is placed inside a pipeline
  * It receives Evidence via a FlowData object
  * It uses this to optionally create ElementData on the Flowdata
@@ -38,7 +43,7 @@ class FlowElement {
    * elementData will be stored under
    * @param {Function} options.processInternal callback to act on flowData
    * @param {object} options.properties list of properties including metadata
-   * @param {{EvidenceKeyFilter}} options.evidenceKeyFilter an instance of
+   * @param {EvidenceKeyFilter} options.evidenceKeyFilter an instance of
    * an EvidenceKeyFilter to filter evidence added to the Pipeline
    */
   constructor ({

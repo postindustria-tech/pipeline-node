@@ -23,6 +23,10 @@
 const ElementData = require('./elementData');
 
 /**
+ * @typedef {import('./flowElement')} FlowElement
+ */
+
+/**
  * A basic extension of elementData with dictionary object storage / lookup
  **/
 class ElementDataDictionary extends ElementData {
@@ -32,7 +36,7 @@ class ElementDataDictionary extends ElementData {
    * @param {object} options options object
    * @param {FlowElement} options.flowElement FlowElement the options are
    * added to
-   * @param {contents} options.contents // key value dictionary
+   * @param {object} options.contents // key value dictionary
    */
   constructor ({ flowElement, contents }) {
     super(...arguments);
@@ -50,7 +54,7 @@ class ElementDataDictionary extends ElementData {
    * Return value from elementData dictionary
    *
    * @param {string} key the property key to retrieve
-   * @returns {int} value
+   * @returns {number} integer value
    */
   getInternal (key) {
     return this.contents[key];

@@ -22,5 +22,8 @@
 
 module.exports = {
   noElementData: 'There is no element data for "%s" against this flow ' +
-    'data. Available element data keys are: %s.'
+    'data. Available element data keys are: %s.',
+  genericMissingProperties: 'Property "%s" not found',
+  noReasonUnknown: ' Please check that the element and property names ' +
+  'are correct.'
 }

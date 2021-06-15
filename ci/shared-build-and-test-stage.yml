@@ -1,0 +1,140 @@
+parameters:
+- name: stageName
+- name: imageName
+
+stages:
+- stage: ${{ parameters.stageName }}
+  dependsOn: []
+
+  jobs:
+  - job: Build_and_Test
+    displayName: Build and Test
+    
+    pool:
+      vmImage: ${{ parameters.imageName }}
+    
+    strategy:
+      matrix:
+        node_10_x:
+          node_version: 10.x
+        node_12_x:
+          node_version: 12.x
+        node_14_x:
+          node_version: 14.x
+    
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: $(node_version)
+        displayName: "Install Node.js"
+    
+      - bash: |
+          content='{ 
+            "name": "pipeline-node", 
+            "version": "1.0.0", 
+            "description": "Temporary package to allow all tests to run using the local code as dependencies", 
+            "main": "index.js", 
+            "scripts": { 
+              "test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura" 
+              }, 
+            "repository": { 
+              "type": "git", "url": "https://github.com/51Degrees/pipeline-node" 
+              }, 
+            "author": "51Degrees",
+            "dependencies": { 
+              "jest": "^24.9.0",
+              "node-mocks-http": "^1.10.1",
+              "jest-junit": "^9.0.0",
+              "mustache": "^4.0.1",
+              "uglify-js": "^3.8.1",
+              "eslint": "^6.8.0",
+              "eslint-config-standard": "^14.1.1",
+              "eslint-plugin-import": "^2.20.2",
+              "eslint-plugin-node": "^11.1.0",
+              "eslint-plugin-promise": "^4.2.1",
+              "eslint-plugin-standard": "^4.0.1",
+              "eslint-plugin-jsdoc": "^25.4.0"
+              },
+            "jest-junit": {
+                "outputName": "'"$NODE_VERSION"'.xml"    
+              } 
+            }'
+          echo $content
+          echo $content > package.json
+        displayName: "Create package.json for tests"
+        failOnStderr: true
+    
+      - bash: |
+          npm install
+          npm test
+        displayName: "Build and Test"
+    
+      - bash: |
+          eslint='{
+              "env": {
+                  "browser": true,
+                  "commonjs": true,
+                  "es6": true
+              },
+              "extends": [
+                  "standard"
+              ],
+              "globals": {
+                  "Atomics": "readonly",
+                  "SharedArrayBuffer": "readonly",
+                  "test": true,
+                  "jest": true,
+                  "expect": true
+              },
+              "parserOptions": {
+                  "ecmaVersion": 2018
+              },
+              "rules": {
+                  "node/no-deprecated-api": "off",
+                  "no-throw-literal": "off",
+                  "no-path-concat": "off",
+                  "no-prototype-builtins": "off",
+                  "no-eval": "off",
+                  "semi": [
+                      2,
+                      "always"
+                  ],
+                  "jsdoc/check-alignment": 1,
+                  "jsdoc/check-param-names": 1,
+                  "jsdoc/check-tag-names": 1,
+                  "jsdoc/check-types": 1,
+                  "jsdoc/implements-on-classes": 1,
+                  "jsdoc/newline-after-description": 1,
+                  "jsdoc/require-description": 1,
+                  "jsdoc/require-jsdoc": 1,
+                  "jsdoc/require-param": 1,
+                  "jsdoc/require-param-description": 1,
+                  "jsdoc/require-param-name": 1,
+                  "jsdoc/require-param-type": 1,
+                  "jsdoc/require-returns": 1,
+                  "jsdoc/require-returns-check": 1,
+                  "jsdoc/require-returns-description": 1,
+                  "jsdoc/require-returns-type": 1,
+                  "jsdoc/valid-types": 1
+                }
+            }'
+          echo $eslint
+          echo $eslint > .eslintrc
+          npm install -g eslint
+          eslint . --ext .js
+        displayName: "Set up and run eslint"
+        condition: gt(variables['node_version'], '9')
+        failOnStderr: true
+    
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testRunner: JUnit
+          testResultsFiles: "**/$(node_version).xml"
+          testRunTitle: 'Node $(node_version) ${{ parameters.stageName }}'
+    
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/*coverage.xml"
+          reportDirectory: "$(System.DefaultWorkingDirectory)/**/coverage"

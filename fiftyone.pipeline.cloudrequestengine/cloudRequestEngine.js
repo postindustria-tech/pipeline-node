@@ -28,14 +28,18 @@ const require51 = (requestedPackage) => {
   }
 };
 
-const Engine = require51('fiftyone.pipeline.engines').Engine;
+const Engine = require('fiftyone.pipeline.engines').Engine;
 const querystring = require('querystring');
 const cloudHelpers = require('./cloudHelpers');
-const AspectDataDictionary = require51('fiftyone.pipeline.engines')
+const AspectDataDictionary = require('fiftyone.pipeline.engines')
   .AspectDataDictionary;
-const BasicListEvidenceKeyFilter = require51('fiftyone.pipeline.core')
+const BasicListEvidenceKeyFilter = require('fiftyone.pipeline.core')
   .BasicListEvidenceKeyFilter;
 const sharedValues = require('./sharedValues');
+
+/**
+ * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
+ */
 
 // Engine that makes a call to the 51Degrees cloud service
 // Returns raw JSON as a "cloud" property under "cloud" dataKey

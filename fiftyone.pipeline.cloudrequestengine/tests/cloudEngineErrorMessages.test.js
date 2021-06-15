@@ -35,7 +35,10 @@ const PipelineBuilder = require(
 const AspectDataDictionary = require(
   __dirname + '/../../fiftyone.pipeline.engines/aspectDataDictionary'
 );
-const errorMessages = require(
+const coreErrorMessages = require(
+  __dirname + '/../../fiftyone.pipeline.core/errorMessages'
+);
+const engineErrorMessages = require(
   __dirname + '/../../fiftyone.pipeline.engines/errorMessages'
 );
 
@@ -97,9 +100,9 @@ test('missing property service - no properties for resource key', done => {
       flowData.get('testEngineNoProperties').get('one');
     } catch (e) {
       expect(e.indexOf(
-        util.format(errorMessages.genericMissingProperties, 'one') +
+        util.format(coreErrorMessages.genericMissingProperties, 'one') +
         ' in data for element "testEngineNoProperties".' +
-        util.format(errorMessages.cloudNoPropertiesAccess,
+        util.format(engineErrorMessages.cloudNoPropertiesAccess,
           'testEngineNoProperties')) !== -1)
         .toBe(true);
     }
@@ -118,9 +121,9 @@ test('missing property service - property not included in resource key', done =>
       flowData.get('testEngine').get('three');
     } catch (e) {
       expect(e.indexOf(
-        util.format(errorMessages.genericMissingProperties, 'three') +
+        util.format(coreErrorMessages.genericMissingProperties, 'three') +
         ' in data for element "testEngine".' +
-        util.format(errorMessages.cloudNoPropertyAccess,
+        util.format(engineErrorMessages.cloudNoPropertyAccess,
           'testEngine', 'one, two')) !== -1)
         .toBe(true);
     }
@@ -138,9 +141,9 @@ test('missing property service - unknown reason', done => {
       flowData.get('testEngineMissingContents').get('two');
     } catch (e) {
       expect(e.indexOf(
-        util.format(errorMessages.genericMissingProperties, 'two') +
+        util.format(coreErrorMessages.genericMissingProperties, 'two') +
         ' in data for element "testEngineMissingContents".' +
-        util.format(errorMessages.cloudReasonUnknown)) !== -1).toBe(true);
+        util.format(engineErrorMessages.cloudReasonUnknown)) !== -1).toBe(true);
     }
 
     done();

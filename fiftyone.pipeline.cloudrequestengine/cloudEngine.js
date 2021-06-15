@@ -103,6 +103,12 @@ class CloudEngine extends Engine {
 
       cloudData = JSON.parse(cloudData);
 
+      if (cloudData.device && cloudData.device[engine.dataKey] === null) {
+        flowData.pipeline.log('warn', engine.dataKey + " not populated. " +
+        cloudData.device[engine.dataKey + 'nullreason'] !== null ? cloudData.device[engine.dataKey + 'nullreason'] : "" +
+        "\n" + "This may be because the provided API key is not authorised for " + engine.dataKey + " queries.");
+      }
+
       // Loop over cloudData.device properties to check if they have a value
 
       const result = {};
