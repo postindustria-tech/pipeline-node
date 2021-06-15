@@ -25,6 +25,10 @@ const ElementDataDictionary = require('./elementDataDictionary.js');
 const AspectPropertyValue = require('./aspectPropertyValue');
 
 /**
+ * @typedef {import('./pipeline')} Pipeline
+ * @typedef {import('./flowData')} FlowData
+ */
+/**
  * Set response headers element class. This is used to get response
  * headers based on what the browser supports. For example, newer
  * Chrome browsers support the Accept-CH header.
@@ -45,8 +49,8 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 
 	/**
 	 * Get the name of the header which the property relates to.
-	 * @param propertyName: To get the header name from.
-	 * @return Header name.
+	 * @param {string} propertyName: To get the header name from.
+	 * @return {string} Header name.
 	 */
 	getHeaderName(propertyName) {
 		// Skip over the 'SetHeader' prefix.
@@ -72,8 +76,8 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 	 *         [ 'device.SetHeaderBrowserAccept-CH',
 	 *           'device.SetHeaderPlatformAccept-CH',
 	 *           'device.SetHeaderHardwareAccept-CH' ] } }
-	 * @param pipeline: The pipeline instance to get the properties from.
-	 * @return Collection of headers which can be set in the response.
+	 * @param {Pipeline} pipeline: The pipeline instance to get the properties from.
+	 * @return {object} Collection of headers which can be set in the response.
 	 */
 	constructHeaders(pipeline) {
 		var headers = {};
@@ -118,9 +122,9 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 
 	/**
 	 * Get response headers (e.g. Accept-CH)
-	 * @param flowData: A processed FlowData instance to get the response header values
+	 * @param {FlowData} flowData: A processed FlowData instance to get the response header values
 	 * from.
-	 * @return A dictionary of response header names with their values if they are not
+	 * @return {object} A dictionary of response header names with their values if they are not
 	 * null
 	 */
 	getResponseHeaders(flowData) {
@@ -146,10 +150,10 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 	 * Try to get the value for the given element and property.
 	 * If the value cannot be found or is null/unknown, then undefined
 	 * is returned.
-	 * @param flowData: A processed FlowData instance to get the value from.
-	 * @param elementKey: Key for the element data to get the value from.
-	 * @param propertyKey: Name of the property to get the value for.
-	 * @return value string or undefined.
+	 * @param {FlowData} flowData: A processed FlowData instance to get the value from.
+	 * @param {string} elementKey: Key for the element data to get the value from.
+	 * @param {string} propertyKey: Name of the property to get the value for.
+	 * @return {string | undefined} value string or undefined.
 	 */
 	tryGetValue(flowData, elementKey, propertyKey) {
 		

@@ -23,6 +23,10 @@
 const url = require('url');
 
 /**
+ * @typedef {import('./flowData')} FlowData
+ */
+
+/**
  * Storage of evidence on a flowData object
  */
 class Evidence {

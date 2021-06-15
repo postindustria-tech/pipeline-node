@@ -28,7 +28,7 @@ const require51 = (requestedPackage) => {
   }
 };
 
-const EvidenceKeyFilter = require51('fiftyone.pipeline.core').EvidenceKeyFilter;
+const EvidenceKeyFilter = require('fiftyone.pipeline.core').EvidenceKeyFilter;
 
 /**
  * The ShareUsageEvidenceKeyFilter filters out all evidence

@@ -24,6 +24,7 @@ module.exports = {
   BasicListEvidenceKeyFilter: require('./basicListEvidenceKeyFilter'),
   ElementData: require('./elementData'),
   ElementDataDictionary: require('./elementDataDictionary'),
+  ErrorMessages: require('./errorMessages'),
   Evidence: require('./evidence'),
   EvidenceKeyFilter: require('./evidenceKeyFilter'),
   FlowData: require('./flowData'),

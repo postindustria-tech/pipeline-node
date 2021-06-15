@@ -28,9 +28,15 @@ const require51 = (requestedPackage) => {
   }
 };
 
-const FlowElement = require51('fiftyone.pipeline.core').FlowElement;
+const FlowElement = require('fiftyone.pipeline.core').FlowElement;
 
 const DataFileUpdateService = require('./dataFileUpdateService');
+
+/**
+ * @typedef {import('./dataFile')} DataFile
+ * @typedef {import('./dataKeyedCache')} DataKeyedCache
+ * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
+ */
 
 /**
  * An Engine is an extension of a FlowElement which adds
@@ -43,9 +49,9 @@ class Engine extends FlowElement {
    * Constructor for an Engine
    *
    * @param {object} options options for the engine
-   * @param {Datafile} options.dataFile an optional datafile
+   * @param {DataFile} options.dataFile an optional datafile
    * to add to the engine
-   * @param {Cache} options.cache instance of a DataKeyedCache
+   * @param {DataKeyedCache} options.cache instance of a DataKeyedCache
    * @param {Array} options.restrictedProperties specific list
    * of properties to fetch elementData for
    */
@@ -138,7 +144,7 @@ class Engine extends FlowElement {
    * Function to attach a DataFile to the engine and
    * register it with a DataFileUpdateService if needed
    *
-   * @param {Datafile} dataFile the datafile to register
+   * @param {DataFile} dataFile the datafile to register
    */
   registerDataFile (dataFile) {
     this.registrationCallbacks.push(function (pipeline) {

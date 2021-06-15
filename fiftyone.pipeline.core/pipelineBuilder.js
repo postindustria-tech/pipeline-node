@@ -26,6 +26,10 @@ const fs = require('fs');
 const path = require('path');
 
 /**
+ * @typedef {import('./flowElement')} FlowElement
+ */
+
+/**
  * A PipelineBuilder generates a Pipeline object
  * Before construction of the Pipeline, FlowElements are added to it
  * There are also options for how JavaScript is output from the Pipeline
@@ -45,10 +49,14 @@ class PipelineBuilder {
    * @param {boolean} settings.useSetHeaderProperties Whether to
    * automatically add the SetHeadersElement needed to request additional
    * HTTP headers from the client side. This is true by default.
-   * @param {object} settings.javascriptBuilderSettings The settings
+   * @param {typeof import('./javascriptbuilder').prototype.settings}
+   * settings.javascriptBuilderSettings The settings
    * to pass to the JavaScriptBuilder. See JavaScriptBuilder class for details.
    */
   constructor (settings = {}) {
+    /**
+     * @type {FlowElement[]}
+     */
     this.flowElements = [];
 
     if (typeof settings.addJavaScriptBuilder !== 'undefined') {

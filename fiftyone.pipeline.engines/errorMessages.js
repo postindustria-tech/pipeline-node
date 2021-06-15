@@ -21,7 +21,6 @@
  * ********************************************************************* */
 
 module.exports = {
-  genericMissingProperties: 'Property "%s" not found',
   cloudNoPropertiesAccess: ' This is because your resource key does not ' +
     'include access to any properties under "%s". For more details, see our ' +
     'resource key explainer: ' +
@@ -33,8 +32,6 @@ module.exports = {
     'https://51degrees.com/documentation/4.1/_info__resourcekeys.html',
   cloudReasonUnknown: ' The reason for this is unknown as the supplied ' +
     'resource key does appear to allow access to this property.',
-  noReasonUnknown: ' Please check that the element and property names ' +
-    'are correct.',
   propertyExcluded: 'Property "%s" is not present in the results. This ' +
     'is because the property has been excluded when configuring the engine.'
 }

@@ -23,6 +23,11 @@
 const AspectData = require('./aspectData');
 
 /**
+ * @typedef {import('fiftyone.pipeline.core').FlowElement} FlowElement
+ * @typedef {import('./missingPropertyService')} MissingPropertyService
+ */
+
+/**
  * Extension of elementDataDictionary which stores a
  * {key,value} dictionary of elements like elementDataDictionary
  * but with the additional aspectData extensions

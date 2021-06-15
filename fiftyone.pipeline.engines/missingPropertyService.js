@@ -21,7 +21,11 @@
  * ********************************************************************* */
 
 const util = require('util');
-const errorMessages = require('./errorMessages');
+const coreErrorMessages = require('fiftyone.pipeline.core').ErrorMessages;
+const engineErrorMessages = require('./errorMessages');
+/**
+ * @typedef {import('fiftyone.pipeline.core').FlowElement} FlowElement
+ */
 
 /**
  * Base class for a missing property service that throws
@@ -34,30 +38,30 @@ class MissingPropertyService {
    * in the AspectData returned by the FlowElement
    *
    * @param {string} key property key
-   * @param {flowElement} flowElement flowelement the data
+   * @param {FlowElement} flowElement flowelement the data
    * was requested in
    */
   check (key, flowElement) {
-    let message = util.format(errorMessages.genericMissingProperties, key) + 
+    let message = util.format(coreErrorMessages.genericMissingProperties, key) + 
       (typeof flowElement === 'undefined' ? '' : ' in data for element "' + flowElement.dataKey) + '".';
 
     if (this._isCloudEngine(flowElement)) {
       if (typeof flowElement.properties === 'undefined') {
         message = message +
-          util.format(errorMessages.cloudNoPropertiesAccess,
+          util.format(engineErrorMessages.cloudNoPropertiesAccess,
             flowElement.dataKey);
       } else {
         var properties = Object.getOwnPropertyNames(flowElement.properties);
         if (properties.includes(key) === false) {
           message = message +
-            util.format(errorMessages.cloudNoPropertyAccess,
+            util.format(engineErrorMessages.cloudNoPropertyAccess,
               flowElement.dataKey, properties.join(', '));
         } else {
-          message = message + util.format(errorMessages.cloudReasonUnknown);
+          message = message + util.format(engineErrorMessages.cloudReasonUnknown);
         }
       }
     } else {
-      message = message + util.format(errorMessages.noReasonUnknown);
+      message = message + util.format(coreErrorMessages.noReasonUnknown);
     }
 
     throw message;
@@ -65,7 +69,7 @@ class MissingPropertyService {
 
   /**
    * Return true if the supplied flow element is a CloudEngine, false if not.
-   * @param {flowElement} flowElement The flow element to check
+   * @param {FlowElement} flowElement The flow element to check
    */
   _isCloudEngine (flowElement) {
     try {

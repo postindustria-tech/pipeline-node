@@ -28,7 +28,7 @@ const require51 = (requestedPackage) => {
   }
 };
 
-const engines = require51('fiftyone.pipeline.engines');
+const engines = require('fiftyone.pipeline.engines');
 
 const Engine = engines.Engine;
 const ShareUsageEvidenceKeyFilter = require('./shareUsageEvidenceKeyFilter');
@@ -37,6 +37,10 @@ const zlib = require('zlib');
 const https = require('https');
 
 const os = require('os');
+
+/**
+ * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
+ */
 
 /**
  * The ShareUsage element sends usage data to 51Degrees in zipped batches

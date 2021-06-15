@@ -21,18 +21,23 @@
  * ********************************************************************* */
 
 const util = require('util');
-const errorMessages = require('../fiftyone.pipeline.engines/errorMessages')
+const errorMessages = require('./errorMessages')
+
+/**
+ * @typedef {import('./flowElement')} FlowElement
+ */
 
 /**
  * Stores information created by a flowElement based on flowData.
  * Stored in flowData
  */
 class ElementData {
+
   /**
    * Constructor for elementData
    *
    * @param {object} options the options object
-   * @param {flowElement} options.flowElement the FlowElement this data
+   * @param {FlowElement} options.flowElement the FlowElement this data
    * is part of
    */
   constructor ({ flowElement }) {
@@ -115,7 +120,7 @@ class ElementData {
    * Return float value of property
    *
    * @param {string} key the key to retreive a property value for
-   * @returns {float} value
+   * @returns {number} value
    */
   getAsFloat (key) {
     const result = this.get(key);
@@ -129,7 +134,7 @@ class ElementData {
    * Return int value of property
    *
    * @param {string} key the key to retreive a property value for
-   * @returns {int} value
+   * @returns {number} value
    */
   getAsInteger (key) {
     const result = this.get(key);

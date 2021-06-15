@@ -28,7 +28,7 @@ const require51 = (requestedPackage) => {
   }
 };
 
-const engines = require51('fiftyone.pipeline.engines');
+const engines = require('fiftyone.pipeline.engines');
 
 const Tracker = engines.Tracker;
 const LRU = engines.Lru;
