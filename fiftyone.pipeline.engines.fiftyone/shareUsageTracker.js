@@ -44,9 +44,9 @@ class ShareUsageTracker extends Tracker {
    *
    * @param {object} options options for share usage tracker
    * @param {number} options.size size of the share usage lru cache
-   * @param {number} options.interval how often to put evidence into the cache
+   * @param {number} options.interval if identical evidence values are seen by the tracker within this interval (in milliseconds) it will be ignored by the tracker.
    **/
-  constructor ({ size = 100, interval = 1000 } = {}) {
+  constructor ({ size = 1000, interval = 1200000 } = {}) {
     super(...arguments);
 
     this.cache = new LRU(size);
