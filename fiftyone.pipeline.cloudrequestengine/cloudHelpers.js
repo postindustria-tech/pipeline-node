@@ -27,10 +27,11 @@ module.exports = {
    * promise with the result
    *
    * @param {string} url url to make request to
+   * @param {string} originHeader The value to use for the Origin header
    * @returns {Promise} promise resolving to data,
    * or rejecting with error
    */
-  makeHTTPRequest: function (url) {
+  makeHTTPRequest: function (url, originHeader) {
     let httpModule;
 
     if (url.indexOf('https') !== -1) {
@@ -40,7 +41,17 @@ module.exports = {
     }
 
     return new Promise(function (resolve, reject) {
-      httpModule.get(url, function (resp) {
+      var httpOptions = {
+        path: url,
+        method: 'GET' 
+      };
+      if(originHeader) {        
+        httpOptions.headers = {
+          'Origin': originHeader
+        }
+      }
+
+      httpModule.get(url, httpOptions, function (resp) {
         let data = '';
 
         resp.on('data', (chunk) => {

@@ -52,12 +52,19 @@ class CloudRequestEngine extends Engine {
    * @param {string} options.licenseKey licensekey for cloud service
    * @param {string} options.baseURL url the cloud service is located at
    * if overriding default
+   * @param {string} options.cloudRequestOrigin The value to set for the Origin 
+   * header when making requests to the cloud service.
+   * This is used by the cloud service to check that the request is being 
+   * made from a origin matching those allowed by the resource key.
+   * For more detail, see the 'Request Headers' section in the 
+   * <a href="https://cloud.51degrees.com/api-docs/index.html">cloud documentation</a>.
    */
   constructor (
     {
       resourceKey,
       licenseKey,
-      baseURL
+      baseURL,
+      cloudRequestOrigin
     }) {
     super(...arguments);
 
@@ -69,6 +76,7 @@ class CloudRequestEngine extends Engine {
 
     this.resourceKey = resourceKey;
     this.licenseKey = licenseKey;
+    this.cloudRequestOrigin = cloudRequestOrigin
 
     // Check if baseURL is set. If not try to set it the environment variable
     // if presents, else set to default value
@@ -95,8 +103,8 @@ class CloudRequestEngine extends Engine {
       self.initialised = true;
     }).catch(function (error) {
       self.initialised = false;
-
-      self.errors = JSON.parse(error).errors;
+      
+      self.errors = self.getErrorsFromResponse(error);
 
       if (self.pipelines) {
         // Log error on all pipelines engine is attached to
@@ -151,6 +159,22 @@ class CloudRequestEngine extends Engine {
   }
 
   /**
+   * Typically, cloud will return errors as JSON.
+   * However, transport level errors or other failures can result in
+   * responses that are plain text. This function handles these cases.
+   * 
+   * @param {String} response the response data to process
+   * @returns {Object} The error message data
+   */
+  getErrorsFromResponse(response){
+    try {
+      return JSON.parse(response).errors;  
+    } catch (parseError) {
+      return { errors: [ 'Error parsing response - ' + response ]};
+    }
+  }
+
+  /**
    * Internal process to fetch all the properties available under a resourcekey
    *
    * @returns {Promise} properties from the cloud server
@@ -169,7 +193,8 @@ class CloudRequestEngine extends Engine {
         url += '&license=' + engine.licenseKey;
       }
 
-      cloudHelpers.makeHTTPRequest(url).then(function (properties) {
+      cloudHelpers.makeHTTPRequest(url, engine.cloudRequestOrigin)
+      .then(function (properties) {
         const propertiesOutput = {};
 
         properties = JSON.parse(properties);
@@ -235,7 +260,7 @@ class CloudRequestEngine extends Engine {
 
     return new Promise(function (resolve, reject) {
       cloudHelpers
-        .makeHTTPRequest(url)
+        .makeHTTPRequest(url, engine.cloudRequestOrigin)
         .then(function (body) {
           const data = new AspectDataDictionary({
             flowElement: engine,
@@ -249,8 +274,7 @@ class CloudRequestEngine extends Engine {
 
           resolve();
         }).catch(function (error) {
-          self.errors = JSON.parse(error).errors;
-
+          self.errors = self.getErrorsFromResponse(error); 
           reject(self.errors);
         });
     });
@@ -264,7 +288,7 @@ class CloudRequestEngine extends Engine {
   getEvidenceKeys () {
     const engine = this;
     const url = this.baseURL + 'evidencekeys';
-    return cloudHelpers.makeHTTPRequest(url)
+    return cloudHelpers.makeHTTPRequest(url, engine.cloudRequestOrigin)
       .then(function (body) {
         engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
           JSON.parse(body)
