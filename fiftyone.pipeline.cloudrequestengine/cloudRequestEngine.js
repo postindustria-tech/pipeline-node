@@ -27,15 +27,15 @@ const require51 = (requestedPackage) => {
     return require(requestedPackage);
   }
 };
-
+const util = require('util');
 const Engine = require('fiftyone.pipeline.engines').Engine;
-const querystring = require('querystring');
-const cloudHelpers = require('./cloudHelpers');
 const AspectDataDictionary = require('fiftyone.pipeline.engines')
   .AspectDataDictionary;
 const BasicListEvidenceKeyFilter = require('fiftyone.pipeline.core')
   .BasicListEvidenceKeyFilter;
 const sharedValues = require('./sharedValues');
+const errorMessages = require('./errorMessages');
+const RequestClient = require('./requestClient');
 
 /**
  * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
@@ -52,12 +52,20 @@ class CloudRequestEngine extends Engine {
    * @param {string} options.licenseKey licensekey for cloud service
    * @param {string} options.baseURL url the cloud service is located at
    * if overriding default
+   * @param {string} options.cloudRequestOrigin The value to set for the Origin 
+   * header when making requests to the cloud service.
+   * This is used by the cloud service to check that the request is being 
+   * made from a origin matching those allowed by the resource key.
+   * For more detail, see the 'Request Headers' section in the 
+   * <a href="https://cloud.51degrees.com/api-docs/index.html">cloud documentation</a>.
    */
   constructor (
     {
       resourceKey,
       licenseKey,
-      baseURL
+      baseURL,
+      cloudRequestOrigin,
+      requestClient
     }) {
     super(...arguments);
 
@@ -69,6 +77,13 @@ class CloudRequestEngine extends Engine {
 
     this.resourceKey = resourceKey;
     this.licenseKey = licenseKey;
+    this.cloudRequestOrigin = cloudRequestOrigin
+    if (requestClient !== undefined) {
+      this.requestClient = requestClient;
+    }
+    else {
+      this.requestClient = new RequestClient();
+    }
 
     // Check if baseURL is set. If not try to set it the environment variable
     // if presents, else set to default value
@@ -96,7 +111,7 @@ class CloudRequestEngine extends Engine {
     }).catch(function (error) {
       self.initialised = false;
 
-      self.errors = JSON.parse(error).errors;
+      self.errors = self.getErrorsFromResponse(error);
 
       if (self.pipelines) {
         // Log error on all pipelines engine is attached to
@@ -151,6 +166,22 @@ class CloudRequestEngine extends Engine {
   }
 
   /**
+   * Typically, cloud will return errors as JSON.
+   * However, transport level errors or other failures can result in
+   * responses that are plain text. This function handles these cases.
+   * 
+   * @param {String} response the response data to process
+   * @returns {Object} The error message data
+   */
+  getErrorsFromResponse(response){
+    try {
+      return JSON.parse(response).errors;  
+    } catch (parseError) {
+      return { errors: [ 'Error parsing response - ' + response ]};
+    }
+  }
+
+  /**
    * Internal process to fetch all the properties available under a resourcekey
    *
    * @returns {Promise} properties from the cloud server
@@ -169,7 +200,8 @@ class CloudRequestEngine extends Engine {
         url += '&license=' + engine.licenseKey;
       }
 
-      cloudHelpers.makeHTTPRequest(url).then(function (properties) {
+      engine.requestClient.get(url, engine.cloudRequestOrigin)
+      .then(function (properties) {
         const propertiesOutput = {};
 
         properties = JSON.parse(properties);
@@ -177,29 +209,44 @@ class CloudRequestEngine extends Engine {
         const products = properties.Products;
 
         for (const product in products) {
-          propertiesOutput[product] = {};
-
-          products[product]
-            .Properties
-            .forEach(function (productProperty) {
-              propertiesOutput[product][productProperty
-                .Name
-                .toLowerCase()
-              ] = {};
-              for (const metaKey in productProperty) {
-                propertiesOutput[product][productProperty
-                  .Name
-                  .toLowerCase()
-                ][metaKey.toLowerCase()] = productProperty[metaKey];
-              }
-            });
+          propertiesOutput[product] = engine.propertiesTransform(
+            products[product].Properties);
         }
+
         engine.flowElementProperties = propertiesOutput;
         resolve(propertiesOutput);
       }).catch(reject);
     });
   }
 
+  propertiesTransform(properties) {
+    let result = {};
+    let self = this;
+    properties
+      .forEach(function (property) {
+        result[property
+          .Name
+          .toLowerCase()
+        ] = {};
+        for (const metaKey in property) {
+          result[property.Name.toLowerCase()][metaKey.toLowerCase()] =
+            self.metaPropertyTransform(
+              metaKey.toLowerCase(),
+              property[metaKey]);
+        }
+      });
+      return result;
+  }
+
+  metaPropertyTransform(key, value) {
+    switch (key) {
+      case "itemproperties":
+        return this.propertiesTransform(value);
+      default:
+        return value;
+
+    }
+  }
   /**
    * Internal function to get data from cloud service
    *
@@ -211,20 +258,8 @@ class CloudRequestEngine extends Engine {
   getData (flowData) {
     const engine = this;
 
-    const evidence = flowData.evidence.getAll();
-
-    const evidenceRequest = {};
-
-    Object.keys(evidence).forEach(function (key) {
-      const value = evidence[key];
-      const keyWithoutPrefix = key.split('.')[1];
-
-      evidenceRequest[keyWithoutPrefix] = value;
-    });
-
     let url = this.baseURL +
-      this.resourceKey + '.json?' +
-      querystring.stringify(evidenceRequest);
+      this.resourceKey + '.json';
 
     // licensekey is optional
     if (this.licenseKey) {
@@ -234,8 +269,11 @@ class CloudRequestEngine extends Engine {
     const self = this;
 
     return new Promise(function (resolve, reject) {
-      cloudHelpers
-        .makeHTTPRequest(url)
+
+      engine.requestClient.post(
+          url,
+          engine.getContent(flowData),
+          engine.cloudRequestOrigin)
         .then(function (body) {
           const data = new AspectDataDictionary({
             flowElement: engine,
@@ -249,8 +287,7 @@ class CloudRequestEngine extends Engine {
 
           resolve();
         }).catch(function (error) {
-          self.errors = JSON.parse(error).errors;
-
+          self.errors = self.getErrorsFromResponse(error); 
           reject(self.errors);
         });
     });
@@ -264,12 +301,138 @@ class CloudRequestEngine extends Engine {
   getEvidenceKeys () {
     const engine = this;
     const url = this.baseURL + 'evidencekeys';
-    return cloudHelpers.makeHTTPRequest(url)
+    return this.requestClient.get(url, engine.cloudRequestOrigin)
       .then(function (body) {
         engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
           JSON.parse(body)
         );
       });
+  }
+
+  /**
+   * Generate the Content to send in the POST request. The evidence keys
+   * e.g. 'query.' and 'header.' have an order of precedence. These are
+   * added to the evidence in reverse order, if there is conflict then 
+   * the queryData value is overwritten. 
+   * 'query.' evidence should take precedence over all other evidence.
+   * If there are evidence keys other than 'query.' that conflict then
+   * this is unexpected so a warning will be logged.
+   * @param {FlowData} flowData
+   * @returns {Evidence} Evidence Dictionary
+   */
+  getContent(flowData) {
+    let queryData = {};
+
+    const evidence = flowData.evidence.getAll();
+
+    // Add evidence in reverse alphabetical order, excluding special keys. 
+    this.addQueryData(flowData, queryData, evidence, this.getSelectedEvidence(evidence, "other"));
+    // Add cookie evidence.
+    this.addQueryData(flowData, queryData, evidence, this.getSelectedEvidence(evidence, "cookie"));
+    // Add header evidence.
+    this.addQueryData(flowData, queryData, evidence, this.getSelectedEvidence(evidence, "header"));
+    // Add query evidence.
+    this.addQueryData(flowData, queryData, evidence, this.getSelectedEvidence(evidence, "query"));
+
+    return queryData;
+  }
+
+  /**
+   * Add query data to the evidence.
+   * @param {object} queryData The destination dictionary to add query data to.
+   * @param {Evidence} allEvidence All evidence in the flow data. This is used to
+   * report which evidence keys are conflicting.
+   * @param {object} evidence Evidence to add to the query Data.
+   */
+  addQueryData(flowData, queryData, allEvidence, evidence) {
+
+    for (const [evidenceKey, evidenceValue] of Object.entries(evidence)) {
+      // Get the key parts
+      const evidenceKeyParts = evidenceKey.split('.')
+      const prefix = evidenceKeyParts[0]
+      const suffix = evidenceKeyParts[1];
+
+      // Check and add the evidence to the query parameters.
+      if ((suffix in queryData) == false) {
+        queryData[suffix] = evidenceValue
+      }
+      else {
+        // If the queryParameter exists already.
+        // Get the conflicting pieces of evidence and then log a 
+        // warning, if the evidence prefix is not query. Otherwise a
+        // warning is not needed as query evidence is expected 
+        // to overwrite any existing evidence with the same suffix.
+        if (prefix !== "query") {
+          let conflicts = {}
+          for (const [key, value] of Object.entries(allEvidence)) {
+            if (key !== evidenceKey && key.includes(suffix)) {
+              conflicts[key] = value
+            }
+          }
+          
+          let conflictStr = '';
+          for (const [key, value] of Object.entries(conflicts)) {
+            if (conflictStr.length > 0) {
+              conflictStr += ', ';
+            }
+            conflictStr += util.format('%s:%s', key, value);
+          }
+          
+          let warningMessage = util.format(
+            errorMessages.evidenceConflict,
+            evidenceKey,
+            evidenceValue,
+            conflictStr);
+          flowData.pipeline.log('warn', warningMessage);
+        }
+        // Overwrite the existing queryParameter value.
+        queryData[suffix] = evidenceValue
+      }
+    }
+  }
+
+  /**
+   * Get evidence with specified prefix.
+   * @param {Evidence} evidence All evidence in the flow data.
+   * @param {stirng} type Required evidence key prefix
+   */
+  getSelectedEvidence(evidence, type) {
+    let selectedEvidence = {}
+
+    if (type === "other") {
+        for (const [key, value] of Object.entries(evidence)) {
+          if (this.hasKeyPrefix(key, "query") === false &&
+            this.hasKeyPrefix(key, "header") === false &&
+            this.hasKeyPrefix(key, "cookie") === false ) {
+              selectedEvidence[key] = value
+            }
+        }
+        selectedEvidence = Object.keys(selectedEvidence).sort().reverse().reduce(
+          (obj, key) => { 
+            obj[key] = selectedEvidence[key]; 
+            return obj;
+          }, 
+          {}
+        );
+    }
+    else {
+      for (const [key, value] of Object.entries(evidence)) {
+        if (this.hasKeyPrefix(key, type)) {
+          selectedEvidence[key] = value
+        }
+      }
+    }
+    return selectedEvidence
+  }
+  
+  /**
+   * Check that the key of a KeyValuePair has the given prefix.
+   * @param {string} itemKey Key to check
+   * @param {string} prefix The prefix to check for.
+   * @returns True if the key has the prefix.
+   */
+  hasKeyPrefix(itemKey, prefix) {
+    return itemKey.startsWith(prefix + '.')
   }
 }
 

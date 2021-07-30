@@ -2,44 +2,46 @@ trigger:
   - master
   - develop
   - release/*  
+  - hotfix/*
 
 # Don't trigger for a pull request
 pr: none
 
-# Schedule to run overnight
-schedules:
-- cron: "0 20 * * *"
-  displayName: Daily overnight build
-  branches:
-    include:
-    - develop
-
 # Include shared variables
 variables:
 - template: shared-variables.yml
+- group: CIAutomation
+# Access token for the git repository. Used by the git tag task.
+- name: system_accesstoken
+  value: $(System.AccessToken)
+
+resources:
+  repositories:
+    - repository: ciTemplates # Id of the repository used to reference to in this script
+      type: git
+      name: common-ci # Name of the actual repository
 
 stages:
-- template: shared-build-and-test-platforms.yml
-  parameters:
-    windowsImage: $(windowsImage)
-    linuxImage: $(linuxImage)
-    macImage: $(macImage)
 
 - stage: CreatePackages
   displayName: Create Packages
-  dependsOn: [Windows,Linux,MacOS]
 
   jobs:
+  - template: shared-git-version-job.yml@ciTemplates
+    parameters:
+      imageName: $(linuxImage)
+
   - job: Create
     displayName: Create Packages
+    dependsOn: Versioning
+    condition: and(succeeded(), ne(variables['CreatePackages'], 'Off'))
 
     pool:
       vmImage: $(linuxImage)
   
-    variables: 
-        # Access token for the git repository. Used by the git tag task.
-      - name: system_accesstoken
-        value: $(System.AccessToken)
+    variables:
+      - name: GitVersionSemVer
+        value: $[ dependencies.Versioning.outputs['SetGitVersionVars.GitVersionSemVer'] ]
   
     steps:
     # The lines below are needed to allow the pipeline access to the
@@ -49,13 +51,6 @@ stages:
       lfs: true
       submodules: recursive
       persistCredentials: true
-    
-    - task: gittools.gitversion.gitversion-task.GitVersion@5
-      displayName: 'Determine Version Number'
-      # Give this task a name so we can use the variables it sets later. 
-      name: GitVersion
-      inputs:
-        preferBundledVersion: false
     
     # All modules that reference other pipeline modules in this repository
     # have package.json files where the dependency is defined relative to 
@@ -92,7 +87,7 @@ stages:
         command: custom
         workingDir: fiftyone.pipeline.core
         verbose: true
-        customCommand: version $(GitVersion.SemVer)    
+        customCommand: version $(GitVersionSemVer)    
       continueOnError: true
       condition: succeededOrFailed()
     
@@ -102,7 +97,7 @@ stages:
         command: custom
         workingDir: fiftyone.pipeline.engines
         verbose: true
-        customCommand: version $(GitVersion.SemVer)    
+        customCommand: version $(GitVersionSemVer)    
       continueOnError: true
       condition: succeededOrFailed()
     
@@ -112,7 +107,7 @@ stages:
         command: custom
         workingDir: fiftyone.pipeline.engines.fiftyone
         verbose: true
-        customCommand: version $(GitVersion.SemVer)    
+        customCommand: version $(GitVersionSemVer)    
       continueOnError: true
       condition: succeededOrFailed()
     
@@ -122,7 +117,7 @@ stages:
         command: custom
         workingDir: fiftyone.pipeline.cloudrequestengine
         verbose: true
-        customCommand: version $(GitVersion.SemVer)    
+        customCommand: version $(GitVersionSemVer)    
       continueOnError: true
       condition: succeededOrFailed()
     
@@ -190,15 +185,6 @@ stages:
       condition: succeededOrFailed()
       failOnStderr: true
     
-    # Add a tag to the git repository with the version number of
-    # the package that has just been published
-    - task: ATP.ATP-GitTag.GitTag.GitTag@5
-      displayName: 'Tag Repo With Version Number'
-      inputs:
-        tagUser: 'Azure DevOps'
-        tagEmail: 'CIUser@51Degrees.com'
-      condition: succeeded()
-    
     # Publish artifacts to DevOps
     - task: PublishBuildArtifacts@1
       inputs:
@@ -206,3 +192,8 @@ stages:
         artifactName: npm
       displayName: 'Publish npm artifact'
       condition: succeeded()
+
+  - template: shared-git-tag-job.yml@ciTemplates
+    parameters:
+      imageName: $(linuxImage)
+      jobDependencies: [Versioning,Create]

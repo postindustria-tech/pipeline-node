@@ -20,7 +20,8 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "jest-each": "^26.6.2"
   },
   "dependencies": {
     "fiftyone.pipeline.core": "file:../fiftyone.pipeline.core",

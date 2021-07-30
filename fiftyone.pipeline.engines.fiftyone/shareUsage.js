@@ -49,19 +49,33 @@ class ShareUsage extends Engine {
   /**
    * Constructor for ShareUsage engine
    *
-   * @param {object} options settings object for shareusage
-   * @param {number} options.interval how often to send
-   * @param {number} options.requestedPackageSize how many items
-   * in one zipped packaged
-   * @param {string} options.cookie which cookie is used to track evidence
-   * @param {Array} options.queryWhitelist list of query string
-   * whitelist evidence to keep
-   * @param {Array} options.headerBlacklist list of header evidence to exclude
-   * @param {number} options.sharePercentage percentage of requests to share
+   * @param {object} options settings object for share usage.
+   * @param {number} options.interval If exactly the same evidence values 
+   * are seen multiple times within this time limit (in milliseconds) then 
+   * they will only be shared once.
+   * @param {number} options.requestedPackageSize The usage element 
+   * will group data into single requests before sending it.
+   * This setting controls the minimum number of entries before
+   * data is sent.
+   * If you are sharing large amounts of data, increasing this value 
+   * is recommended in order to reduce the overhead of sending HTTP 
+   * messages.
+   * For example, the 51Degrees cloud service uses a value of 2500.
+   * @param {string} options.cookie if a cookie is being used to identify
+   * user sessions, it can be specified here in order to reduce the 
+   * sharing of duplicated data.
+   * @param {Array} options.queryWhitelist By default query string 
+   * and HTTP form parameters are not shared unless prefixed with '51D_'.
+   * If you need to share query string parameters, a list can be 
+   * specified here.
+   * @param {Array} options.headerBlacklist By default, all HTTP headers
+   * (except a few, such as Cookies) are shared. Individual headers can 
+   * be excluded from sharing by adding them to this list.
+   * @param {number} options.sharePercentage percentage of requests to share.
    */
   constructor (
     {
-      interval = 100,
+      interval = 1200000,
       requestedPackageSize = 10,
       cookie,
       queryWhitelist,

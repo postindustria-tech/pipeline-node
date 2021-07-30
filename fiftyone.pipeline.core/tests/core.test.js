@@ -131,7 +131,7 @@ test('get from flowElement property as property', done => {
 test('get for formatting', done => {
   syncFlowData.process().then(function () { 
     expect(() => {
-      console.log(syncFlowData.sync);
+      return syncFlowData.sync;
     }).not.toThrow();
 
     done();
@@ -255,13 +255,8 @@ test('aspectPropertyValue', done => {
 
     // Trying to access the value of an APV that does not have a 
     // value should throw an error.
-    try {
-      console.log(flowData.apv.no.value);
-    } catch (e) {
-      error = e;
-    }
-
-    expect(expect(error).toBe('Value missing'));
+    expect(() => {return flowData.apv.no.value}).toThrow()
+    expect(() => {return flowData.apv.no.value}).toThrowError('Value missing')
 
     done();
   });
