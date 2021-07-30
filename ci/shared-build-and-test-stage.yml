@@ -10,6 +10,9 @@ stages:
   - job: Build_and_Test
     displayName: Build and Test
     
+    variables: 
+      - group: InternalKeys
+
     pool:
       vmImage: ${{ parameters.imageName }}
     
@@ -63,8 +66,10 @@ stages:
           echo $content > package.json
         displayName: "Create package.json for tests"
         failOnStderr: true
-    
+
       - bash: |
+          export RESOURCE_KEY="$(SuperResourceKey)"      
+          echo 'Exporting resource key for cloud tests, RESOURCE_KEY=$(SuperResourceKey)'
           npm install
           npm test
         displayName: "Build and Test"
