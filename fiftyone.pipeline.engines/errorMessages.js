@@ -24,12 +24,12 @@ module.exports = {
   cloudNoPropertiesAccess: ' This is because your resource key does not ' +
     'include access to any properties under "%s". For more details, see our ' +
     'resource key explainer: ' +
-    'https://51degrees.com/documentation/4.1/_info__resourcekeys.html',
+    'https://51degrees.com/documentation/_info__resource_keys.html',
   cloudNoPropertyAccess: ' This is because your resource key does not ' +
     'include access to this property. Properties that are included for this ' +
     'key under "%s" are %s. For more details on resource keys, see our ' +
     'explainer: ' +
-    'https://51degrees.com/documentation/4.1/_info__resourcekeys.html',
+    'https://51degrees.com/documentation/_info__resource_keys.html',
   cloudReasonUnknown: ' The reason for this is unknown as the supplied ' +
     'resource key does appear to allow access to this property.',
   propertyExcluded: 'Property "%s" is not present in the results. This ' +
