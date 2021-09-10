@@ -21,6 +21,20 @@
  * ********************************************************************* */
 
 class RequestClient {
+
+    /**
+     * Make a POST request to the specified url
+     * @param {*} url The url to send a request to
+     * @param {*} data The data to send in the body of the request
+     * @param {*} origin The value to use for the Origin header when 
+     * making the request
+     * @returns a Promise. The resolve function will be passed the content
+     * from the response and the reject function will be passed
+     * an object with 3 properties:
+     * headers = HTTP headers in the response
+     * statusCode = HTTP status code of response
+     * content = The content of the response or an error message
+     */
     post(url, data, origin) {
     
         return new Promise(function (resolve, reject) {
@@ -38,20 +52,39 @@ class RequestClient {
             }
 
             request.post(httpOptions, function (err, httpResponse, body) { 
-                if (err) {
-                    reject(err); // todo message?
+                let result = { 
+                    headers: httpResponse ? httpResponse.headers : undefined, 
+                    statusCode: httpResponse ? httpResponse.statusCode : undefined,
+                    content: body
+                }
+
+                if (err) {              
+                    result.content = err;      
+                    reject(result); // todo message?
                 }
                 if (httpResponse.statusCode > 399) {
                     // If response from cloud is not 2**, reject with error
-                    reject(body);
+                    reject(result);
                 }
                 else {
                     resolve(body);
                 }
-            })
+            });
         });
     }
 
+    /**
+     * Make a GET request to the specified url
+     * @param {*} url The url to send a request to
+     * @param {*} origin The value to use for the Origin header when 
+     * making the request
+     * @returns a Promise. The resolve function will be passed the content
+     * from the response and the reject function will be passed
+     * an object with 3 properties:
+     * headers = HTTP headers in the response
+     * statusCode = HTTP status code of response
+     * content = The content of the response or an error message
+     */
     get(url, origin) {
         let httpModule;
 
@@ -73,21 +106,26 @@ class RequestClient {
 
             httpModule.get(url, httpOptions, function (resp) {
                 let data = '';
+                let result = { 
+                    headers: resp ? resp.headers : undefined, 
+                    statusCode: resp ? resp.statusCode : undefined
+                }
     
                 resp.on('data', (chunk) => {
                     data += chunk;
                 });
     
                 resp.on('end', () => {
+                    result.content = data;
                     // If response from cloud is not 2**, reject with error
                     if (resp.statusCode > 399) {
-                        reject(data);
+                        reject(result);
                     } else {
                         resolve(data);
                     }
                 });
             }).on('error', (err) => {
-                reject(err.message);
+                reject({ content: err.message });
             });
         });
     }

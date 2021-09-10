@@ -22,6 +22,7 @@
 
 const { PipelineBuilder } = require('fiftyone.pipeline.core');
 const CloudRequestEngine = require('../cloudRequestEngine');
+const CloudRequestError = require('../cloudRequestError');
 const sharedValues = require('../sharedValues');
 const MockRequestClient = require('./classes/mockRequestClient');
 const each = require('jest-each').default;
@@ -75,6 +76,38 @@ test('custom end point - default value', done => {
   expect(testCloudRequestEngine.baseURL).toBe(sharedValues.baseURLDefault);
 
   done();
+});
+
+// Check that values from the http response are populated in the 
+// error object.
+test('HTTP data set in error', done => {
+  let errorThrown = false;
+
+  let engine = new CloudRequestEngine({
+    resourceKey: testResourceKey
+  });
+  
+  const builder = new PipelineBuilder();
+  const pipeline = builder.add(engine).build();
+  const flowData = pipeline.createFlowData();
+  
+  // When an error occurs, check that the expected values are populated.
+  pipeline.on('error', (e) => {
+    expect(e).toBeDefined();
+    expect(e.message).toBeDefined();
+    let expectedError = '\'' + testResourceKey + '\' is not a valid resource key.';
+    expect(e.message[0].message).toEqual(expectedError); 
+    expect(e.message[0].httpStatusCode).toEqual(400); 
+    expect(e.message[0].responseHeaders.etag).toBeDefined();
+    errorThrown = true;
+  });
+
+  // Make sure that the expected error was thrown.
+  flowData.process().then(function () {
+    expect(errorThrown).toBe(true);
+    done();
+  });
+
 });
 
 /**

@@ -119,7 +119,7 @@ each([[ 400],[ 404],[ 429],[ 500]])
         },
         noCheck,
         res => {
-            return expect(res).rejects.toBe(expectedResponse);
+            return expect(res).rejects.toMatchObject({content: expectedResponse, statusCode: status});
         },
         done);
 })
@@ -152,7 +152,7 @@ each([[ 400],[ 404],[ 429],[ 500]])
         },
         noCheck,
         res => {
-            return expect(res).rejects.toBe(expectedResponse);
+            return expect(res).rejects.toMatchObject({content: expectedResponse, statusCode: status});
         },
         done);
 })
