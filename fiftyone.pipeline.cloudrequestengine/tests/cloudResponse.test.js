@@ -23,6 +23,7 @@
 const path = require('path');
 const MockRequestClient = require('./classes/mockRequestClient');
 const CloudRequestEngine = require('../cloudRequestEngine');
+const CloudRequestError = require('../cloudRequestError');
 
 // CloudEngine does not use relative path to import module so update the module
 // lookups path here via setting of NODE_PATH environment variable.
@@ -153,7 +154,7 @@ test("validate error handling JSON errors", async () => {
             requestClient: client
         }).ready();
     }    
-    await expect(e()).rejects.toStrictEqual([errorMessage]);
+    await expect(e()).rejects.toEqual([new CloudRequestError(errorMessage)]);
 });
 
 function propertiesContainName(properties, name) {

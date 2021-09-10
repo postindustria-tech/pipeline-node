@@ -36,6 +36,7 @@ const BasicListEvidenceKeyFilter = require('fiftyone.pipeline.core')
 const sharedValues = require('./sharedValues');
 const errorMessages = require('./errorMessages');
 const RequestClient = require('./requestClient');
+const CloudRequestError = require('./cloudRequestError');
 
 /**
  * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
@@ -108,10 +109,10 @@ class CloudRequestEngine extends Engine {
 
     Promise.all([this.getEvidenceKeys(), this.fetchProperties()]).then(function () {
       self.initialised = true;
-    }).catch(function (error) {
+    }).catch(function (errors) {
       self.initialised = false;
 
-      self.errors = self.getErrorsFromResponse(error);
+      self.errors = errors;
 
       if (self.pipelines) {
         // Log error on all pipelines engine is attached to
@@ -171,14 +172,50 @@ class CloudRequestEngine extends Engine {
    * responses that are plain text. This function handles these cases.
    * 
    * @param {String} response the response data to process
-   * @returns {Object} The error message data
+   * @returns {Array} The error messages
    */
-  getErrorsFromResponse(response){
+  getErrorMessages(responseBody){
+    let errors = [];
     try {
-      return JSON.parse(response).errors;  
+      errors = JSON.parse(responseBody).errors;  
     } catch (parseError) {
-      return { errors: [ 'Error parsing response - ' + response ]};
+      errors = [ 'Error parsing response - ' + responseBody ];
     }
+    if(responseBody.length == 0) {
+      errors = [ 'No data in response from cloud service' ];
+    }
+    return errors;
+  }
+
+  /**
+   * Used to handle errors from http requests
+   */
+   getErrorsFromResponse(response) {    
+    let content = response;
+    if(response.content) {
+      content = response.content;
+    }
+
+    let errors = this.getErrorMessages(content); 
+    let cloudErrors = [];
+    errors.forEach(function(errorText) {
+      cloudErrors.push(new CloudRequestError(
+        errorText, 
+        response.headers, 
+        response.statusCode));           
+    });
+
+    if(cloudErrors.length == 0 &&
+      response.statusCode > 299) {
+        let message = 'Cloud service returned status code ' + 
+          response.statusCode + ' with content ' + content + '.';
+        cloudErrors.push(new CloudRequestError(
+          message, 
+          response.headers, 
+          response.statusCode)); 
+    }
+
+    return cloudErrors;
   }
 
   /**
@@ -215,7 +252,9 @@ class CloudRequestEngine extends Engine {
 
         engine.flowElementProperties = propertiesOutput;
         resolve(propertiesOutput);
-      }).catch(reject);
+      }).catch(function(response) {
+        reject(engine.getErrorsFromResponse(response));
+      });
     });
   }
 
@@ -286,8 +325,8 @@ class CloudRequestEngine extends Engine {
           flowData.setElementData(data);
 
           resolve();
-        }).catch(function (error) {
-          self.errors = self.getErrorsFromResponse(error); 
+        }).catch(function(response) {
+          self.errors = engine.getErrorsFromResponse(response)
           reject(self.errors);
         });
     });
@@ -301,12 +340,18 @@ class CloudRequestEngine extends Engine {
   getEvidenceKeys () {
     const engine = this;
     const url = this.baseURL + 'evidencekeys';
-    return this.requestClient.get(url, engine.cloudRequestOrigin)
+    return new Promise(function (resolve, reject) {
+      engine.requestClient.get(url, engine.cloudRequestOrigin)
       .then(function (body) {
         engine.evidenceKeyFilter = new BasicListEvidenceKeyFilter(
           JSON.parse(body)
         );
+
+        resolve();
+      }).catch(function(response) {
+        reject(engine.getErrorsFromResponse(response));
       });
+    });
   }
 
   /**
