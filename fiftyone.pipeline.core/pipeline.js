@@ -38,12 +38,17 @@ class Pipeline {
    *
    * @param {FlowElement[]} flowElements list of FlowElements to
    * add to the Pipeline
+   * @param {Boolean} suppressProcessExceptions If true then pipeline 
+   * will suppress exceptions added to FlowData.
    */
-  constructor (flowElements = []) {
+  constructor (flowElements = [], suppressProcessExceptions = false) {
     const pipeline = this;
 
     // The chain of flowElements to run, including arrays of parallel elements
     this.flowElementsChain = flowElements;
+
+    // If true then pipeline will suppress exceptions added to FlowData.
+    this.suppressProcessExceptions = suppressProcessExceptions;
 
     // A logger for emitting messages
     this.eventEmitter = new EventEmitter();
@@ -126,7 +131,11 @@ class Pipeline {
                 resolve(flowData);
               })
               .catch(setError);
-          });
+
+            if (flowData.errors !== undefined && Object.entries(flowData.errors).length !== 0  && !pipeline.suppressProcessExceptions) {              
+              throw Object.values(flowData.errors)[0];    
+            }
+          });         
         };
       };
 

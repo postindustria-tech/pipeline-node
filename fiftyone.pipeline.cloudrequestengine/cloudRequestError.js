@@ -24,6 +24,7 @@ class CloudRequestError extends Error {
   constructor(message, responseHeaders, httpStatusCode){
       super(message);
       this.name = this.constructor.name
+	  this.errorMessage = message;
       this.responseHeaders = responseHeaders;
       this.httpStatusCode = httpStatusCode;
       // This clips the constructor invocation from the stack trace.
