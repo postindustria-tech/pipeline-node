@@ -81,7 +81,6 @@ test('custom end point - default value', done => {
 // Check that values from the http response are populated in the 
 // error object.
 test('HTTP data set in error', done => {
-  let errorThrown = false;
 
   let engine = new CloudRequestEngine({
     resourceKey: testResourceKey
@@ -90,24 +89,22 @@ test('HTTP data set in error', done => {
   const builder = new PipelineBuilder();
   const pipeline = builder.add(engine).build();
   const flowData = pipeline.createFlowData();
-  
-  // When an error occurs, check that the expected values are populated.
+  let expectedError = '\'' + testResourceKey + '\' is not a valid resource key.';      
+ 
+  // When an error occurs, check that the message is logged.
   pipeline.on('error', (e) => {
-    expect(e).toBeDefined();
-    expect(e.message).toBeDefined();
-    let expectedError = '\'' + testResourceKey + '\' is not a valid resource key.';
-    expect(e.message[0].message).toEqual(expectedError); 
-    expect(e.message[0].httpStatusCode).toEqual(400); 
-    expect(e.message[0].responseHeaders.etag).toBeDefined();
-    errorThrown = true;
-  });
-
-  // Make sure that the expected error was thrown.
-  flowData.process().then(function () {
-    expect(errorThrown).toBe(true);
+    expect(e).toBeDefined();  
     done();
   });
 
+  flowData.process().then(function () {
+    done();
+  }).catch((e) => {
+    // When an error occurs, check that the expected values are populated.
+    expect(e[0].errorMessage.indexOf(expectedError) !== -1).toBe(true);     
+    expect(e[0].httpStatusCode).toEqual(400); 
+    expect(e[0].responseHeaders.etag).toBeDefined(); 
+  });
 });
 
 /**

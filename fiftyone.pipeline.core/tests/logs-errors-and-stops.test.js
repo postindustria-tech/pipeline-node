@@ -35,8 +35,9 @@ const syncPipeline = new PipelineBuilder()
 
 const syncFlowData = syncPipeline.createFlowData();
 test('error data is populated', done => {
+  syncPipeline.suppressProcessExceptions = true;
   syncFlowData.process().then(function () {
-    expect(syncFlowData.errors.error[0]).toBe('Something went wrong');
+    expect(syncFlowData.errors.error).toBe('Something went wrong');
 
     done();
   });
@@ -45,14 +46,25 @@ test('error data is populated', done => {
 let log;
 
 syncPipeline.on('error', function (error) {
-  log = error.message;
+  console.log(error);
+  log = error;
 });
 
 test('logging', done => {
+  syncPipeline.suppressProcessExceptions = true;
   syncFlowData.process().then(function () {
-    expect(log).toBe('Something went wrong');
+    expect(log).toBe("Error occurred during processing of error. 'Something went wrong'");
 
     done();
+  });
+});
+
+test("Don't Suppress Exception", done => {
+  syncFlowData.process().then(function () {
+    done();
+  }).catch((e) => {
+    // When an error occurs, check that the expected values are populated.
+    expect(e.indexOf('Something went wrong') !== -1).toBe(true);
   });
 });
 

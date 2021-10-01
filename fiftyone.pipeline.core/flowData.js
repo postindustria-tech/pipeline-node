@@ -140,13 +140,16 @@ class FlowData {
       errorKey = 'other';
     }
 
-    if (!this.errors[errorKey]) {
-      this.errors[errorKey] = [];
+    this.errors[errorKey] = error;
+
+    let logMessage = "Error occurred during processing";
+
+    if (errorKey !== undefined) {
+        logMessage = logMessage + " of " + errorKey + ". '" + error + "'";
     }
 
-    this.pipeline.log('error', { message: error, source: errorKey });
+    this.pipeline.log('error', logMessage);
 
-    this.errors[errorKey].push(error);
   }
 
   /**

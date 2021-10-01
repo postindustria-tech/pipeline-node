@@ -59,15 +59,12 @@ const flowData = pipeline.createFlowData();
 // Check that if an invalid resource key is used, a correct error
 // message will be returned and stored in flowData.errors
 test('missing property service - invalid resource key', done => {
+  pipeline.suppressProcessExceptions = true;
   flowData.process().then(function () {
     var errorFound = false;
-    flowData.errors.CloudEngineBase.forEach(function (errors) {
-      errors.forEach(function (error) {
-        errorFound = errorFound ||
-        (error.message.includes(testResourceKey) &&
-        error.message.includes('not a valid resource key'));
-      });
-    });
+    error = flowData.errors.CloudEngineBase[0];
+    errorFound = error.message.includes(testResourceKey) &&
+    error.message.includes('not a valid resource key');
     expect(errorFound).toBe(true);
 
     done();
