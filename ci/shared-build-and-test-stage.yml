@@ -45,15 +45,15 @@ stages:
             "main": "index.js", 
             "scripts": { 
               "test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura" 
-              }, 
+            }, 
             "repository": { 
               "type": "git", "url": "https://github.com/51Degrees/pipeline-node" 
-              }, 
+            }, 
             "author": "51Degrees",
             "dependencies": { 
-              "jest": "^24.9.0",
+              "jest": "^27.0.6",
               "node-mocks-http": "^1.10.1",
-              "jest-junit": "^9.0.0",
+              "jest-junit": "^12.2.0",
               "mustache": "^4.0.1",
               "uglify-js": "^3.8.1",
               "eslint": "^6.8.0",
@@ -63,11 +63,14 @@ stages:
               "eslint-plugin-promise": "^4.2.1",
               "eslint-plugin-standard": "^4.0.1",
               "eslint-plugin-jsdoc": "^25.4.0"
-              },
+            },
             "jest-junit": {
                 "outputName": "'"$NODE_VERSION"'.xml"    
-              } 
-            }'
+            },
+            "jest":{
+              "setupFilesAfterEnv": ["./setup.js"]
+            } 
+          }'
           echo $content
           echo $content > package.json
         displayName: "Create package.json for tests"

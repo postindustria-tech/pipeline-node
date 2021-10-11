@@ -36,40 +36,65 @@ class RequestClient {
      * content = The content of the response or an error message
      */
     post(url, data, origin) {
-    
+        let httpModule;
+
+        if (url.indexOf('https') !== -1) {
+            httpModule = require('https');
+        } else {
+            httpModule = require('http');
+        }
+
+        if (data) {
+            var requestData = "";
+            var keys = Object.keys(data);
+            for (var i = 0; i < keys.length; i++) {
+                requestData += encodeURIComponent(keys[i]) + "=" + encodeURIComponent(data[keys[i]]);
+                if (i < (keys.length-1)) requestData += "&";
+            }
+        }
+            
         return new Promise(function (resolve, reject) {
-            const request = require('request');
-
             var httpOptions = {
-                url: url,
+                method: 'POST',
                 headers: {
-                },
-                form: data
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
             };
-
-            if(origin) {        
-                httpOptions.headers['Origin']= origin;
+            if (origin) {        
+                httpOptions.headers['Origin'] = origin
+            }
+            if (requestData) {
+                httpOptions.headers['Content-Length'] = requestData.length
             }
 
-            request.post(httpOptions, function (err, httpResponse, body) { 
+            const req = httpModule.request(url, httpOptions, function (resp) { 
+                let data = '';
                 let result = { 
-                    headers: httpResponse ? httpResponse.headers : undefined, 
-                    statusCode: httpResponse ? httpResponse.statusCode : undefined,
-                    content: body
+                    headers: resp ? resp.headers : undefined, 
+                    statusCode: resp ? resp.statusCode : undefined
                 }
+    
+                resp.on('data', (chunk) => {
+                    data += chunk;
+                });
 
-                if (err) {              
-                    result.content = err;      
-                    reject(result); // todo message?
-                }
-                if (httpResponse.statusCode > 399) {
-                    // If response from cloud is not 2**, reject with error
-                    reject(result);
-                }
-                else {
-                    resolve(body);
-                }
+                resp.on('end', () => {
+                    result.content = data;
+                    // If response from cloud is not 2** / 3**, reject with error
+                    if (resp.statusCode > 399) {
+                        reject(result);
+                    } else {
+                        resolve(data);
+                    }
+                });
             });
+            
+            req.on('error', (err) => {
+                reject({ content: err.message });
+            });
+
+            req.write(requestData)
+            req.end();
         });
     }
 
@@ -117,7 +142,7 @@ class RequestClient {
     
                 resp.on('end', () => {
                     result.content = data;
-                    // If response from cloud is not 2**, reject with error
+                    // If response from cloud is not 2** / 3**, reject with error
                     if (resp.statusCode > 399) {
                         reject(result);
                     } else {

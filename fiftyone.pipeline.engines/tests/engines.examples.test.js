@@ -48,7 +48,7 @@ const testExample = function ({ file, portNumber }) {
 
   code += serverClose;
 
-  jest.fn(eval(code));
+  () => jest.fn(eval(code));
 };
 
 test('caching example', () => {
