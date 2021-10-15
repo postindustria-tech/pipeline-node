@@ -56,7 +56,7 @@ test("process", done => {
 
     var data = pipeline.createFlowData();
 
-    return data.process().then((processedData) => {
+    data.process().then((processedData) => {
         var result = processedData.getFromElement(engine)["cloud"];
 
         expect(result).toBe(JSON.stringify(jsonResponse));
