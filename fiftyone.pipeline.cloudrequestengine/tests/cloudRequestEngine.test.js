@@ -89,7 +89,7 @@ test('HTTP data set in error', done => {
   const builder = new PipelineBuilder();
   const pipeline = builder.add(engine).build();
   const flowData = pipeline.createFlowData();
-  let expectedError = '\'' + testResourceKey + '\' is not a valid resource key.';      
+  let expectedError = '\'' + testResourceKey + '\' is not a valid Resource Key.';      
  
   // When an error occurs, check that the message is logged.
   pipeline.on('error', (e) => {

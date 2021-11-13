@@ -141,7 +141,9 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 					headerValue += value;
 				}
 			});
-			result[header.name] = headerValue;
+			if (headerValue !== '') {
+				result[header.name] = headerValue;
+			}
 		}
 		return result;
 	}
