@@ -57,6 +57,9 @@ const pipeline = new PipelineBuilder()
  * 
  */
 each([
+  ["Ignore all unknown values.",
+    { "SetHeaderBrowserAccept-CH": unknownValue, "SetHeaderPlatformAccept-CH": unknownValue, "SetHeaderHardwareAccept-CH": unknownValue},
+    { "Accept-CH": "nil"}],
   ["Ignore unknown values.",
     { "SetHeaderBrowserAccept-CH": unknownValue, "SetHeaderPlatformAccept-CH": unknownValue, "SetHeaderHardwareAccept-CH": testValue},
     { "Accept-CH": "test"}],
@@ -74,7 +77,7 @@ each([
     { "Accept-CH": browserValue.value}],
   ["Undefined value.",
     { "SetHeaderBrowserAccept-CH": undefined},
-    { "Accept-CH": ""}],
+    { "Accept-CH": "nil"}],
   ["Set multiple headers.",
     { "SetHeaderBrowserAccept-CH": browserValue, "SetHeaderHardwareSomeOtherHeader": platformValue},
     { "Accept-CH": browserValue.value, "SomeOtherHeader": platformValue.value}],
@@ -90,7 +93,12 @@ each([
   Helpers.setResponseHeaders(response, result);
   // Check the correct headers were added to the response.
   for (const [key, value] of Object.entries(expectedHeaders)) {
-    expect(response.getHeader(key)).toBe(value); 
+    if (value === "nil") {
+      expect(response.getHeader("Accept-CH")).toBe(undefined)
+    }
+    else {
+      expect(response.getHeader(key)).toBe(value); 
+    }
   }
   
 });
