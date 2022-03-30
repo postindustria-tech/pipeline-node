@@ -33,6 +33,8 @@ const testValue = new AspectPropertyValue(null, 'test')
 const browserValue = new AspectPropertyValue(null, 'SEC-CH-UA,SEC-CH-UA-Full-Version')
 const platformValue = new AspectPropertyValue(null, 'SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version')
 const hardwareValue = new AspectPropertyValue(null, 'SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch')
+// Value which contains at least one duplicate value from each of other SetHeader values. 
+const duplicateValue = new AspectPropertyValue(null, 'SEC-CH-UA,SEC-CH-UA-Platform,SEC-CH-UA-Model')
 
 // Set up the properties in the element.
 setup.device.properties["SetHeaderBrowserAccept-CH"] = {
@@ -81,6 +83,9 @@ each([
   ["Set multiple headers.",
     { "SetHeaderBrowserAccept-CH": browserValue, "SetHeaderHardwareSomeOtherHeader": platformValue},
     { "Accept-CH": browserValue.value, "SomeOtherHeader": platformValue.value}],
+  ["Properties with duplicate values.",
+    { "SetHeaderPlatformAccept-CH": platformValue, "SetHeaderHardwareAccept-CH": duplicateValue},
+    { "Accept-CH": "SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version,SEC-CH-UA,SEC-CH-UA-Model"}],
 ])
 .test('testGetResponseHeaderValue - %s', async (name, device, expectedHeaders) => {
   // Set up a mock repsonse object to collect the headers which are

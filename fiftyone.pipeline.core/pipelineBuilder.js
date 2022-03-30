@@ -122,9 +122,15 @@ class PipelineBuilder {
       flowElements.push(new FlowElement(element.elementParameters));
     });
 
-    flowElements = flowElements.concat(this.getJavaScriptElements());
+    flowElements = this.addRequiredElements(flowElements);
 
     return new Pipeline(flowElements);
+  }
+
+  addRequiredElements(flowElements) {
+    return flowElements
+      .concat(this.getJavaScriptElements())
+      .concat(this.getHttpElements());
   }
 
   /**
@@ -214,10 +220,7 @@ class PipelineBuilder {
    * @returns {Pipeline} The constructed Pipeline
    */
   build () {
-    this.flowElements = this.flowElements
-      .concat(this.getJavaScriptElements())
-      .concat(this.getHttpElements());
-
+    this.flowElements = this.addRequiredElements(this.flowElements);
     return new Pipeline(this.flowElements);
   }
 }

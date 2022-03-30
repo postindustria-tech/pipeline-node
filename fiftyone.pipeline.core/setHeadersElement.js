@@ -23,6 +23,8 @@
 const FlowElement = require('./flowElement.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
 const AspectPropertyValue = require('./aspectPropertyValue');
+// SetHeader source headers separator
+const SOURCE_HEADER_SEPARATOR = ',';
 
 /**
  * @typedef {import('./pipeline')} Pipeline
@@ -130,19 +132,19 @@ const AspectPropertyValue = require('./aspectPropertyValue');
 	getResponseHeaders(flowData) {
 		const result = {};
 		for (const [key, header] of Object.entries(this.headers)) {
-			var headerValue = '';
+			var headerValue = new Set();
 			header.properties.forEach(property => {
 				var keys = property.split('.');
 				var value = this.tryGetValue(flowData, keys[0], keys[1]);
 				if (value !== undefined && value !== '') {
-					if (headerValue.length > 0) {
-						headerValue += ',';
-					}
-					headerValue += value;
+					value.split(SOURCE_HEADER_SEPARATOR).forEach((v) => {
+						headerValue.add(v);
+					});
 				}
 			});
-			if (headerValue !== '') {
-				result[header.name] = headerValue;
+			if (headerValue.size > 0) {
+				result[header.name] =
+				    Array.from(headerValue).join(SOURCE_HEADER_SEPARATOR);
 			}
 		}
 		return result;

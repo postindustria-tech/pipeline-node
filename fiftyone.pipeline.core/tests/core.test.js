@@ -229,6 +229,10 @@ test('build from config', done => {
   configPipelineFlowData.process().then(function () {
     expect(configPipelineFlowData.get('configTest')
       .get('built')).toBe('hello_world');
+    expect(configPipeline.getElement('sequence')).not.toBe(undefined);
+    expect(configPipeline.getElement('jsonbundler')).not.toBe(undefined);
+    expect(configPipeline.getElement('javascriptbuilder')).not.toBe(undefined);
+    expect(configPipeline.getElement('set-headers')).not.toBe(undefined);
 
     done();
   });
