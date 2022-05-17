@@ -5,7 +5,14 @@
 ## Introduction
 This repository contains the components of the Node.JS implementation of the 51Degrees Pipeline API.
 
-The Pipeline is a generic web request intelligence and data processing solution with the ability to add a range of 51Degrees and/or custom plug ins (Engines) 
+The Pipeline is a generic web request intelligence and data processing solution with the ability to 
+add a range of 51Degrees and/or custom plug ins (Engines) 
+
+## Dependencies
+
+The [tested versions](https://51degrees.com/documentation/_info__tested_versions.html) page shows 
+the Node versions that we currently test against. The software may run fine against other versions, 
+but additional caution should be applied.
 
 ## Contents
 This repository contains 4 modules:
@@ -14,7 +21,6 @@ This repository contains 4 modules:
 - **fiftyone.pipeline.engines** - Functionality for a specialized type of flow element called an engine.
 - **fiftyone.pipeline.engines.fiftyone** - Functionality specific to 51Degrees engines.
 - **fiftyone.pipeline.cloudrequestengine** - An engine used to make requests to the 51Degrees cloud service.
-
 
 ## Installation
 
@@ -49,7 +55,7 @@ npm test
 ## Examples
 
 There are several examples available that demonstrate how to make use of the Pipeline API in isolation. These are described in the table below.
-If you want examples that demonstrate how to use 51Degrees products such as device detection, then these are available in the corresponding [repository](https://github.com/51Degrees/device-detection-node) and on our [website](http://51degrees.com/documentation/4.3/_examples__device_detection__index.html).
+If you want examples that demonstrate how to use 51Degrees products such as device detection, then these are available in the corresponding [repository](https://github.com/51Degrees/device-detection-node) and on our [website](http://51degrees.com/documentation/_examples__device_detection__index.html).
 
 | Example                                | Description |
 |----------------------------------------|-------------|
