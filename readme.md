@@ -5,7 +5,14 @@
 ## Introduction
 This repository contains the components of the Node.JS implementation of the 51Degrees Pipeline API.
 
-The Pipeline is a generic web request intelligence and data processing solution with the ability to add a range of 51Degrees and/or custom plug ins (Engines) 
+The Pipeline is a generic web request intelligence and data processing solution with the ability to 
+add a range of 51Degrees and/or custom plug ins (Engines) 
+
+## Dependencies
+
+The [tested versions](https://51degrees.com/documentation/_info__tested_versions.html) page shows 
+the Node versions that we currently test against. The software may run fine against other versions, 
+but additional caution should be applied.
 
 ## Contents
 This repository contains 4 modules:
@@ -14,7 +21,6 @@ This repository contains 4 modules:
 - **fiftyone.pipeline.engines** - Functionality for a specialized type of flow element called an engine.
 - **fiftyone.pipeline.engines.fiftyone** - Functionality specific to 51Degrees engines.
 - **fiftyone.pipeline.cloudrequestengine** - An engine used to make requests to the 51Degrees cloud service.
-
 
 ## Installation
 
@@ -47,9 +53,13 @@ npm test
 ```
 
 ## Examples
-There are several examples available:
 
-- **fiftyone.pipeline.core/examples/customFlowElements/1-simpleEvidenceFlowElement.js** - Demonstrates how to create a custom flow element that takes some evidence (birthdate) and returns something related to that evidence (star sign)
-- **fiftyone.pipeline.core/examples/customFlowelements/3-clientSideEvidenceFlowElement.js** - Demonstrates how to modify the flow element from the 'simple evidence' example to gather evidence from code running on the client device (i.e. JavaScript).
-- **fiftyone.pipeline.engines/examples/onPremiseFlowElement.js** - Demonstrates the creation of an engine that uses an auto-updating datafile to populate properties
-- **fiftyone.pipeline.engines/examples/caching.js** - Demonstrates a custom cache that makes use of the result caching feature that engines provide.
+There are several examples available that demonstrate how to make use of the Pipeline API in isolation. These are described in the table below.
+If you want examples that demonstrate how to use 51Degrees products such as device detection, then these are available in the corresponding [repository](https://github.com/51Degrees/device-detection-node) and on our [website](http://51degrees.com/documentation/_examples__device_detection__index.html).
+
+| Example                                | Description |
+|----------------------------------------|-------------|
+| fiftyone.pipeline.core/examples/customFlowElements/simpleEvidenceFlowElement.js | Demonstrates how to create a custom flow element that takes some evidence (birthdate) and returns something related to that evidence (star sign) |
+| fiftyone.pipeline.core/examples/customFlowelements/clientSideEvidenceFlowElement.js | Demonstrates how to modify the flow element from the 'simple evidence' example to gather evidence from code running on the client device (i.e. JavaScript). |
+| fiftyone.pipeline.engines/examples/onPremiseFlowElement.js | Demonstrates the creation of an engine that uses an auto-updating datafile to populate properties |
+| fiftyone.pipeline.engines/examples/caching.js | Demonstrates a custom cache that makes use of the result caching feature that engines provide. |
