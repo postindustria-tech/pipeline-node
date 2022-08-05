@@ -30,6 +30,8 @@ module.exports = {
   Lru: require('./lru'),
   LruCache: require('./lruCache'),
   MissingPropertyService: require('./missingPropertyService'),
+  DataFileUpdateService: require('./dataFileUpdateService'),
+  AutoUpdateStatus: require('./autoUpdateStatus'),
   Tracker: require('./tracker')
 
 };

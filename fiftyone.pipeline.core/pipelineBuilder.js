@@ -59,6 +59,10 @@ class PipelineBuilder {
      */
     this.flowElements = [];
 
+    if (settings.dataFileUpdateService) {
+      this.dataFileUpdateService = settings.dataFileUpdateService;
+      }
+
     if (typeof settings.addJavaScriptBuilder !== 'undefined') {
       this.addJavaScriptBuilder = settings.addJavaScriptBuilder;
     } else {
@@ -124,7 +128,7 @@ class PipelineBuilder {
 
     flowElements = this.addRequiredElements(flowElements);
 
-    return new Pipeline(flowElements);
+    return new Pipeline(flowElements, false, this.dataFileUpdateService);
   }
 
   addRequiredElements(flowElements) {
@@ -221,7 +225,7 @@ class PipelineBuilder {
    */
   build () {
     this.flowElements = this.addRequiredElements(this.flowElements);
-    return new Pipeline(this.flowElements);
+    return new Pipeline(this.flowElements, false, this.dataFileUpdateService);
   }
 }
 

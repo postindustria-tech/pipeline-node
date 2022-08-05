@@ -26,6 +26,9 @@ const crypto = require('crypto');
 const https = require('https');
 const http = require('http');
 const url = require('url');
+const EventEmitter = require('events');
+
+const AutoUpdateStatus = require('./autoUpdateStatus');
 
 const minToMs = (min) => min * 60000;
 
@@ -47,7 +50,20 @@ class DataFileUpdateService {
    * pipeline the update service is attached to
    **/
   constructor (pipeline) {
+    this.registerPipeline(pipeline);
+    this.eventEmitter = new EventEmitter();
+  }
+
+  registerPipeline(pipeline) {
     this.pipeline = pipeline;
+  }
+
+  on (listener, callback) {
+    this.eventEmitter.on(listener, callback);
+  }
+
+  once(listener, callback) {
+    this.eventEmitter.once(listener, callback);
   }
 
   /**
@@ -99,8 +115,11 @@ class DataFileUpdateService {
               'error',
               "Too many requests to '" + dataFile.updateUrl +
               "' for engine '" +
-              dataFile.flowElement.dataKey + "'"
-            );
+              dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS,
+              dataFile);
             break;
           case (304):
             dataFileUpdateService.pipeline.log(
@@ -109,14 +128,21 @@ class DataFileUpdateService {
               dataFile.updateUrl +
               "' for engine '" +
               dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_NOT_NEEDED,
+              dataFile);
             break;
           case (403):
             dataFileUpdateService.pipeline.log('error',
               'Access denied from ' +
               dataFile.updateUrl +
               "' for engine '" +
-              dataFile.flowElement.dataKey + "'"
-            );
+              dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_ERR_403_FORBIDDEN,
+              dataFile);
             break;
           default:
             dataFileUpdateService.pipeline.log(
@@ -125,8 +151,11 @@ class DataFileUpdateService {
               ' from ' +
               dataFile.updateUrl +
               "' for engine '" +
-              dataFile.flowElement.dataKey + "'"
-            );
+              dataFile.flowElement.dataKey + "'");
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_HTTPS_ERR,
+              dataFile);
             break;
         }
 
@@ -136,7 +165,7 @@ class DataFileUpdateService {
       }
 
       const filename = dataFile.tempDataDirectory +
-        '/' + dataFile.identifier +
+        '/' + dataFile.identifier + 
         Date.now();
 
       response.pipe(fs.createWriteStream(filename));
@@ -165,6 +194,10 @@ class DataFileUpdateService {
 
               dataFile.updating = false;
               dataFileUpdateService.checkNextUpdate(dataFile);
+              dataFileUpdateService.eventEmitter.emit(
+                'updateComplete',
+                AutoUpdateStatus.AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED,
+                dataFile);
             } else {
               dataFileUpdateService.processFile(dataFile, filename);
             }
@@ -192,24 +225,46 @@ class DataFileUpdateService {
     fs.readFile(filename, function (err, data) {
       if (err) {
         dataFileUpdateService.pipeline.log('error', err);
+        dataFileUpdateService.eventEmitter.emit(
+          'updateComplete',
+          AutoUpdateStatus.AUTO_UPDATE_MASTER_FILE_CANT_RENAME,
+          dataFile);
       }
 
       fs.writeFile(dataFile.path, data, function (err) {
         if (err) {
-          dataFileUpdateService.pipe.log('error', err);
+          dataFileUpdateService.pipeline.log('error', err);
+          dataFileUpdateService.eventEmitter.emit(
+            'updateComplete',
+            AutoUpdateStatus.AUTO_UPDATE_NEW_FILE_CANT_RENAME,
+            dataFile);
         }
 
-        dataFile.refresh();
-
+        try {
+          dataFile.refresh();
+        } catch (e) {
+          dataFileUpdateService.pipeline.log('error', e);
+          dataFileUpdateService.eventEmitter.emit(
+            'updateComplete',
+            AutoUpdateStatus.AUTO_UPDATE_REFRESH_FAILED,
+            dataFile);
+        }
         dataFileUpdateService.checkNextUpdate(dataFile);
-
         dataFile.updating = false;
 
         // Delete the temp file
         fs.unlink(filename, function (err) {
           if (err) {
             dataFileUpdateService.pipeline.log('error', err);
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_NEW_FILE_CANT_RENAME,
+              dataFile);
           }
+          dataFileUpdateService.eventEmitter.emit(
+            'updateComplete',
+            AutoUpdateStatus.AUTO_UPDATE_SUCCESS,
+            dataFile);
         });
       });
     });
@@ -229,11 +284,19 @@ class DataFileUpdateService {
       fs.readFile(filename, function (err, buffer) {
         if (err) {
           dataFileUpdateService.pipeline.log('error', err);
+          dataFileUpdateService.eventEmitter.emit(
+            'updateComplete',
+            AutoUpdateStatus.AUTO_UPDATE_ERR_READING_STREAM,
+            dataFile);
         }
 
         zlib.gunzip(buffer, function (err, data) {
           if (err) {
             dataFileUpdateService.pipeline.log('error', err);
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_ERR_READING_STREAM,
+              dataFile);
           }
 
           const doneFileName = filename + '_done';
@@ -301,10 +364,15 @@ class DataFileUpdateService {
     // check if fileSystemWatcher is enabled and listen for datafile changes
 
     if (dataFile.fileSystemWatcher) {
+      const dataFileUpdateService = this;
       const watch = function () {
         fs.watch(dataFile.path, { persistent: false }, function (event) {
           if (!dataFile.updating) {
             dataFile.refresh();
+            dataFileUpdateService.eventEmitter.emit(
+              'updateComplete',
+              AutoUpdateStatus.AUTO_UPDATE_SUCCESS,
+              dataFile);
           }
         });
       };

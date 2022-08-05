@@ -41,7 +41,7 @@ class Pipeline {
    * @param {Boolean} suppressProcessExceptions If true then pipeline 
    * will suppress exceptions added to FlowData.
    */
-  constructor (flowElements = [], suppressProcessExceptions = false) {
+  constructor (flowElements = [], suppressProcessExceptions = false, dataFileUpdateService = null) {
     const pipeline = this;
 
     // The chain of flowElements to run, including arrays of parallel elements
@@ -55,6 +55,11 @@ class Pipeline {
 
     // Flattened dictionary of flowElements the pipeline contains
     this.flowElements = {};
+
+    if (dataFileUpdateService) {
+      this.dataFileUpdateService = dataFileUpdateService;
+      this.dataFileUpdateService.registerPipeline(this);
+    }
 
     // Run through flowElements and store them by dataKey
     // in the pipeline.flowElements object.
