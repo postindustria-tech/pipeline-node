@@ -48,9 +48,17 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
   constructor ({ cookie, queryWhitelist = [], headerBlacklist = [] }) {
     super(...arguments);
 
-    this.queryWhitelist = queryWhitelist;
-    this.headerBlacklist = headerBlacklist;
+    this.includedQueryStringParams = queryWhitelist;
+    this.blockedHttpHeaders = headerBlacklist;
     this.cookie = cookie;
+    if (!cookie &&
+      (!queryWhitelist || queryWhitelist.length === 0) &&
+      (!headerBlacklist || headerBlacklist.length === 0)) {
+      this.shareAll = true;
+    }
+    else {
+      this.shareAll = false;
+    }
   }
 
   /**
@@ -63,39 +71,39 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
     const prefix = key.toLowerCase().split('.')[0];
     const suffix = key.toLowerCase().split('.')[1];
 
-    const allowed = ['header', 'cookie', 'query'];
+    let result = this.shareAll;
 
-    // First filter out anything that isn't in the allowed list
-
-    if (!allowed.includes(prefix)) {
-      return false;
-    } else {
-      // Filter out all cookies that aren't either 51D prefixed
-      // or the tracking cookie
-
-      if (prefix === 'cookie' && (
-        prefix.indexOf('51D') !== 0 || suffix === this.cookie
-      )
-      ) {
-        return false;
+    if (!this.shareAll) {
+      if (prefix === 'header') {
+        // Add the header to the list if the header name does not 
+        // appear in the list of blocked headers.
+        result = this.blockedHttpHeaders
+          .includes(suffix) === false;
+      } else if (prefix === 'cookie') {
+          // Only add cookies that start with the 51Degrees cookie 
+          // prefix.
+          result = suffix.indexOf('51d_') === 0 ||
+          (this.includeSession && suffix === this.cookie);
+      } else if (prefix === 'session') {
+          // Only add session values that start with the 51Degrees
+          // cookie prefix.
+          result = suffix.indexOf('51d_') === 0;
+      } else if (prefix === 'query') {
+          // If no query string parameter filter was specified 
+          // then share all of them.
+          // Otherwise, only include query string parameters that 
+          // start with 51d_ or that have been specified in 
+          // the constructor.
+          result = this.includedQueryStringParams === null ||
+          suffix.indexOf('51d_') === 0 ||
+            this.includedQueryStringParams.includes(suffix);
+      } else {
+          // Add anything that is not a cookie, header, session 
+          // variable or query string parameter.
+          result = true;
       }
-
-      // Filter out any query evidence not in whitelist
-
-      if (prefix === 'query' && !this.queryWhitelist.includes(suffix)) {
-        return false;
-      }
-
-      // Filter out any header evidence in blacklist
-
-      if (prefix === 'header' && this.headerBlacklist.includes(suffix)) {
-        return false;
-      }
-
-      // Passed filtering tests, track
-
-      return true;
     }
+    return result;
   }
 }
 

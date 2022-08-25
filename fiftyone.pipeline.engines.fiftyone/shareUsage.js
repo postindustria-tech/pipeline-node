@@ -34,9 +34,17 @@ const Engine = engines.Engine;
 const ShareUsageEvidenceKeyFilter = require('./shareUsageEvidenceKeyFilter');
 const ShareUsageTracker = require('./shareUsageTracker');
 const zlib = require('zlib');
-const https = require('https');
+const url = require('url');
 
 const os = require('os');
+
+/**
+ * The maximum length of a piece of evidence's value which can be
+ * added to the usage data being sent.
+ */
+const SHARE_USAGE_MAX_EVIDENCE_LENGTH = 512;
+
+const SHARE_USAGE_VERSION = '1.1';
 
 /**
  * @typedef {import('fiftyone.pipeline.core').FlowData} FlowData
@@ -71,7 +79,8 @@ class ShareUsage extends Engine {
    * @param {Array} options.headerBlacklist By default, all HTTP headers
    * (except a few, such as Cookies) are shared. Individual headers can 
    * be excluded from sharing by adding them to this list.
-   * @param {number} options.sharePercentage percentage of requests to share.
+   * @param {number} options.sharePercentage approximate proportion of
+   * requests to be shared. 1 = 100%, 0.5 = 50%, etc..
    */
   constructor (
     {
@@ -80,7 +89,8 @@ class ShareUsage extends Engine {
       cookie,
       queryWhitelist,
       headerBlacklist,
-      sharePercentage = 100
+      sharePercentage = 1,
+      endpoint = 'https://devices-v4.51degrees.com/new.ashx'
     } = {}) {
     super(...arguments);
 
@@ -101,9 +111,21 @@ class ShareUsage extends Engine {
 
     this.sharePercentage = sharePercentage;
 
-    this.sharePercentageCounter = 0;
-
     this.shareData = [];
+
+    if (endpoint.includes('https://') === false &&
+      endpoint.includes('http://') == false) {
+      endpoint = 'https://' + endpoint;
+    }
+    this.endpoint = url.parse(endpoint);
+    switch (this.endpoint.protocol) {
+      case 'http:':
+        this.http = require('http');
+        break;
+      case 'https:':
+        this.http = require('https');
+        break;
+    }
   }
 
   /**
@@ -113,71 +135,156 @@ class ShareUsage extends Engine {
    * @param {FlowData} flowData flowData to process
    */
   processInternal (flowData) {
-    this.sharePercentageCounter += 1;
 
-    if (this.sharePercentageCounter === this.sharePercentage) {
-      this.sharePercentageCounter = 0;
+    if (Math.random() <= this.sharePercentage) {
+      const cacheKey = this.evidenceKeyFilter
+        .filterEvidence(flowData.evidence.getAll());
+
+      const share = this.tracker.track(cacheKey);
+      if (share) {
+        this.tracker.put(cacheKey);
+
+        this.addToShareUsage(this.getDataFromEvidence(flowData));
+      }
     }
+  }
 
-    if (this.sharePercentageCounter !== 0) {
-      return;
+  /**
+   * Creates a ShareUsageData instance populated from the evidence
+   * within the flow data provided.
+   * @param {FlowData} flowData the flow data containing the evidence to use
+   * @returns a new ShareUsageData instance, populated from the evidence
+   * provided 
+   */
+   getDataFromEvidence(flowData) {
+    const data = new ShareUsageData();
+
+    Object.keys(flowData.evidence.getAll()).forEach(key => {
+      const value = flowData.evidence.get(key);
+      if (key === 'server.client-ip') {
+        // The client IP is dealt with separately for backwards
+        // compatibility purposes.
+        data.clientIP = value;
+      } else if (key === 'query.session-id') {
+        // The SessionID is dealt with separately.
+        data.sessionId = value;
+      } else if (key === 'query.sequence') {
+        // The Sequence is dealt with separately.
+        var sequence = parseInt(value);
+
+        if (isNaN(sequence) === false) {
+            data.sequence = sequence;
+        }
+        else {
+          this._log('error',
+            `The value '${value}' could not be parsed to an integer.`);
+        }
+      } else {
+        // Check if we can send this piece of evidence
+        if (this.evidenceKeyFilter.filterEvidenceKey(key)) {
+            data.tryAddToData(key, value);
+        }
+      }
+    });
+    return data;
+  }
+
+  getConstantXml() {
+    if (!this.constantXml) {
+      const versions = this.getPackageVersions();
+      const coreVersion = versions['fiftyone.pipeline.core'];
+      const osVersion = `${new ReplacedString(process.platform).result} ${new ReplacedString(os.release()).result}`;
+      const nodeVersion = new ReplacedString(process.versions.node).result;
+
+      let xml = '';
+
+      // The version number of the Pipeline API
+      xml += `<Version>${coreVersion}</Version>`;
+      // Write Pipeline information
+      // The product name
+      xml += '<Product>Pipeline</Product>';
+      // The flow elements in the current pipeline
+      this.getFlowElements().forEach(element => {
+        xml += `<FlowElement>${element}</FlowElement>`;
+      })
+      xml += '<Language>Node.JS</Language>';
+      // The software language version
+      xml += `<LanguageVersion>${nodeVersion}</LanguageVersion>`;
+      // The OS name and version
+      xml += `<Platform>${osVersion}</Platform>`;
+      this.constantXml = xml;
     }
-
-    const cacheKey = this.evidenceKeyFilter
-      .filterEvidence(flowData.evidence.getAll());
-
-    const share = this.tracker.track(cacheKey);
-
-    if (share) {
-      this.tracker.put(cacheKey);
-
-      this.addToShareUsage(cacheKey);
-    }
+    return this.constantXml;
   }
 
   /**
    * Internal method which adds to the share usage bundle (generating XML)
    *
-   * @param {object} key key value store of current
+   * @param {object} data key value store of current
    * evidence in FlowData (filtered by the ShareUsageEvidenceKeyFilter)
    */
-  addToShareUsage (key) {
+  addToShareUsage (data) {
     let xml = '';
+    
+    xml += '<Device>';
 
-    xml += '<device>';
+    // --- write invariant data
+    xml += this.getConstantXml();
 
-    xml += '<Version>4</Version>';
-
-    xml += '<Language>Node.JS</Language>';
-
-    xml += '<LanguageVersion>' + process.version + '</LanguageVersion>';
-
-    xml += '<Platform>' + process.platform + ' ' + os.release() + '</Platform>';
-
-    for (const item in key) {
-      const parts = item.split('.');
-
-      const prefix = parts[0];
-      const name = parts[1];
-      const value = key[item];
-
-      xml += `<${prefix} name="${name}">${value}</${prefix}>`;
-    }
-
+    // --- write variable data
+    // The SessionID used to track a series of requests
+    xml += `<SessionId>${data.sessionId}</SessionId>`;
+    // The sequence number of the request in a series of requests.
+    xml += `<Sequence>${data.sequence}</Sequence>`;
+    // The client IP of the request
+    xml += `<ClientIP>${data.clientIP}</ClientIP>`;
+    
+    // The UTC date/time this entry was written
     const date = new Date()
       .toISOString()
-      .substr(0, 19)
+      .substring(0, 19)
       .replace('T', ' ')
       .split(' ')
       .join(':');
+    xml += `<DateSent>${date}</DateSent>`;
 
-    xml += '<dateSent>' + date + '</dateSent>';
+    // Write all other evidence data that has been included.
+    Object.keys(data.evidenceData).forEach(categoryKey => {
+      const categoryValue = data.evidenceData[categoryKey];
+      Object.keys(categoryValue).forEach(entryKey => {
+        const entryValue = categoryValue[entryKey];
+        const replacedString = new ReplacedString(entryValue);
+        // Write start element
+        if (categoryKey.length > 0) {
+          xml += `<${categoryKey} Name="${entryKey}"`;
+        } else {
+          xml += `<${entryKey}`;
+        }
+        // Write any attributes
+        if (replacedString.replaced) {
+          xml += ' replaced="true"';
+        }
+        if (replacedString.truncated) {
+          xml += ' truncated="true"';
+        }
+        // End the start element
+        xml += '>';
+        // Write the value
+        xml += replacedString.result;
+        // Write end element
+        if (categoryKey.length > 0) {
+          xml += `</${categoryKey}>`;
+        } else {
+          xml += `</${entryKey}>`;
+        }
+      });
+    });
 
-    xml += '</device>';
+    xml += '</Device>';
 
     this.shareData.push(xml);
-
-    if (this.shareData.length === this.requestedPackageSize) {
+    
+    if (this.shareData.length >= this.requestedPackageSize) {
       this.sendShareUsage();
     }
   }
@@ -186,33 +293,167 @@ class ShareUsage extends Engine {
    * Internal method to send the share usage bundle to the 51Degrees servers
    */
   sendShareUsage () {
-    const data = '<devices>' + this.shareData.join() + '</devices>';
+    const usageEngine = this;
+    var shareData = this.shareData;
+    this.shareData = [];
+    var data = `<Devices version="${SHARE_USAGE_VERSION}">${shareData.join()}</Devices>`;
 
     const options = {
-      hostname: 'devices-v4.51degrees.com',
-      path: '/new.ashx',
+      hostname: this.endpoint.hostname,
+      path: this.endpoint.pathname,
+      port: this.endpoint.port,
       method: 'POST',
-      headers: { 'Content-Encoding': 'gzip', 'Content-Type': 'text/xml' }
+      headers: { 'Content-Encoding': 'gzip', 'Content-Type': 'text/xml; charset=utf-8' }
     };
 
     zlib.gzip(data, function (err, buffer) {
       if (err) {
-        this.pipeline.emit('warning', err);
+        usageEngine._log('warning', err);
       }
-
-      var req = https.request(options, function (res) {
-        // Reset sharedata collection
-
-        this.shareData = [];
+      var req = usageEngine.http.request(options, function (res) {
+        usageEngine._log('debug', `Usage data sent. Response code ${res.statusCode}`);
       });
       req.on('error', function (e) {
-        this.pipeline.emit('warning', e);
+        usageEngine._log('warning', e);
       });
-
       req.write(buffer);
       req.end();
     });
   }
+
+  
+    /**
+     * Return a list of FlowElements in the pipeline.
+     * If the list is null then populate from the pipeline.
+     * If there are multiple or no pipelines then log an error.
+     * @returns list of flow elements
+     */
+    getFlowElements() {
+        if (!this.flowElements) {
+            if (this.pipelines.length === 1) {
+                const list = [];
+                for (const [key, value] of Object.entries(this.pipelines[0].flowElements)) {
+                  list.push(value.constructor.name);
+                }
+                this.flowElements = list;
+            } else {
+                // This element has somehow been registered to too
+                // many (or zero) pipelines.
+                // This means we cannot know the flow elements that
+                // make up the pipeline so a warning is logged
+                // but otherwise, the system can continue as normal.
+                this._log('warn', 'Share usage element registered ' +
+                    `to ${this.pipelines.length > 0 ? "too many" : "no"}` +
+                    ' pipelines. Unable to send share usage information.');
+                this.flowElements = [];
+            }
+        }
+        return this.flowElements;
+    }
+    
+    /**
+     * Get the versions of all packages installed in 'node_modules'.
+     * @returns package versions keyed on name
+     */
+    getPackageVersions() {
+      var fs = require('fs');
+      var dirs = fs.readdirSync('node_modules');
+      var data = {};
+      dirs.forEach(function(dir) {
+          try {
+            var file = dir + '/package.json';
+            var json = require(file);
+            var name = json.name;
+            var version = json.version;
+            data[name] = version;
+          } catch(err) {
+            // Do nothing here
+          }
+      });
+      return data;
+
+    }
 }
 
+// a set of valid XML character values (ignoring valid controls x09, x0a, x0d, x85)
+const VALID_XML_CHARS = 
+  Array.from({length: parseInt('0x7F', 16) - parseInt('0x20', 16)}, (v, k) => k + parseInt('0x20', 16))
+  .concat(
+    Array.from({length: parseInt('0x100', 16) - parseInt('0x40', 16)}, (v, k) => k + parseInt('0x40', 16)));
+
+// an array describing whether a character value is valid
+const IS_VALID_XML_CHAR = __getIsValidCharMap();
+
+function __getIsValidCharMap() {
+  const maxChar = parseInt('0x100', 16);
+  const isValidChar = {};
+  for (var c = 0; c <= maxChar; c++) {
+    isValidChar[c] = VALID_XML_CHARS.includes(c);
+  }
+  return isValidChar;
+}
+
+/**
+ * Replace characters that cause problems in XML with the "Replacement character"
+ */
+class ReplacedString {
+
+  constructor(text) {
+    this.result = '';
+    this.replaced = false;
+    this.truncated = false;
+    if (text) {
+      const escapedText = text
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const length = Math.min(escapedText.length, SHARE_USAGE_MAX_EVIDENCE_LENGTH);
+      this.truncated = escapedText.length > SHARE_USAGE_MAX_EVIDENCE_LENGTH;
+      Array.from(escapedText.substring(0, length))
+        .map(c => {
+          if (c.charCodeAt(0) < Object.keys(IS_VALID_XML_CHAR).length && IS_VALID_XML_CHAR[c.charCodeAt(0)]) {
+            this.result += c;
+          } else {
+            this.result += String.fromCharCode(parseInt('0xFFFD', 16));
+            this.replaced = true;
+          }
+        });
+    }
+  }
+}
+/**
+ * Internal class that is used to store details of data in memory
+ * prior to it being sent to 51Degrees.
+ */
+class ShareUsageData {
+
+  constructor() {
+    this.evidenceData = {};
+    this.sessionId = '';
+    this.clientIp = '';
+    this.sequence = '';
+  }
+
+  tryAddToData(key, value) {
+    // Get the category and field names from the evidence key.
+    let category = '';
+    let field = key;
+
+    const firstSeparator = key.indexOf('.');
+    if (firstSeparator > 0) {
+        category = key.substring(0, firstSeparator);
+        field = key.substring(firstSeparator + 1);
+    }
+
+    // Add the evidence to the dictionary.
+    let categoryDict = this.evidenceData[category];
+    if (!categoryDict) {
+      categoryDict = {};
+      this.evidenceData[category] = categoryDict;
+    }
+    categoryDict[field] = value.toString();
+  }
+}
 module.exports = ShareUsage;

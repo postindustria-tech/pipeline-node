@@ -147,6 +147,14 @@ class FlowElement {
   getProperties () {
     return this.properties;
   }
+
+  _log(type, message) {
+    if (this.pipelines) {
+      this.pipelines.forEach(pipeline => {
+        pipeline.log(type, message);
+      })
+    }
+  }
 }
 
 module.exports = FlowElement;
