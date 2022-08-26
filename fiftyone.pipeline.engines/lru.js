@@ -38,9 +38,18 @@ class LRU {
     this.cache = {};
   }
 
+  __convertKey (key) {
+    if (((!!key) && (key.constructor === Array)) ||
+      ((!!key) && (key.constructor === Object))) {
+      return JSON.stringify(key);
+    } else {
+      return key;
+    }
+  }
+
   write (key, value) {
     this.ensureLimit();
-
+    key = this.__convertKey(key);
     if (!this.head) {
       this.head = this.tail = new Node(key, value);
     } else {
@@ -54,6 +63,7 @@ class LRU {
   }
 
   read (key) {
+    key = this.__convertKey(key);
     if (this.cache[key]) {
       const value = this.cache[key].value;
 
@@ -73,6 +83,7 @@ class LRU {
   }
 
   remove (key) {
+    key = this.__convertKey(key);
     const node = this.cache[key];
 
     if (node.prev !== null) {
