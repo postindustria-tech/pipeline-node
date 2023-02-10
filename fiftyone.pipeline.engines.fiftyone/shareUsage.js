@@ -191,15 +191,13 @@ class ShareUsage extends Engine {
 
   getConstantXml() {
     if (!this.constantXml) {
-      const versions = this.getPackageVersions();
-      const coreVersion = versions['fiftyone.pipeline.core'];
       const osVersion = `${new ReplacedString(process.platform).result} ${new ReplacedString(os.release()).result}`;
       const nodeVersion = new ReplacedString(process.versions.node).result;
 
       let xml = '';
 
       // The version number of the Pipeline API
-      xml += `<Version>${coreVersion}</Version>`;
+      xml += `<Version>4.4.6</Version>`;
       // Write Pipeline information
       // The product name
       xml += '<Product>Pipeline</Product>';
@@ -349,29 +347,6 @@ class ShareUsage extends Engine {
             }
         }
         return this.flowElements;
-    }
-    
-    /**
-     * Get the versions of all packages installed in 'node_modules'.
-     * @returns package versions keyed on name
-     */
-    getPackageVersions() {
-      var fs = require('fs');
-      var dirs = fs.readdirSync('node_modules');
-      var data = {};
-      dirs.forEach(function(dir) {
-          try {
-            var file = dir + '/package.json';
-            var json = require(file);
-            var name = json.name;
-            var version = json.version;
-            data[name] = version;
-          } catch(err) {
-            // Do nothing here
-          }
-      });
-      return data;
-
     }
 }
 
