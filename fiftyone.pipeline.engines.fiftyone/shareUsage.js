@@ -197,7 +197,7 @@ class ShareUsage extends Engine {
       let xml = '';
 
       // The version number of the Pipeline API
-      xml += `<Version>4.4.6</Version>`;
+      xml += `<Version>4.4.7</Version>`;
       // Write Pipeline information
       // The product name
       xml += '<Product>Pipeline</Product>';
@@ -238,12 +238,8 @@ class ShareUsage extends Engine {
     xml += `<ClientIP>${data.clientIP}</ClientIP>`;
     
     // The UTC date/time this entry was written
-    const date = new Date()
-      .toISOString()
-      .substring(0, 19)
-      .replace('T', ' ')
-      .split(' ')
-      .join(':');
+    const date = new Date().toISOString()
+
     xml += `<DateSent>${date}</DateSent>`;
 
     // Write all other evidence data that has been included.
