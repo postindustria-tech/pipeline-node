@@ -1,15 +1,21 @@
-name: Nightly PRs to Main
+ame: Nightly PRs to Main
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: '0 1 * * *'
+    inputs:
+      dryrun:
+        default: 'false'
+        description: Dry Run
+    # schedule:
+    #   - cron: '0 1 * * *'
 
 jobs:
   Nightly_PRs_to_Main:
-    uses: romansertsov/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+    uses: postindustria-tech/common-ci/.github/workflows/nightly-prs-to-main.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
+      org-name: ${{ github.event.repository.owner.login }}
+      dryrun: ${{ inputs.dryrun }}
     secrets:
-      token: ${{ secrets.ACCESS_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
       asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}"}'
