@@ -1,0 +1,15 @@
+name: Nightly PRs to Main
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 1 * * *'
+
+jobs:
+  Nightly_PRs_to_Main:
+    uses: romansertsov/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+    with:
+      repo-name: ${{ github.event.repository.name }}
+    secrets:
+      token: ${{ secrets.ACCESS_TOKEN }}
+      asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}"}'
