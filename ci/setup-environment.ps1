@@ -1,8 +1,8 @@
 param (
     [Parameter(Mandatory=$true)]
-    [string]$LanguageVersion
+    [string]$RepoName
 )
 
-./node/setup-environment.ps1 -LanguageVersion $LanguageVersion
+./node/setup-environment.ps1 -RepoName $RepoName
 
 exit $LASTEXITCODE
