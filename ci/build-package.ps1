@@ -5,8 +5,10 @@ param (
     [string]$Version
 )
 
-$packages = "fiftyone.pipeline.cloudrequestengine", "fiftyone.pipeline.core", "fiftyone.pipeline.engines", "fiftyone.pipeline.engines.fiftyone";
+$packages = "fiftyone.pipeline.cloudrequestengine", "fiftyone.pipeline.core", "fiftyone.pipeline.engines", "fiftyone.pipeline.engines.fiftyone"
 
-./node/build-package-npm.ps1 -RepoName $RepoName -Version $Version -Packages $packages
+$noRemote = "fiftyone.pipeline.core"
+
+./node/build-package-npm.ps1 -RepoName $RepoName -Version $Version -Packages $packages -NoRemote $noRemote
 
 exit $LASTEXITCODE
