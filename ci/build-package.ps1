@@ -3,6 +3,6 @@ param (
     [string]$RepoName
 )
 
-./node/build-package-npm.ps1 -RepoName $RepoName -Packages $packages -NoRemote $noRemote
+./node/build-package-npm.ps1 -RepoName $RepoName
 
 exit $LASTEXITCODE
