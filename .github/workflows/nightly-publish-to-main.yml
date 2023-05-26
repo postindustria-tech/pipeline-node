@@ -19,4 +19,4 @@ jobs:
       build-platform: ubuntu-latest
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-      asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}"}'
+      asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}", "NPMAuthToken": "${{ secrets.NPM_AUTH_TOKEN}}"}'
