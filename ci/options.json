@@ -4,6 +4,7 @@
     "Image": "ubuntu-latest",
     "Language": "node",
     "LanguageVersion": "12.22.12",
-    "RunPerformance": true
+    "RunPerformance": true,
+    "PackageRequirement": true
   }
 ]
