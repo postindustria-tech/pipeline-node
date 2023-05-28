@@ -32,7 +32,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "51Degrees Pipeline Node.js"
+PROJECT_NAME           = "51Degrees Pipeline Node"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -44,14 +44,14 @@ PROJECT_NUMBER         = 4.4
 # for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "51Degrees Pipeline for Node.js"
+PROJECT_BRIEF          = "51Degrees Pipeline for Node"
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = ../../../docs/images/logo-51Degrees-Docs.png
+PROJECT_LOGO           = ../../documentation/docs/images/logo-51Degrees-Docs.png
 
 # The PROJECT_URL tag is used to specify the URL which is linked by the
 # PROJECT_LOGO.
@@ -270,15 +270,15 @@ TCL_SUBST              =
 # members will be omitted, etc.
 # The default value is: NO.
 
-OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_FOR_C  = NO
 
 # Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java or
-# Python sources only. Doxygen will then generate output that is more tailored
+# Node sources only. Doxygen will then generate output that is more tailored
 # for that language. For instance, namespaces will be presented as packages,
 # qualified scopes will look different, etc.
 # The default value is: NO.
 
-OPTIMIZE_OUTPUT_JAVA   = NO
+OPTIMIZE_OUTPUT_JAVA   = YES
 
 # Set the OPTIMIZE_FOR_FORTRAN tag to YES if your project consists of Fortran
 # sources. Doxygen will then generate output that is tailored for Fortran.
@@ -305,7 +305,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 # extension. Doxygen has a built-in mapping, but you can override or extend it
 # using this tag. The format is ext=language, where ext is a file extension, and
 # language is one of the parsers supported by doxygen: IDL, Java, Javascript,
-# Csharp (C#), C, C++, D, PHP, md (Markdown), Objective-C, Python, Slice,
+# Csharp (C#), C, C++, D, PHP, md (Markdown), Objective-C, Node, Slice,
 # Fortran (fixed format Fortran: FortranFixed, free formatted Fortran:
 # FortranFree, unknown formatted Fortran: Fortran. In the later case the parser
 # tries to guess whether the code is fixed or free formatted code, this is the
@@ -318,7 +318,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 # Note that for custom extensions you also need to set FILE_PATTERNS otherwise
 # the files are not read by doxygen.
 
-EXTENSION_MAPPING      = js=Javascript
+EXTENSION_MAPPING      =
 
 # If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
 # according to the Markdown format, which allows for more readable
@@ -818,11 +818,10 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../fiftyone.pipeline.core \
-                         ../fiftyone.pipeline.engines \
-                         ../fiftyone.pipeline.engines.fiftyone \
-                         ../fiftyone.pipeline.javascriptbundler \
-                         ../fiftyone.pipeline.cloudrequestengine \
+INPUT                  = ../fiftyone_pipeline_cloudrequestengine \
+                         ../fiftyone_pipeline_core \
+                         ../fiftyone_pipeline_engines \
+                         ../fiftyone_pipeline_engines_fiftyone \
                          ../readme.md
 
 # This tag can be used to specify the character encoding of the source files
@@ -848,7 +847,8 @@ INPUT_ENCODING         = UTF-8
 # *.m, *.markdown, *.md, *.mm, *.dox, *.py, *.pyw, *.f90, *.f95, *.f03, *.f08,
 # *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf, *.qsf and *.ice.
 
-FILE_PATTERNS          = *.js
+FILE_PATTERNS          = *.py \
+                         *.md
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -879,9 +879,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */node_modules/* \
-                         */docs/* \
-                         */tests/*
+EXCLUDE_PATTERNS       =
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -898,17 +896,16 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../fiftyone.pipeline.core/examples \
-                         ../fiftyone.pipeline.engines/examples \
-                         ../fiftyone.pipeline.engines.fiftyone/examples \
-                         ../../../src/snippets
+EXAMPLE_PATH           = ../fiftyone_pipeline_core/examples \
+                         ../fiftyone_pipeline_engines_fiftyone/examples \
+                         ../../documentation/src/snippets
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
 # *.h) to filter out the source-files in the directories. If left blank all
 # files are included.
 
-EXAMPLE_PATTERNS       = *.js
+EXAMPLE_PATTERNS       = *.py
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude commands
@@ -921,7 +918,7 @@ EXAMPLE_RECURSIVE      = YES
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = ../../../docs/images
+IMAGE_PATH             = ../../documentation/docs/images
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1133,7 +1130,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = ../../../docs/header.html
+HTML_HEADER            =
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1143,7 +1140,7 @@ HTML_HEADER            = ../../../docs/header.html
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            = ../../../docs/footer.html
+HTML_FOOTER            = ../../documentation/docs/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading style
 # sheet that is used by each HTML page. It can be used to fine-tune the look of
@@ -1155,7 +1152,7 @@ HTML_FOOTER            = ../../../docs/footer.html
 # obsolete.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_STYLESHEET        = ../../../docs/docs-main.min.css
+HTML_STYLESHEET        = ../../documentation/docs/docs-main.min.css
 
 # The HTML_EXTRA_STYLESHEET tag can be used to specify additional user-defined
 # cascading style sheets that are included after the standard style sheets
@@ -1178,13 +1175,11 @@ HTML_EXTRA_STYLESHEET  =
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../../../docs/images/icon-arrow-left-black.svg \
-                         ../../../docs/images/icon-arrow-right-black.svg \
-                         ../../../docs/images/icon-arrow-solid-right-mute.svg \
-                         ../../../docs/images/icon-arrow-solid-right-orange.svg \
-                         ../../../docs/images/icon-search.svg \
-                         ../../../docs/examplegrabber.js \
-                         ../../../docs/search51.js
+HTML_EXTRA_FILES       = ../../documentation/docs/images/icon-arrow-left-black.svg \
+                         ../../documentation/docs/images/icon-arrow-right-black.svg \
+                         ../../documentation/docs/images/icon-arrow-solid-right-mute.svg \
+                         ../../documentation/docs/images/icon-arrow-solid-right-orange.svg \
+                         ../../documentation/docs/images/icon-search.svg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -1600,7 +1595,7 @@ MATHJAX_CODEFILE       =
 # The default value is: YES.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-SEARCHENGINE           = NO
+SEARCHENGINE           = YES
 
 # When the SERVER_BASED_SEARCH tag is enabled the search engine will be
 # implemented using a web server instead of a web client using Javascript. There
@@ -2176,13 +2171,13 @@ SKIP_FUNCTION_MACROS   = NO
 # the path). If a tag file is not located in the directory in which doxygen is
 # run, you must also specify the path to the tagfile here.
 
-TAGFILES               =
+TAGFILES               = ../pipeline-node/docs/tagfile=../../pipeline-node/4.4/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create a
 # tag file that is based on the input files it reads. See section "Linking to
 # external documentation" for more information about the usage of tag files.
 
-GENERATE_TAGFILE       = tagfile
+GENERATE_TAGFILE       =
 
 # If the ALLEXTERNALS tag is set to YES, all external class will be listed in
 # the class index. If set to NO, only the inherited external classes will be
