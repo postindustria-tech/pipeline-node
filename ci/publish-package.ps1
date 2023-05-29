@@ -5,8 +5,6 @@ param (
     [boolean]$DryRun
 )
 
-$packages = "fiftyone.pipeline.cloudrequestengine", "fiftyone.pipeline.core", "fiftyone.pipeline.engines", "fiftyone.pipeline.engines.fiftyone"
-
-./node/publish-package-npm.ps1 -RepoName $RepoName -Packages $packages -DryRun $DryRun
+./node/publish-package-npm.ps1 -RepoName $RepoName -DryRun $DryRun
 
 exit $LASTEXITCODE
