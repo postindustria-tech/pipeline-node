@@ -3,16 +3,7 @@ param (
     [string]$RepoName
 )
 
-CurrentPath = Get-Location
-$Items = Get-ChildItem -Path $CurrentPath
-
-foreach ($Item in $Items) {
-    if ($Item.Attributes -band [System.IO.FileAttributes]::Directory) {
-        Write-Host "Directory: $($Item.Name)"
-    } else {
-        Write-Host "File: $($Item.Name)"
-    }
-}
+Push-Location $RepoName
 
 $packageJSON = @"
 {
@@ -54,8 +45,9 @@ Write-Output "Package configuration file created successfully."
 
 ./node/setup-environment.ps1 -RepoName $RepoName
 
-
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
+
+Pop-Location
 
