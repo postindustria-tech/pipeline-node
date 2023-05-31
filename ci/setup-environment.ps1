@@ -2,9 +2,6 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$RepoName
 )
-
-Push-Location $RepoName
-
 $packageJSON = @"
 {
     "name": "pipeline-node",
@@ -43,10 +40,8 @@ New-Item -ItemType File -Path "package.json" -Force | Out-Null
 Set-Content -Path "package.json" -Value $packageJSON
 Write-Output "Package configuration file created successfully."
 
-
 ./node/setup-environment.ps1 -RepoName $RepoName
 
-Pop-Location
 
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
