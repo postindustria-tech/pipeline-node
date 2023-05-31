@@ -48,5 +48,7 @@ Write-Output "Package configuration file created successfully."
 
 Pop-Location
 
-exit $LASTEXITCODE
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
 
