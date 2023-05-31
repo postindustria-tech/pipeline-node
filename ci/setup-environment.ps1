@@ -2,6 +2,18 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$RepoName
 )
+
+CurrentPath = Get-Location
+$Items = Get-ChildItem -Path $CurrentPath
+
+foreach ($Item in $Items) {
+    if ($Item.Attributes -band [System.IO.FileAttributes]::Directory) {
+        Write-Host "Directory: $($Item.Name)"
+    } else {
+        Write-Host "File: $($Item.Name)"
+    }
+}
+
 $packageJSON = @"
 {
     "name": "pipeline-node",
