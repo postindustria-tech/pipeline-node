@@ -12,7 +12,7 @@ $packageJSON = @"
     "description": "Temporary package to allow all tests to run using the local code as dependencies",
     "main": "index.js",
     "scripts": {
-        "unit-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testPathIgnorePatterns '(deviceDetectionCloud\.test\.js|keyUtils\.js)'",
+        "unit-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testPathIgnorePatterns '.*integration.*'",
         "integration-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testMatch '**/*integration*.js'"
     },
     "repository": {
