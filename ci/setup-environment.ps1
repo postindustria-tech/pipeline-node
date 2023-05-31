@@ -43,9 +43,10 @@ New-Item -ItemType File -Path "package.json" -Force | Out-Null
 Set-Content -Path "package.json" -Value $packageJSON
 Write-Output "Package configuration file created successfully."
 
-exit $LASTEXITCODE
 
 ./node/setup-environment.ps1 -RepoName $RepoName
 
 Pop-Location
+
+exit $LASTEXITCODE
 
