@@ -7,6 +7,6 @@ param (
 
 $packages = "fiftyone.pipeline.cloudrequestengine", "fiftyone.pipeline.core", "fiftyone.pipeline.engines", "fiftyone.pipeline.engines.fiftyone"
 
-./node/update-package.ps1 -RepoName $RepoName -Packages $packages
+./node/update-packages.ps1 -RepoName $RepoName -Packages $packages
 
 exit $LASTEXITCODE
