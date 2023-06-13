@@ -18,5 +18,5 @@ jobs:
       dryrun: ${{ inputs.dryrun }}
       build-platform: ubuntu-latest
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.ACCESS_TOKEN }}
       asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}", "NPMAuthToken": "${{ secrets.NPM_AUTH_TOKEN}}"}'
