@@ -30,176 +30,176 @@ const { default: each } = require('jest-each');
 process.env.NODE_PATH = __dirname + '/../..' + path.delimiter + process.env.NODE_PATH;
 require('module').Module._initPaths();
 
-const noCheck = function() {}
+const noCheck = function () {};
 
 let server;
 
 afterEach(() => {
-    if (server) {
-        server.close();
-        server = undefined;
-    }
-})
+  if (server) {
+    server.close();
+    server = undefined;
+  }
+});
 
-getTest = function(origin, writeResponse, checkRequest, checkResponse, done) {
-    const client = new RequestClient();
-    const requestListener = function (req, res) {
-        checkRequest(req);
-        writeResponse(res);
-    }
-    
-    server = http.createServer(requestListener);
-    server.listen(3000, () => {
-        const response = client.get("http://localhost:3000", origin);
-        checkResponse(response)
-        .finally(() => {
-            done();
-        })
-    });
-}
+getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
+  const client = new RequestClient();
+  const requestListener = function (req, res) {
+    checkRequest(req);
+    writeResponse(res);
+  };
 
-postTest = function(data, origin, writeResponse, checkRequest, checkResponse, done) {
-    const client = new RequestClient();
-    const requestListener = function (req, res) {
-        checkRequest(req);
-        writeResponse(res);
-    }
-    
-    server = http.createServer(requestListener);
-    server.listen(3000, () => {
-        const response = client.post("http://localhost:3000", data, origin);
-        checkResponse(response)
-        .finally(() => {
-            done();
-        })
-    });
-}
+  server = http.createServer(requestListener);
+  server.listen(3000, () => {
+    const response = client.get('http://localhost:3000', origin);
+    checkResponse(response)
+      .finally(() => {
+        done();
+      });
+  });
+};
+
+postTest = function (data, origin, writeResponse, checkRequest, checkResponse, done) {
+  const client = new RequestClient();
+  const requestListener = function (req, res) {
+    checkRequest(req);
+    writeResponse(res);
+  };
+
+  server = http.createServer(requestListener);
+  server.listen(3000, () => {
+    const response = client.post('http://localhost:3000', data, origin);
+    checkResponse(response)
+      .finally(() => {
+        done();
+      });
+  });
+};
 
 test('get - success', done => {
-    const expectedResponse = "here is the expected response."
-    getTest(
-        undefined,
-        res => {
-            res.writeHead(200);
-            res.end(expectedResponse);
-        },
-        noCheck,
-        res => {
-            return expect(res).resolves.toBe(expectedResponse);
-        },
-        done);
-})
+  const expectedResponse = 'here is the expected response.';
+  getTest(
+    undefined,
+    res => {
+      res.writeHead(200);
+      res.end(expectedResponse);
+    },
+    noCheck,
+    res => {
+      return expect(res).resolves.toBe(expectedResponse);
+    },
+    done);
+});
 
 test('get - origin', done => {
-    const origin = "some origin";
-    const expectedResponse = "here is the expected response."
-    getTest(
-        origin,
-        res => {
-            res.writeHead(200);
-            res.end(expectedResponse);
-        },
-        req => {
-            expect(req.headers.origin).toBe(origin);
-        },
-        res => {
-            return expect(res).resolves.toBe(expectedResponse);
-        },
-        done);
-})
+  const origin = 'some origin';
+  const expectedResponse = 'here is the expected response.';
+  getTest(
+    origin,
+    res => {
+      res.writeHead(200);
+      res.end(expectedResponse);
+    },
+    req => {
+      expect(req.headers.origin).toBe(origin);
+    },
+    res => {
+      return expect(res).resolves.toBe(expectedResponse);
+    },
+    done);
+});
 
-each([[ 400],[ 404],[ 429],[ 500]])
-.test('get - failure %d', (status, done) => {
-    const expectedResponse = "here is the expected response."
+each([[400], [404], [429], [500]])
+  .test('get - failure %d', (status, done) => {
+    const expectedResponse = 'here is the expected response.';
     getTest(
-        undefined,
-        res => {
-            res.writeHead(status);
-            res.end(expectedResponse);
-        },
-        noCheck,
-        res => {
-            return expect(res).rejects.toMatchObject({content: expectedResponse, statusCode: status});
-        },
-        done);
-})
+      undefined,
+      res => {
+        res.writeHead(status);
+        res.end(expectedResponse);
+      },
+      noCheck,
+      res => {
+        return expect(res).rejects.toMatchObject({ content: expectedResponse, statusCode: status });
+      },
+      done);
+  });
 
 test('post - success', done => {
-    const expectedResponse = "here is the expected response."
-    postTest(
-        {},
-        undefined,
-        res => {
-            res.writeHead(200);
-            res.end(expectedResponse);
-        },
-        noCheck,
-        res => {
-            return expect(res).resolves.toBe(expectedResponse);
-        },
-        done);
-})
+  const expectedResponse = 'here is the expected response.';
+  postTest(
+    {},
+    undefined,
+    res => {
+      res.writeHead(200);
+      res.end(expectedResponse);
+    },
+    noCheck,
+    res => {
+      return expect(res).resolves.toBe(expectedResponse);
+    },
+    done);
+});
 
-each([[ 400],[ 404],[ 429],[ 500]])
-.test('post - failure %d', (status, done) => {
-    const expectedResponse = "here is the expected response."
+each([[400], [404], [429], [500]])
+  .test('post - failure %d', (status, done) => {
+    const expectedResponse = 'here is the expected response.';
     postTest(
-        {},
-        undefined,
-        res => {
-            res.writeHead(status);
-            res.end(expectedResponse);
-        },
-        noCheck,
-        res => {
-            return expect(res).rejects.toMatchObject({content: expectedResponse, statusCode: status});
-        },
-        done);
-})
+      {},
+      undefined,
+      res => {
+        res.writeHead(status);
+        res.end(expectedResponse);
+      },
+      noCheck,
+      res => {
+        return expect(res).rejects.toMatchObject({ content: expectedResponse, statusCode: status });
+      },
+      done);
+  });
 
 test('post - origin', done => {
-    const origin = "some origin";
-    const expectedResponse = "here is the expected response."
-    postTest(
-        {},
-        origin,
-        res => {
-            res.writeHead(200);
-            res.end(expectedResponse);
-        },
-        req => {
-            expect(req.headers.origin).toBe(origin);
-        },
-        res => {
-            return expect(res).resolves.toBe(expectedResponse);
-        },
-        done);
-})
+  const origin = 'some origin';
+  const expectedResponse = 'here is the expected response.';
+  postTest(
+    {},
+    origin,
+    res => {
+      res.writeHead(200);
+      res.end(expectedResponse);
+    },
+    req => {
+      expect(req.headers.origin).toBe(origin);
+    },
+    res => {
+      return expect(res).resolves.toBe(expectedResponse);
+    },
+    done);
+});
 
 test('post - data', done => {
-    const expectedResponse = "here is the expected response."
-    const data = {one: "some evidence", two: "some more evidence"};
-    const encodedData = "one=some%20evidence&two=some%20more%20evidence";
-    postTest(
-        data,
-        undefined,
-        res => {
-            res.writeHead(200);
-            res.end(expectedResponse);
-        },
-        req => {
-            let recieved = '';
-            req.on('data', chunk => {
-                recieved += chunk;
-            })
-            req.on('end', () => {
-                expect(req.headers["content-type"]).toBe("application/x-www-form-urlencoded");
-                expect(req.headers["content-length"]).toBe(encodedData.length.toString());
-                expect(recieved).toBe(encodedData);
-            })
-        },
-        res => {
-            return expect(res).resolves.toBe(expectedResponse);
-        },
-        done);
-})
+  const expectedResponse = 'here is the expected response.';
+  const data = { one: 'some evidence', two: 'some more evidence' };
+  const encodedData = 'one=some%20evidence&two=some%20more%20evidence';
+  postTest(
+    data,
+    undefined,
+    res => {
+      res.writeHead(200);
+      res.end(expectedResponse);
+    },
+    req => {
+      let recieved = '';
+      req.on('data', chunk => {
+        recieved += chunk;
+      });
+      req.on('end', () => {
+        expect(req.headers['content-type']).toBe('application/x-www-form-urlencoded');
+        expect(req.headers['content-length']).toBe(encodedData.length.toString());
+        expect(recieved).toBe(encodedData);
+      });
+    },
+    res => {
+      return expect(res).resolves.toBe(expectedResponse);
+    },
+    done);
+});

@@ -31,40 +31,39 @@ process.env.NODE_PATH = __dirname + '/../..' + path.delimiter + process.env.NODE
 require('module').Module._initPaths();
 
 const PipelineBuilder = require(
-    __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
+  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
 );
 
 // Invalid resource key
-var testResourceKey = 'AAAAAAAAAAAA';
+const testResourceKey = 'AAAAAAAAAAAA';
 
 /**
  * Test cloud request engine adds correct information to post request
  * and returns the response in the ElementData
  */
-test("process", done => {
+test('process', done => {
+  const jsonResponse = { device: { value: 51 } };
+  const client = new MockRequestClient({ json: jsonResponse });
+  const engine = new CloudRequestEngine({
+    resourceKey: testResourceKey,
+    requestClient: client
+  });
 
-    const jsonResponse = { "device": { "value": 51 } };
-    const client = new MockRequestClient({json: jsonResponse});
-    const engine = new CloudRequestEngine({
-        resourceKey: testResourceKey,
-        requestClient: client
-    });
+  const pipeline = new PipelineBuilder()
+    .add(engine)
+    .build();
 
-    const pipeline = new PipelineBuilder()
-        .add(engine)
-        .build();
+  const data = pipeline.createFlowData();
 
-    var data = pipeline.createFlowData();
+  data.process().then((processedData) => {
+    const result = processedData.getFromElement(engine).cloud;
 
-    data.process().then((processedData) => {
-        var result = processedData.getFromElement(engine)["cloud"];
+    expect(result).toBe(JSON.stringify(jsonResponse));
 
-        expect(result).toBe(JSON.stringify(jsonResponse));
-    
-        var jsonObj = JSON.parse(result);
-        expect(jsonObj["device"]["value"]).toBe(51);
-        done();
-    });
+    const jsonObj = JSON.parse(result);
+    expect(jsonObj.device.value).toBe(51);
+    done();
+  });
 });
 
 /**
@@ -72,93 +71,97 @@ test("process", done => {
  * response from the accessible properties endpoint that contains
  * meta-data for sub-properties.
  */
-test("sub properties", () => {
-    const properties = {
-        'Products': {
-            'device': {
-                'DataTier': 'CloudV4TAC',
-                'Properties': [
-                    {
-                        'Name': 'IsMobile',
-                            'Type': 'Boolean',
-                            'Category': 'Device'
-                    },
-                    {
-                        'Name': 'IsTablet',
-                            'Type': 'Boolean',
-                            'Category': 'Device'
-                    }
-                ]
-            },
-            'devices': {
-                'DataTier': 'CloudV4TAC',
-                'Properties': [
-                    {
-                        'Name': 'Devices',
-                        'Type': 'Array',
-                        'Category': 'Unspecified',
-                        'ItemProperties': [
-                            {
-                                'Name': 'IsMobile',
-                                'Type': 'Boolean',
-                                'Category': 'Device'
-                            },
-                            {
-                                'Name': 'IsTablet',
-                                'Type': 'Boolean',
-                                'Category': 'Device'
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    };
-    const client = new MockRequestClient({ properties: properties });
-    const engine = new CloudRequestEngine({
-        resourceKey: testResourceKey,
-        requestClient: client
-    });
-    return engine.ready().then((engine => {
-        expect(Object.entries(engine.flowElementProperties).length).toBe(2);
-        var deviceProperties = engine.flowElementProperties["device"];
-        expect(Object.entries(deviceProperties).length).toBe(2);
-        propertiesContainName(deviceProperties, "IsMobile");
-        propertiesContainName(deviceProperties, "IsTablet");
-        var devicesProperties = engine.flowElementProperties["devices"];
-        expect(devicesProperties).not.toBeUndefined();
-        expect(devicesProperties).not.toBeNull();
-        expect(Object.entries(devicesProperties).length).toBe(1);
-        propertiesContainName(devicesProperties["devices"]["itemproperties"], "IsMobile");
-        propertiesContainName(devicesProperties["devices"]["itemproperties"], "IsTablet");
-    }))
-    
+test('sub properties', () => {
+  const properties = {
+    Products: {
+      device: {
+        DataTier: 'CloudV4TAC',
+        Properties: [
+          {
+            Name: 'IsMobile',
+            Type: 'Boolean',
+            Category: 'Device'
+          },
+          {
+            Name: 'IsTablet',
+            Type: 'Boolean',
+            Category: 'Device'
+          }
+        ]
+      },
+      devices: {
+        DataTier: 'CloudV4TAC',
+        Properties: [
+          {
+            Name: 'Devices',
+            Type: 'Array',
+            Category: 'Unspecified',
+            ItemProperties: [
+              {
+                Name: 'IsMobile',
+                Type: 'Boolean',
+                Category: 'Device'
+              },
+              {
+                Name: 'IsTablet',
+                Type: 'Boolean',
+                Category: 'Device'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+  const client = new MockRequestClient({ properties });
+  const engine = new CloudRequestEngine({
+    resourceKey: testResourceKey,
+    requestClient: client
+  });
+  return engine.ready().then(engine => {
+    expect(Object.entries(engine.flowElementProperties).length).toBe(2);
+    const deviceProperties = engine.flowElementProperties.device;
+    expect(Object.entries(deviceProperties).length).toBe(2);
+    propertiesContainName(deviceProperties, 'IsMobile');
+    propertiesContainName(deviceProperties, 'IsTablet');
+    const devicesProperties = engine.flowElementProperties.devices;
+    expect(devicesProperties).not.toBeUndefined();
+    expect(devicesProperties).not.toBeNull();
+    expect(Object.entries(devicesProperties).length).toBe(1);
+    propertiesContainName(devicesProperties.devices.itemproperties, 'IsMobile');
+    propertiesContainName(devicesProperties.devices.itemproperties, 'IsTablet');
+  });
 });
 
 /**
- * Test cloud request engine handles JSON errors from the cloud service 
+ * Test cloud request engine handles JSON errors from the cloud service
  * as expected.
  * An exception should be thrown by the cloud request engine
  * containing the errors from the cloud service in the JSON object.
  */
-test("validate error handling JSON errors", async () => {
-    const errorMessage = "an error message returned by the cloud service"
-    const client = new MockRequestClient({
-        resourceKey: "resourceKey",
-        error: '{ "status":"400", "errors": ["' + errorMessage + '"] }'
-    });
+test('validate error handling JSON errors', async () => {
+  const errorMessage = 'an error message returned by the cloud service';
+  const client = new MockRequestClient({
+    resourceKey: 'resourceKey',
+    error: '{ "status":"400", "errors": ["' + errorMessage + '"] }'
+  });
 
-    const e = () => {
-        return new CloudRequestEngine({
-            resourceKey: testResourceKey,
-            requestClient: client
-        }).ready();
-    }    
-    await expect(e()).rejects.toEqual([new CloudRequestError(errorMessage)]);
+  const e = () => {
+    return new CloudRequestEngine({
+      resourceKey: testResourceKey,
+      requestClient: client
+    }).ready();
+  };
+  await expect(e()).rejects.toEqual([new CloudRequestError(errorMessage)]);
 });
 
-function propertiesContainName(properties, name) {
-    expect(properties[name.toLowerCase()]).not.toBeUndefined();
-    expect(properties[name.toLowerCase()]).not.toBeNull();
-    expect(properties[name.toLowerCase()].name).toBe(name);
+/**
+ *
+ * @param properties
+ * @param name
+ */
+function propertiesContainName (properties, name) {
+  expect(properties[name.toLowerCase()]).not.toBeUndefined();
+  expect(properties[name.toLowerCase()]).not.toBeNull();
+  expect(properties[name.toLowerCase()].name).toBe(name);
 }

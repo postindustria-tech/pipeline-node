@@ -21,22 +21,24 @@
  * ********************************************************************* */
 
 class Helpers {
-    
-	/**
-	 * Set response headers in the response object (e.g. Accept-CH)
-     * @param response: The response to set the headers in.
-	 * @param flowData: A processed FlowData instance to get the response header values
-	 * from.
-	 */
-	static setResponseHeaders(response, flowData) {
-        for (const [key, value] of Object.entries(flowData['set-headers']['responseheadersdictionary'])) {
-			if (response.hasHeader(key)) {
-				response.setHeader(key, `${response.getHeader(key)},${value}`);
-			} else {
+  /**
+   * Set response headers in the response object (e.g. Accept-CH)
+   *
+   * @param response: The response to set the headers in.
+   * @param flowData: A processed FlowData instance to get the response header values
+   * from.
+   * @param response
+   * @param flowData
+   */
+  static setResponseHeaders (response, flowData) {
+    for (const [key, value] of Object.entries(flowData['set-headers'].responseheadersdictionary)) {
+      if (response.hasHeader(key)) {
+        response.setHeader(key, `${response.getHeader(key)},${value}`);
+      } else {
             	response.setHeader(key, value);
-			}
-        }
+      }
     }
+  }
 }
 
 module.exports = Helpers;

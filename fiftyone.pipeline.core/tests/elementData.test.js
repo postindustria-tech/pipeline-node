@@ -44,7 +44,7 @@ const testEngine = new Engine(
         meta: {
           type: 'int'
         }
-      },
+      }
     },
     processInternal: function (flowData) {
       const contents = { one: 1 };
@@ -52,7 +52,7 @@ const testEngine = new Engine(
       // Check if flowData has been processed before (for cache test)
 
       const data = new ElementDataDictionary(
-        { flowElement: this, contents: contents }
+        { flowElement: this, contents }
       );
 
       flowData.setElementData(data);

@@ -32,7 +32,7 @@ const template = fs.readFileSync(
 const FlowElement = require('./flowElement.js');
 const EvidenceKeyFilter = require('./evidenceKeyFilter.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
-var uglifyJS = require('uglify-js');
+const uglifyJS = require('uglify-js');
 
 /**
  * An instance of EvidenceKeyFilter which removes all but header
@@ -86,12 +86,12 @@ class JavaScriptBuilderElement extends FlowElement {
     super(...arguments);
 
     this.settings = {
-      objName: objName,
-      protocol: protocol,
-      host: host,
-      endPoint: endPoint,
-      enableCookies: enableCookies,
-      minify: minify
+      objName,
+      protocol,
+      host,
+      endPoint,
+      enableCookies,
+      minify
     };
 
     this.dataKey = 'javascriptbuilder';

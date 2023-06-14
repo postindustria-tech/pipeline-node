@@ -182,14 +182,14 @@ const pipeline = new FiftyOnePipelineCore.PipelineBuilder()
 const server = http.createServer((req, res) => {
   if (req.url !== '/favicon.ico') {
     const flowData = pipeline.createFlowData();
-  
+
     // Add any information from the request
     // (headers, cookies and additional client side provided information)
     flowData.evidence.addFromRequest(req);
-  
+
     flowData.process().then(function () {
       // Output the date of birth form with any results if they exist
-  
+
       const output = `
   
           <h1>Starsigns</h1>
@@ -207,7 +207,7 @@ const server = http.createServer((req, res) => {
           </form>
           
           `;
-  
+
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html');
       res.end(output);

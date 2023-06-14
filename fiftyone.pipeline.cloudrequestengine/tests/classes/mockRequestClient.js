@@ -21,84 +21,82 @@
  * ********************************************************************* */
 
 const defaultProperties = {
-    "Products": {
-        "device": { 
-            "DataTier":"CloudV4Free",
-            "Properties":[
-                {"Name":"IsMobile","Type":"Boolean","Category":"Device","DelayExecution":false},
-                {"Name":"ScreenPixelsWidth","Type":"Int32","Category":"Screen","DelayExecution":false},
-                {"Name":"ScreenPixelsHeight","Type":"Int32","Category":"Screen","DelayExecution":false},
-                {"Name":"JavascriptHardwareProfile","Type":"JavaScript","Category":"Javascript","DelayExecution":false}]
-            }
-        }
-    };
+  Products: {
+    device: {
+      DataTier: 'CloudV4Free',
+      Properties: [
+        { Name: 'IsMobile', Type: 'Boolean', Category: 'Device', DelayExecution: false },
+        { Name: 'ScreenPixelsWidth', Type: 'Int32', Category: 'Screen', DelayExecution: false },
+        { Name: 'ScreenPixelsHeight', Type: 'Int32', Category: 'Screen', DelayExecution: false },
+        { Name: 'JavascriptHardwareProfile', Type: 'JavaScript', Category: 'Javascript', DelayExecution: false }]
+    }
+  }
+};
 
 const defaultKeys = [
-    "header.User-Agent",
-    "query.User-Agent",
-    "cookie.51D_JavascriptHardwareProfile",
-    "query.51D_JavascriptHardwareProfile",
-    "query.51D_ProfileIds",
-    "cookie.51D_ProfileIds"
-  ];
+  'header.User-Agent',
+  'query.User-Agent',
+  'cookie.51D_JavascriptHardwareProfile',
+  'query.51D_JavascriptHardwareProfile',
+  'query.51D_ProfileIds',
+  'cookie.51D_ProfileIds'
+];
 
 const defaultJson = {
-    "device": {
-      "ismobile": false,
-      "screenpixelswidth": 0,
-      "screenpixelsheight": 0,
-      "javascripthardwareprofile": null,
-      "javascripthardwareprofilenullreason": null
-    },
-    "javascriptProperties": [
-      "device.javascripthardwareprofile"
-    ]
-  }
+  device: {
+    ismobile: false,
+    screenpixelswidth: 0,
+    screenpixelsheight: 0,
+    javascripthardwareprofile: null,
+    javascripthardwareprofilenullreason: null
+  },
+  javascriptProperties: [
+    'device.javascripthardwareprofile'
+  ]
+};
 
 class MockRequestClient {
+  constructor ({
+    properties = defaultProperties,
+    json = defaultJson,
+    keys = defaultKeys,
+    error
+  } = {}) {
+    this.properties = properties;
+    this.json = json;
+    this.keys = keys;
+    this.error = error;
+  }
 
-    constructor({
-        properties = defaultProperties,
-        json = defaultJson,
-        keys = defaultKeys,
-        error} = {}) {
-        this.properties = properties;
-        this.json = json;
-        this.keys = keys;
-        this.error = error;
-    }
+  post (url, headers, data) {
+    const self = this;
+    return new Promise(function (resolve, reject) {
+      if (self.error) {
+        reject(error);
+      }
+      if (url.toLowerCase().includes('json')) {
+        resolve(JSON.stringify(self.json));
+      } else {
+        reject('unexpected URL ' + url);
+      }
+    });
+  }
 
-    post(url, headers, data) {
-        let self = this;
-        return new Promise(function (resolve, reject) {
-            if (self.error) {
-                reject(error);
-            }
-            if (url.toLowerCase().includes('json')) {
-                resolve(JSON.stringify(self.json));
-            }
-            else {
-                reject("unexpected URL " + url);
-            }
-        });
-    }
-    get(url, origin) {
-        let self = this;
-        return new Promise(function (resolve, reject) {
-            if (self.error) {
-                reject(self.error);
-            }
-            if (url.toLowerCase().includes('accessibleproperties')) {
-                resolve(JSON.stringify(self.properties));
-            }
-            else if (url.toLowerCase().includes('evidencekeys')) {
-                resolve(JSON.stringify(self.keys));
-            }
-            else {
-                reject("unexpected URL " + url);
-            }
-        });
-    }
+  get (url, origin) {
+    const self = this;
+    return new Promise(function (resolve, reject) {
+      if (self.error) {
+        reject(self.error);
+      }
+      if (url.toLowerCase().includes('accessibleproperties')) {
+        resolve(JSON.stringify(self.properties));
+      } else if (url.toLowerCase().includes('evidencekeys')) {
+        resolve(JSON.stringify(self.keys));
+      } else {
+        reject('unexpected URL ' + url);
+      }
+    });
+  }
 }
 
 module.exports = MockRequestClient;

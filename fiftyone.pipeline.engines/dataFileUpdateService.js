@@ -54,7 +54,7 @@ class DataFileUpdateService {
     this.eventEmitter = new EventEmitter();
   }
 
-  registerPipeline(pipeline) {
+  registerPipeline (pipeline) {
     this.pipeline = pipeline;
   }
 
@@ -62,7 +62,7 @@ class DataFileUpdateService {
     this.eventEmitter.on(listener, callback);
   }
 
-  once(listener, callback) {
+  once (listener, callback) {
     this.eventEmitter.once(listener, callback);
   }
 
@@ -165,7 +165,7 @@ class DataFileUpdateService {
       }
 
       const filename = dataFile.tempDataDirectory +
-        '/' + dataFile.identifier + 
+        '/' + dataFile.identifier +
         Date.now();
 
       response.pipe(fs.createWriteStream(filename));
@@ -176,9 +176,9 @@ class DataFileUpdateService {
         if (dataFile.verifyMD5) {
           const headerMD5 = response.headers['content-md5'];
 
-          var fd = fs.createReadStream(filename);
+          const fd = fs.createReadStream(filename);
 
-          var hash = crypto.createHash('md5');
+          const hash = crypto.createHash('md5');
           hash.setEncoding('hex');
 
           fd.on('end', function () {

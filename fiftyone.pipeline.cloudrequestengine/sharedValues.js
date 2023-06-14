@@ -22,4 +22,4 @@
 
 module.exports = {
   baseURLDefault: 'https://cloud.51degrees.com/api/v4/'
-}
+};
