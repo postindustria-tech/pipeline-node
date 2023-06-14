@@ -40,7 +40,7 @@ module.exports = {
       }
 
       const data = new ElementDataDictionary(
-        { flowElement: this, contents: contents });
+        { flowElement: this, contents });
 
       flowData.setElementData(data);
     },
@@ -64,7 +64,7 @@ module.exports = {
           const contents = { string: 'hello' };
 
           const data = new ElementDataDictionary(
-            { flowElement: flowElement, contents: contents });
+            { flowElement, contents });
 
           flowData.setElementData(data);
 
@@ -118,7 +118,7 @@ module.exports = {
       flowData.setElementData(data);
     }
   }),
-  
+
   device: new FlowElement({
     dataKey: 'device',
     additionalValues: {},
@@ -127,7 +127,7 @@ module.exports = {
         flowElement: this,
         contents: {
           yes: new AspectPropertyValue(null, 'success'),
-          no: new AspectPropertyValue('Value missing')        
+          no: new AspectPropertyValue('Value missing')
         }
       }
       );

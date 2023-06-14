@@ -63,7 +63,7 @@ class Sync extends FlowElement {
     }
 
     const data = new ElementDataDictionary(
-      { flowElement: this, contents: contents }
+      { flowElement: this, contents }
     );
 
     flowData.setElementData(data);

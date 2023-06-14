@@ -23,7 +23,7 @@
 const util = require('util');
 const coreErrorMessages = require(
   __dirname + '/../../fiftyone.pipeline.core/errorMessages'
-)
+);
 const errorMessages = require('../errorMessages');
 const Engine = require(__dirname + '/../engine');
 const PipelineBuilder = require(
@@ -46,7 +46,7 @@ let hasRun = false;
 const testEngine = new Engine(
   {
     dataKey: 'testEngine',
-    cache: cache,
+    cache,
     restrictedProperties: ['one', 'noCache'],
     evidenceKeyFilter: new BasicListEvidenceKeyFilter(['header.user-agent']),
     properties: {
@@ -69,7 +69,7 @@ const testEngine = new Engine(
       contents.noCache = hasRun;
 
       const data = new AspectDataDictionary(
-        { flowElement: this, contents: contents }
+        { flowElement: this, contents }
       );
 
       flowData.setElementData(data);

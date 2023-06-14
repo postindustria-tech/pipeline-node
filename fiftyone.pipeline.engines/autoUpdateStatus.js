@@ -21,28 +21,28 @@
  * ********************************************************************* */
 
 const autoUpdateStatus = {
-    // Update completed successfully.
-    AUTO_UPDATE_SUCCESS: 'Success',
-    // HTTPS connection could not be established.
-    AUTO_UPDATE_HTTPS_ERR: 'HTTPS Error',
-    // No need to perform update.
-    AUTO_UPDATE_NOT_NEEDED: 'Update Not Needed',
-    // Update currently under way.
-    AUTO_UPDATE_IN_PROGRESS: 'In Progress',
-    // Path to master file is directory not file
-    AUTO_UPDATE_MASTER_FILE_CANT_RENAME: 'Cannot Rename Master File',
-    // 51Degrees server responded with 429: too many attempts.
-    AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS: '429 Too Many Attempts',
-    // 51Degrees server responded with 403 meaning key is blacklisted.
-    AUTO_UPDATE_ERR_403_FORBIDDEN: '403 Forbidden',
-    // Used when IO operations with input or output stream failed.
-    AUTO_UPDATE_ERR_READING_STREAM: 'Error Reading Stream',
-    // MD5 validation failed
-    AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED: 'MD5 Validation Failed',
-    // The new data file can't be renamed to replace the previous one.
-    AUTO_UPDATE_NEW_FILE_CANT_RENAME: 'Cannot Rename New File',
-    // Refreshing the engine with the new data caused an error to occur.
-    AUTO_UPDATE_REFRESH_FAILED: 'Refresh Failed'
+  // Update completed successfully.
+  AUTO_UPDATE_SUCCESS: 'Success',
+  // HTTPS connection could not be established.
+  AUTO_UPDATE_HTTPS_ERR: 'HTTPS Error',
+  // No need to perform update.
+  AUTO_UPDATE_NOT_NEEDED: 'Update Not Needed',
+  // Update currently under way.
+  AUTO_UPDATE_IN_PROGRESS: 'In Progress',
+  // Path to master file is directory not file
+  AUTO_UPDATE_MASTER_FILE_CANT_RENAME: 'Cannot Rename Master File',
+  // 51Degrees server responded with 429: too many attempts.
+  AUTO_UPDATE_ERR_429_TOO_MANY_ATTEMPTS: '429 Too Many Attempts',
+  // 51Degrees server responded with 403 meaning key is blacklisted.
+  AUTO_UPDATE_ERR_403_FORBIDDEN: '403 Forbidden',
+  // Used when IO operations with input or output stream failed.
+  AUTO_UPDATE_ERR_READING_STREAM: 'Error Reading Stream',
+  // MD5 validation failed
+  AUTO_UPDATE_ERR_MD5_VALIDATION_FAILED: 'MD5 Validation Failed',
+  // The new data file can't be renamed to replace the previous one.
+  AUTO_UPDATE_NEW_FILE_CANT_RENAME: 'Cannot Rename New File',
+  // Refreshing the engine with the new data caused an error to occur.
+  AUTO_UPDATE_REFRESH_FAILED: 'Refresh Failed'
 };
 
 Object.freeze(autoUpdateStatus);

@@ -35,15 +35,16 @@ let server = null;
 
 /**
  * Local server used to capture usage data sent.
+ *
  * @param req the request
  * @param res the response
  */
 const requestListener = function (req, res) {
-  var data = '';
+  let data = '';
   // Unzip the data.
-  var gunzip = zlib.createGunzip();
+  const gunzip = zlib.createGunzip();
   req.pipe(gunzip);
-  gunzip.on('data', function(chunk) {
+  gunzip.on('data', function (chunk) {
     data += chunk;
   });
   gunzip.on('error', (e) => fail(e));
@@ -53,7 +54,7 @@ const requestListener = function (req, res) {
     res.writeHead(200);
     res.end();
   });
-}
+};
 
 beforeEach(() => {
   received = [];
@@ -81,13 +82,13 @@ test('share usage - data received', done => {
     .build();
 
   const flowData = pipeline.createFlowData();
-  
+
   flowData.process().then(() => {
     setTimeout(() => {
       expect(received.length).toBe(1);
-      done();  
+      done();
     }, 2000);
-  })
+  });
 });
 
 /**
@@ -104,7 +105,7 @@ test('share usage - data correct', done => {
     .build();
 
   const flowData = pipeline.createFlowData();
-  
+
   flowData.process().then(() => {
     setTimeout(() => {
       expect(received[0]).not.toBeNull();
@@ -117,7 +118,7 @@ test('share usage - data correct', done => {
       expect(received[0]).toContain('<FlowElement>ShareUsage</FlowElement>');
       done();
     }, 2000);
-  })
+  });
 });
 
 /**
@@ -143,7 +144,7 @@ test('share usage - includes header', done => {
       expect(received[0]).toContain(`<header Name="user-agent">${uaValue}</header>`);
       done();
     }, 2000);
-  })
+  });
 });
 
 /**
@@ -170,7 +171,7 @@ test('share usage - includes client ip', done => {
       expect(received[0]).toContain(`<ClientIP>${ip}</ClientIP>`);
       done();
     }, 2000);
-  })
+  });
 });
 
 /**
@@ -194,7 +195,7 @@ test('share usage - two events - first event', done => {
       expect(received.length).toBe(0);
       done();
     }, 2000);
-  })
+  });
 });
 
 /**
@@ -237,7 +238,7 @@ test('share usage - ignore headers', done => {
   const usageEngine = new ShareUsage({
     requestedPackageSize: 1,
     endpoint: 'http://127.0.0.1:8080/',
-    headerBlacklist: [ 'x-forwarded-for', 'forwarded-for' ]
+    headerBlacklist: ['x-forwarded-for', 'forwarded-for']
   });
 
   const pipeline = new PipelineBuilder()
@@ -402,7 +403,7 @@ test('share usage - send  more than once', done => {
 /**
  * Check that small portion sharing is done correctly.
  */
-test('share usage - low percentage', function(done) {
+test('share usage - low percentage', function (done) {
   const usageEngine = new ShareUsage({
     requestedPackageSize: 10,
     sharePercentage: 0.1,
@@ -413,9 +414,9 @@ test('share usage - low percentage', function(done) {
     .add(usageEngine)
     .build();
 
-  var requiredEvents = 0;
+  let requiredEvents = 0;
   while (received.length == 0 && requiredEvents < 10000) {
-    let flowData = pipeline.createFlowData();
+    const flowData = pipeline.createFlowData();
     flowData.evidence.add('server.client-ip', '1.2.3.4');
     flowData.evidence.add('header.user-agent', `ua ${requiredEvents}`);
     usageEngine.processInternal(flowData);
@@ -431,14 +432,14 @@ test('share usage - low percentage', function(done) {
     // make sure the value is of the expected order of magnitude.
     expect(received.length).toBeGreaterThan(10);
     expect(received.length).toBeLessThan(1000);
-    done();    
+    done();
   }, (3000));
 });
 
 /**
  * Check that XML characters are escaped correctly.
  */
- test('share usage - XML characters', done => {
+test('share usage - XML characters', done => {
   const usageEngine = new ShareUsage({
     requestedPackageSize: 1,
     endpoint: 'http://127.0.0.1:8080/'

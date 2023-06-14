@@ -21,6 +21,6 @@
  * ********************************************************************* */
 
 module.exports = {
-    // warning message to be shown for conflicted evidences
-    evidenceConflict: "WARNING: '%s:%s' evidence conflicts with %s"
-}
+  // warning message to be shown for conflicted evidences
+  evidenceConflict: "WARNING: '%s:%s' evidence conflicts with %s"
+};

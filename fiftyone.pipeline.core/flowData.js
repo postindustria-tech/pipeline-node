@@ -69,12 +69,11 @@ class FlowData {
         // to the data getters.
         if (typeof key === 'string' || key === Symbol.iterator) {
           try {
-            let value = data[key]; 
+            let value = data[key];
             if (typeof value === 'undefined') {
               value = data.get(key);
             }
             return value;
-
           } catch (e) {
             // If the key was 'then' and an error was thrown then we
             // can ignore it. Otherwise, throw the error back up the stack.
@@ -142,14 +141,13 @@ class FlowData {
 
     this.errors[errorKey] = error;
 
-    let logMessage = "Error occurred during processing";
+    let logMessage = 'Error occurred during processing';
 
     if (errorKey !== undefined) {
-        logMessage = logMessage + " of " + errorKey + ". '" + error + "'";
+      logMessage = logMessage + ' of ' + errorKey + ". '" + error + "'";
     }
 
     this.pipeline.log('error', logMessage);
-
   }
 
   /**
@@ -187,7 +185,7 @@ class FlowData {
 
     const elementData = this.data[flowElementDataKey];
     if (typeof elementData === 'undefined') {
-      var message = util.format(errorMessages.noElementData,
+      const message = util.format(errorMessages.noElementData,
         flowElementDataKey, Object.keys(this.data).join(', '));
       throw message;
     }

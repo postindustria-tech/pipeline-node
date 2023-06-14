@@ -34,4 +34,4 @@ module.exports = {
     'resource key does appear to allow access to this property.',
   propertyExcluded: 'Property "%s" is not present in the results. This ' +
     'is because the property has been excluded when configuring the engine.'
-}
+};
