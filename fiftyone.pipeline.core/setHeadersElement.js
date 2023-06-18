@@ -136,7 +136,7 @@ class SetHeadersElement extends FlowElement {
    */
   getResponseHeaders (flowData) {
     const result = {};
-    for (const [key, header] of Object.entries(this.headers)) {
+    for (const [, header] of Object.entries(this.headers)) {
       var headerValue = new Set();
       header.properties.forEach(property => {
         const keys = property.split('.');
@@ -149,7 +149,7 @@ class SetHeadersElement extends FlowElement {
       });
       if (headerValue.size > 0) {
         result[header.name] =
-				    Array.from(headerValue).join(SOURCE_HEADER_SEPARATOR);
+          Array.from(headerValue).join(SOURCE_HEADER_SEPARATOR);
       }
     }
     return result;
@@ -179,9 +179,9 @@ class SetHeadersElement extends FlowElement {
 
     try {
       const value = element[propertyKey];
-      if (value != undefined && value != null) {
+      if (value !== undefined && value !== null) {
         if (value instanceof AspectPropertyValue) {
-          if (value.hasValue && value.value != 'Unknown') {
+          if (value.hasValue && value.value !== 'Unknown') {
             return value.value;
           } else {
             return undefined;
@@ -191,8 +191,7 @@ class SetHeadersElement extends FlowElement {
         }
       }
     } catch (e) {
-      flowData.pipeline.log('info',
-				`Property '${propertyKey}' is not present in the ${elementKey} element.`);
+      flowData.pipeline.log('info', `Property '${propertyKey}' is not present in the ${elementKey} element.`);
       return undefined;
     }
 

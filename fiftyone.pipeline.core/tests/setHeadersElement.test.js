@@ -25,7 +25,6 @@ const PipelineBuilder = require('../pipelineBuilder');
 const Helpers = require('../helpers');
 const each = require('jest-each').default;
 const AspectPropertyValue = require('../aspectPropertyValue');
-const ElementDataDictionary = require('../elementDataDictionary');
 const httpMocks = require('node-mocks-http');
 
 const unknownValue = new AspectPropertyValue(null, 'Unknown');

@@ -90,7 +90,7 @@ class RequestClient {
       });
 
       req.on('error', (err) => {
-        reject({ content: err.message });
+        reject({ content: err.message }); // eslint-disable-line
       });
 
       req.write(requestData);
@@ -151,7 +151,7 @@ class RequestClient {
           }
         });
       }).on('error', (err) => {
-        reject({ content: err.message });
+        reject({ content: err.message }); // eslint-disable-line
       });
     });
   }

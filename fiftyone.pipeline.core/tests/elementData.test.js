@@ -57,7 +57,7 @@ const testEngine = new Engine(
 
       flowData.setElementData(data);
 
-      hasRun = true;
+      hasRun = true; // eslint-disable-line
     }
   }
 );

@@ -35,7 +35,7 @@ class Helpers {
       if (response.hasHeader(key)) {
         response.setHeader(key, `${response.getHeader(key)},${value}`);
       } else {
-            	response.setHeader(key, value);
+        response.setHeader(key, value);
       }
     }
   }

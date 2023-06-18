@@ -20,14 +20,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const require51 = (requestedPackage) => {
-  try {
-    return require(__dirname + '/../' + requestedPackage);
-  } catch (e) {
-    return require(requestedPackage);
-  }
-};
-
 const EvidenceKeyFilter = require('fiftyone.pipeline.core').EvidenceKeyFilter;
 
 /**

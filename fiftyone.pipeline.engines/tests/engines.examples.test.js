@@ -48,7 +48,7 @@ const testExample = function ({ file, portNumber }) {
 
   code += serverClose;
 
-  () => jest.fn(eval(code));
+  () => jest.fn(eval(code)); // eslint-disable-line
 };
 
 test('caching example', () => {

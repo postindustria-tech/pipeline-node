@@ -72,12 +72,12 @@ class MockRequestClient {
     const self = this;
     return new Promise(function (resolve, reject) {
       if (self.error) {
-        reject(error);
+        reject(self.error);
       }
       if (url.toLowerCase().includes('json')) {
         resolve(JSON.stringify(self.json));
       } else {
-        reject('unexpected URL ' + url);
+        reject('unexpected URL ' + url); // eslint-disable-line
       }
     });
   }
@@ -93,7 +93,7 @@ class MockRequestClient {
       } else if (url.toLowerCase().includes('evidencekeys')) {
         resolve(JSON.stringify(self.keys));
       } else {
-        reject('unexpected URL ' + url);
+        reject('unexpected URL ' + url); // eslint-disable-line
       }
     });
   }

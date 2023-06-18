@@ -79,7 +79,7 @@ test('get', done => {
 test('get invalid data key', done => {
   syncFlowData.process().then(function () {
     try {
-      syncFlowData.invalid;
+      syncFlowData.invalid; // eslint-disable-line
     } catch (e) {
       expect(e.indexOf(
         util.format(
@@ -255,7 +255,7 @@ test('aspectPropertyValue', done => {
     expect(flowData.apv.get('no').hasValue).toBe(false);
     expect(expect(flowData.apv.no.noValueMessage).toBe('Value missing'));
 
-    const error = '';
+    const error = ''; // eslint-disable-line
 
     // Trying to access the value of an APV that does not have a
     // value should throw an error.

@@ -34,14 +34,14 @@ const noCheck = function () {};
 
 let server;
 
-afterEach(() => {
+afterEach(() => { // eslint-disable-line
   if (server) {
     server.close();
     server = undefined;
   }
 });
 
-getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
+const getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
   const client = new RequestClient();
   const requestListener = function (req, res) {
     checkRequest(req);
@@ -58,7 +58,7 @@ getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
   });
 };
 
-postTest = function (data, origin, writeResponse, checkRequest, checkResponse, done) {
+const postTest = function (data, origin, writeResponse, checkRequest, checkResponse, done) {
   const client = new RequestClient();
   const requestListener = function (req, res) {
     checkRequest(req);

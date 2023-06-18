@@ -20,13 +20,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const require51 = (requestedPackage) => {
-  try {
-    return require(__dirname + '/../' + requestedPackage);
-  } catch (e) {
-    return require(requestedPackage);
-  }
-};
 const util = require('util');
 const Engine = require('fiftyone.pipeline.engines').Engine;
 const AspectDataDictionary = require('fiftyone.pipeline.engines')
@@ -182,7 +175,7 @@ class CloudRequestEngine extends Engine {
     } catch (parseError) {
       errors = ['Error parsing response - ' + responseBody];
     }
-    if (responseBody.length == 0) {
+    if (responseBody.length === 0) {
       errors = ['No data in response from cloud service'];
     }
     return errors;
@@ -208,7 +201,7 @@ class CloudRequestEngine extends Engine {
         response.statusCode));
     });
 
-    if (cloudErrors.length == 0 &&
+    if (cloudErrors.length === 0 &&
       response.statusCode > 299) {
       const message = 'Cloud service returned status code ' +
           response.statusCode + ' with content ' + content + '.';
@@ -402,7 +395,7 @@ class CloudRequestEngine extends Engine {
       const suffix = evidenceKeyParts[1];
 
       // Check and add the evidence to the query parameters.
-      if ((suffix in queryData) == false) {
+      if ((suffix in queryData) === false) {
         queryData[suffix] = evidenceValue;
       } else {
         // If the queryParameter exists already.

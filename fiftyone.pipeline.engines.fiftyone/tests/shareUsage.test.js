@@ -20,7 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const { FlowData, PipelineBuilder } = require('fiftyone.pipeline.core');
+const { PipelineBuilder } = require('fiftyone.pipeline.core');
 const ShareUsage = require('../shareUsage');
 const http = require('http');
 const os = require('os');
@@ -47,7 +47,7 @@ const requestListener = function (req, res) {
   gunzip.on('data', function (chunk) {
     data += chunk;
   });
-  gunzip.on('error', (e) => fail(e));
+  gunzip.on('error', (e) => fail(e)); // eslint-disable-line
   // Return an OK response.
   gunzip.on('end', () => {
     received.push(data);
@@ -56,7 +56,7 @@ const requestListener = function (req, res) {
   });
 };
 
-beforeEach(() => {
+beforeEach(() => { // eslint-disable-line
   received = [];
   // Set up the local server. This is HTTP rather than HTTPS to avoid
   // having to use local certificates.
@@ -64,7 +64,7 @@ beforeEach(() => {
   server.listen(8080);
 });
 
-afterEach(() => {
+afterEach(() => { // eslint-disable-line
   server.close();
 });
 
@@ -415,7 +415,7 @@ test('share usage - low percentage', function (done) {
     .build();
 
   let requiredEvents = 0;
-  while (received.length == 0 && requiredEvents < 10000) {
+  while (received.length === 0 && requiredEvents < 10000) {
     const flowData = pipeline.createFlowData();
     flowData.evidence.add('server.client-ip', '1.2.3.4');
     flowData.evidence.add('header.user-agent', `ua ${requiredEvents}`);

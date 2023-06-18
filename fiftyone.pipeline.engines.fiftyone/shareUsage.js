@@ -20,14 +20,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const require51 = (requestedPackage) => {
-  try {
-    return require(__dirname + '/../' + requestedPackage);
-  } catch (e) {
-    return require(requestedPackage);
-  }
-};
-
 const engines = require('fiftyone.pipeline.engines');
 
 const Engine = engines.Engine;
@@ -115,7 +107,7 @@ class ShareUsage extends Engine {
     this.shareData = [];
 
     if (endpoint.includes('https://') === false &&
-      endpoint.includes('http://') == false) {
+      endpoint.includes('http://') === false) {
       endpoint = 'https://' + endpoint;
     }
     this.endpoint = url.parse(endpoint);
@@ -326,7 +318,7 @@ class ShareUsage extends Engine {
     if (!this.flowElements) {
       if (this.pipelines.length === 1) {
         const list = [];
-        for (const [key, value] of Object.entries(this.pipelines[0].flowElements)) {
+        for (const [, value] of Object.entries(this.pipelines[0].flowElements)) {
           list.push(value.constructor.name);
         }
         this.flowElements = list;

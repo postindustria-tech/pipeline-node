@@ -22,9 +22,7 @@
 
 const path = require('path');
 const CloudRequestEngine = require('../cloudRequestEngine');
-const { hasUncaughtExceptionCaptureCallback } = require('process');
-const { doesNotMatch, fail } = require('assert');
-const { exception } = require('console');
+const { fail } = require('assert');
 
 // CloudEngine does not use relative path to import module so update the module
 // lookups path here via setting of NODE_PATH environment variable.

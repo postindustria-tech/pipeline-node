@@ -62,14 +62,14 @@ const core = require('fiftyone.pipeline.core');
 // source repository. If this code has been copied to run standalone
 // then you'll need to replace the require below with the commented
 // out version below it.
-const engine51 = require('../..');
+const engine51 = require('../..'); // eslint-disable-line
 // const engine51 = require("fiftyone.pipeline.engines.fiftyone");
 
 console.log('Constructing pipeline from configuration file.');
 console.log();
 
 // Create a new pipeline from the supplied config file.
-const pipeline = new core.PipelineBuilder().buildFromConfigurationFile('51d.json');
+const pipeline = new core.PipelineBuilder().buildFromConfigurationFile('51d.json'); // eslint-disable-line
 
 // Alternatively, the commented code below shows how to
 // configure the ShareUsageElement in code, rather than

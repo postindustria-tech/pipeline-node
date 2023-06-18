@@ -74,11 +74,11 @@ class MissingPropertyService {
    */
   _isCloudEngine (flowElement) {
     try {
-      if (flowElement.__proto__ === null) {
+      if (flowElement.__proto__ === null) { // eslint-disable-line
         return false;
       } else {
-        return flowElement.__proto__.constructor.name === 'CloudEngine' ||
-          this._isCloudEngine(flowElement.__proto__);
+        return flowElement.__proto__.constructor.name === 'CloudEngine' || // eslint-disable-line
+          this._isCloudEngine(flowElement.__proto__); // eslint-disable-line
       }
     } catch (e) {
       // If some error ocurred, then assume this is not a cloud engine.

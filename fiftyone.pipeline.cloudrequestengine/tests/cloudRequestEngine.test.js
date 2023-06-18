@@ -22,7 +22,6 @@
 
 const { PipelineBuilder } = require('fiftyone.pipeline.core');
 const CloudRequestEngine = require('../cloudRequestEngine');
-const CloudRequestError = require('../cloudRequestError');
 const sharedValues = require('../sharedValues');
 const MockRequestClient = require('./classes/mockRequestClient');
 const each = require('jest-each').default;
@@ -34,7 +33,7 @@ const testResourceKey = 'AAAAAAAAAAAA';
 
 const testEnvVarEndPoint = 'https://testhost/';
 
-afterEach(() => {
+afterEach(() => { // eslint-disable-line
   // Reset the FOD_CLOUD_API_URL environment variable
   process.env.FOD_CLOUD_API_URL = '';
 });

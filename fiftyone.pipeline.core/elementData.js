@@ -57,13 +57,13 @@ class ElementData {
         // In future, this mechanism will be superseded by a less problematic
         // approach. For now, we work around this by only passing string keys
         // to the data getters.
-        if (typeof (key) === 'string' || key == Symbol.iterator) {
+        if (typeof (key) === 'string' || key === Symbol.iterator) {
           try {
             return data[key] || data.get(key);
           } catch (e) {
             // If the key was 'inspect' and an error was thrown then we
             // can ignore it. Otherwise, throw the error back up the stack.
-            if (key != 'inspect') {
+            if (key !== 'inspect') {
               throw (e);
             }
           }

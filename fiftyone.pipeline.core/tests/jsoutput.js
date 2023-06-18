@@ -20,7 +20,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-fiftyoneDegreesManager = function () {
+fiftyoneDegreesManager = function () { // eslint-disable-line
   'use-strict';
   const json = { nullValueReasons: { 'testengine.four': 'This property is not available' }, javascriptProperties: ['testengine.three'], testengine: { one: 1, two: 2, three: "console.log('ok')", four: null } };
 
@@ -66,7 +66,7 @@ fiftyoneDegreesManager = function () {
 
   // Extract key value pairs from the '51D_' prefixed cookies and concatenates
   // them to form a query string for the subsequent json refresh.
-  const getParametersFromCookies = function () {
+  const getParametersFromCookies = function () { // eslint-disable-line
     const fodCookies = getFodCookies();
     const keyValuePairs = [];
     for (const key in fodCookies) {
@@ -82,7 +82,7 @@ fiftyoneDegreesManager = function () {
    *
    * @param name
    */
-  function deleteCookie (name) {
+  function deleteCookie (name) { // eslint-disable-line
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
   }
 
@@ -142,22 +142,22 @@ fiftyoneDegreesManager = function () {
             if (body.indexOf(searchString) !== -1) {
               callbackCounter++;
               body = body.replace(/\/\/ 51D replace this comment with callback function./g, 'callbackFunc(resolveFunc, rejectFunc);');
-              func = new Function('callbackFunc', 'resolveFunc', 'rejectFunc',
-							    'try {\n' +
-							    body + '\n' +
-							    '} catch (err) {\n' +
-							    'console.log(err);' +
-							    '}'
-						    );
+              func = new Function('callbackFunc', 'resolveFunc', 'rejectFunc',// eslint-disable-line
+                'try {\n' +
+                body + '\n' +
+                '} catch (err) {\n' +
+                'console.log(err);' +
+                '}'
+              );
               func(completedCallback, resolve, reject);
             } else {
-              func = new Function(
-							    'try {\n' +
-							    body + '\n' +
-							    '} catch (err) {\n' +
-							    'console.log(err);' +
-							    '}'
-						    );
+              func = new Function( // eslint-disable-line
+                'try {\n' +
+                body + '\n' +
+                '} catch (err) {\n' +
+                'console.log(err);' +
+                '}'
+              );
               func();
             }
           }
@@ -168,8 +168,9 @@ fiftyoneDegreesManager = function () {
   };
 
   // Check if the JSON object still has any JavaScript snippets to run.
-  const hasJSFunctions = function () {
-    for (var i = i; i < json.javascriptProperties; i++) {
+  const hasJSFunctions = function () { // eslint-disable-line
+    // TODO: Fix i = i
+    for (var i = i; i < json.javascriptProperties; i++) { // eslint-disable-line
       const body = getFromJson(json.javascriptProperties[i]);
       if (body !== undefined && body.length > 0) {
         return true;
@@ -214,9 +215,9 @@ fiftyoneDegreesManager = function () {
 
   this.onChange = function (resolve) {
     changeFuncs.push(resolve);
-    if (started === false) {
+    if (started === false) { // eslint-disable-line
       process(resolve, catchError);
-      started = true;
+      started = true; // eslint-disable-line
     }
   };
 
@@ -224,7 +225,6 @@ fiftyoneDegreesManager = function () {
     if (completed) {
       resolve(this);
     } else {
-      const parent = this;
       process(resolve, catchError);
     }
   };
@@ -234,4 +234,4 @@ fiftyoneDegreesManager = function () {
   this.complete(json);
 };
 
-const fod = new fiftyoneDegreesManager();
+const fod = new fiftyoneDegreesManager(); // eslint-disable-line
