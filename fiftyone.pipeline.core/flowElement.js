@@ -89,6 +89,7 @@ class FlowElement {
   /**
    * Function called to check if a FlowElement is ready
    * Used when there are asynchronous initialisation steps
+   *
    * @returns {Promise}
    * */
   ready () {
@@ -148,11 +149,11 @@ class FlowElement {
     return this.properties;
   }
 
-  _log(type, message) {
+  _log (type, message) {
     if (this.pipelines) {
       this.pipelines.forEach(pipeline => {
         pipeline.log(type, message);
-      })
+      });
     }
   }
 }

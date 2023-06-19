@@ -99,23 +99,22 @@ class CloudEngine extends Engine {
     const engine = this;
 
     return engine.ready().then(function () {
-
       let cloudData = flowData.get('cloud').get('cloud');
 
       cloudData = JSON.parse(cloudData);
       const result = {};
 
       if (cloudData && cloudData[engine.dataKey] === null) {
-        flowData.pipeline.log('error', engine.dataKey + " not populated. " +
-        cloudData[engine.dataKey + 'nullreason'] !== null ? cloudData[engine.dataKey + 'nullreason'] : "" +
-        "\n" + "This may be because the provided API key is not authorised for " + engine.dataKey + " queries.");
-      } 
-      else {
-
+        flowData.pipeline.log('error', engine.dataKey + ' not populated. ' +
+        cloudData[engine.dataKey + 'nullreason'] !== null
+          ? cloudData[engine.dataKey + 'nullreason']
+          : '' +
+        '\n' + 'This may be because the provided API key is not authorised for ' + engine.dataKey + ' queries.');
+      } else {
       // Loop over cloudData.device properties to check if they have a value
         Object.entries(cloudData[engine.dataKey]).forEach(function ([key, value]) {
           result[key] = new AspectPropertyValue();
-  
+
           if (cloudData[engine.dataKey][key + 'nullreason']) {
             result[key].noValueMessage = cloudData[engine.dataKey][key + 'nullreason'];
           } else {

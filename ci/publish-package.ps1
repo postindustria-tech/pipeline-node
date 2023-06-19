@@ -2,9 +2,9 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$RepoName,
     [Parameter(Mandatory=$true)]
-    [string]$VariableName
+    [boolean]$DryRun
 )
 
-./node/get-next-package-version.ps1 -RepoName $RepoName -VariableName $VariableName
+./node/publish-package-npm.ps1 -RepoName $RepoName -DryRun $DryRun
 
 exit $LASTEXITCODE

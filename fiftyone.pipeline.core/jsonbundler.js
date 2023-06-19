@@ -24,8 +24,7 @@ const FlowElement = require('./flowElement.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
 const BasicListEvidenceKeyFilter = require('./basicListEvidenceKeyFilter.js');
 
-const elementBlacklist = [ 'jsonbundler', 'javascriptbuilder', 'sequence', 'set-headers'];
-
+const elementBlacklist = ['jsonbundler', 'javascriptbuilder', 'sequence', 'set-headers'];
 
 /**
  * The JSONBundler aggregates all properties from FlowElements
@@ -121,7 +120,7 @@ class JSONBundlerElement extends FlowElement {
         }
 
         this.propertyCache[flowElement.dataKey] = {
-          delayExecutionList: delayExecutionList,
+          delayExecutionList,
           evidenceProperties: delayedEvidenceProperties
         };
       }
@@ -182,7 +181,7 @@ class JSONBundlerElement extends FlowElement {
           !flowData.evidence.get('query.sequence') ||
           flowData.evidence.get('query.sequence') < 10
         ) {
-          var type =
+          const type =
             propertyObject[
               Object.keys(propertyObject).find(
                 (key) => key.toLowerCase() === 'type'

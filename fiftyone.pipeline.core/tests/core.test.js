@@ -45,9 +45,9 @@ setup.sync.properties = {
 const newPropertyFlowData = syncPipeline.createFlowData();
 
 /**
- * Check that the 'updateProperties' function on flowElement is 
+ * Check that the 'updateProperties' function on flowElement is
  * working as expected.
- * The property list is updated with a new property. We then 
+ * The property list is updated with a new property. We then
  * process the element and verify the new property's value.
  */
 test('Update property list on flowElement', done => {
@@ -61,7 +61,7 @@ test('Update property list on flowElement', done => {
 });
 
 /**
- * Check that the 'get' functions on flowData and elementData 
+ * Check that the 'get' functions on flowData and elementData
  * return the expected values.
  */
 test('get', done => {
@@ -79,21 +79,21 @@ test('get', done => {
 test('get invalid data key', done => {
   syncFlowData.process().then(function () {
     try {
-      syncFlowData.invalid;
+      syncFlowData.invalid; // eslint-disable-line
     } catch (e) {
       expect(e.indexOf(
         util.format(
           errorMessages.noElementData,
           'invalid', 'async, sync, jsonbundler, javascriptbuilder, set-headers')) !== -1)
         .toBe(true);
-      
+
       done();
     }
-  })
-})
+  });
+});
 
 /**
- * Check that the proxy on flowData can be used to access 
+ * Check that the proxy on flowData can be used to access
  * element data instances using a 'fake' property in the same
  * way as the 'get' function used above.
  */
@@ -106,8 +106,8 @@ test('get from flowElement property', done => {
 });
 
 /**
- * Check that the proxy on elementData can be used to access 
- * values using a 'fake' property in the same way as the 
+ * Check that the proxy on elementData can be used to access
+ * values using a 'fake' property in the same way as the
  * 'get' function used above.
  */
 test('get from flowElement property as property', done => {
@@ -125,21 +125,21 @@ test('get from flowElement property as property', done => {
  * elementData, which makes it appear that there are 'properties'
  * on the class even though they're not really there.
  * The formatter passes unexpected objects and strings as keys
- * to the proxy function, which can cause errors if not handled 
+ * to the proxy function, which can cause errors if not handled
  * correctly.
  */
 test('get for formatting', done => {
-  syncFlowData.process().then(function () { 
+  syncFlowData.process().then(function () {
     expect(() => {
       return syncFlowData.sync;
     }).not.toThrow();
 
     done();
   });
-})
+});
 
 /**
- * Check that the 'getFromElement' function can be used to 
+ * Check that the 'getFromElement' function can be used to
  * access element data instances.
  */
 test('getFromElement', done => {
@@ -151,7 +151,7 @@ test('getFromElement', done => {
 });
 
 /**
- * Check that we can use a for loop to iterate through the 
+ * Check that we can use a for loop to iterate through the
  * properties on an elementData instance.
  */
 test('for of', done => {
@@ -166,7 +166,7 @@ test('for of', done => {
 });
 
 /**
- * Check that the getWhere function can be used to retrieve 
+ * Check that the getWhere function can be used to retrieve
  * properties matching a supplied filter.
  */
 test('getWhere', done => {
@@ -178,7 +178,7 @@ test('getWhere', done => {
 });
 
 /**
- * Check that the getWhere function can be used to retrieve 
+ * Check that the getWhere function can be used to retrieve
  * properties matching a supplied function filter.
  */
 test('getWhere function version', done => {
@@ -221,8 +221,8 @@ const configPipeline = new PipelineBuilder()
 const configPipelineFlowData = configPipeline.createFlowData();
 
 /**
- * Verify that the 'buildFromConfigurationFile' function will 
- * pull values from the supplied json file and supply them to 
+ * Verify that the 'buildFromConfigurationFile' function will
+ * pull values from the supplied json file and supply them to
  * flow elements as expected.
  */
 test('build from config', done => {
@@ -255,12 +255,12 @@ test('aspectPropertyValue', done => {
     expect(flowData.apv.get('no').hasValue).toBe(false);
     expect(expect(flowData.apv.no.noValueMessage).toBe('Value missing'));
 
-    let error = '';
+    const error = ''; // eslint-disable-line
 
-    // Trying to access the value of an APV that does not have a 
+    // Trying to access the value of an APV that does not have a
     // value should throw an error.
-    expect(() => {return flowData.apv.no.value}).toThrow()
-    expect(() => {return flowData.apv.no.value}).toThrowError('Value missing')
+    expect(() => { return flowData.apv.no.value; }).toThrow();
+    expect(() => { return flowData.apv.no.value; }).toThrowError('Value missing');
 
     done();
   });

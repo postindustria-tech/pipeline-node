@@ -52,7 +52,7 @@ const testEngine = new core.FlowElement({
 
     const data = new core.ElementDataDictionary({
       flowElement: this,
-      contents: contents
+      contents
     });
 
     flowData.setElementData(data);
@@ -128,7 +128,7 @@ test('JSON bundler - Verify output where delayed execution = false', (done) => {
 
       const data = new core.ElementDataDictionary({
         flowElement: this,
-        contents: contents
+        contents
       });
 
       flowData.setElementData(data);
@@ -166,7 +166,7 @@ test('JSON bundler - Verify output where delayed execution = true', (done) => {
 
       const data = new core.ElementDataDictionary({
         flowElement: this,
-        contents: contents
+        contents
       });
 
       flowData.setElementData(data);
@@ -211,7 +211,7 @@ test('JSON bundler - Verify output where a property has multiple evidence proper
 
       const data = new core.ElementDataDictionary({
         flowElement: this,
-        contents: contents
+        contents
       });
 
       flowData.setElementData(data);

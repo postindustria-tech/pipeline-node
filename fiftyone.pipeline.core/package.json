@@ -12,21 +12,21 @@
   },
   "author": "51Degrees <support@51Degrees.com>",
   "dependencies": {
-    "mustache": "^4.0.1",
-    "uglify-js": "^3.8.1"
+    "mustache": "^4.2.0",
+    "uglify-js": "^3.17.4"
   },
   "devDependencies": {
-    "@types/node": "^15.12.2",
+    "@types/node": "^15.14.9",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jsdoc": "^25.4.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^25.4.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "jest": "^27.0.6",
-    "jest-each": "^27.0.6",
-    "node-mocks-http": "^1.10.1"
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^4.1.0",
+    "jest": "^27.5.1",
+    "jest-each": "^27.5.1",
+    "node-mocks-http": "^1.12.2"
   },
   "contributors": [
     "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",

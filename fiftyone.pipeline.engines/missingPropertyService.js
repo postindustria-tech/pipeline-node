@@ -42,7 +42,7 @@ class MissingPropertyService {
    * was requested in
    */
   check (key, flowElement) {
-    let message = util.format(coreErrorMessages.genericMissingProperties, key) + 
+    let message = util.format(coreErrorMessages.genericMissingProperties, key) +
       (typeof flowElement === 'undefined' ? '' : ' in data for element "' + flowElement.dataKey) + '".';
 
     if (this._isCloudEngine(flowElement)) {
@@ -51,7 +51,7 @@ class MissingPropertyService {
           util.format(engineErrorMessages.cloudNoPropertiesAccess,
             flowElement.dataKey);
       } else {
-        var properties = Object.getOwnPropertyNames(flowElement.properties);
+        const properties = Object.getOwnPropertyNames(flowElement.properties);
         if (properties.includes(key) === false) {
           message = message +
             util.format(engineErrorMessages.cloudNoPropertyAccess,
@@ -69,15 +69,16 @@ class MissingPropertyService {
 
   /**
    * Return true if the supplied flow element is a CloudEngine, false if not.
+   *
    * @param {FlowElement} flowElement The flow element to check
    */
   _isCloudEngine (flowElement) {
     try {
-      if (flowElement.__proto__ === null) {
+      if (flowElement.__proto__ === null) { // eslint-disable-line
         return false;
       } else {
-        return flowElement.__proto__.constructor.name === 'CloudEngine' ||
-          this._isCloudEngine(flowElement.__proto__);
+        return flowElement.__proto__.constructor.name === 'CloudEngine' || // eslint-disable-line
+          this._isCloudEngine(flowElement.__proto__); // eslint-disable-line
       }
     } catch (e) {
       // If some error ocurred, then assume this is not a cloud engine.

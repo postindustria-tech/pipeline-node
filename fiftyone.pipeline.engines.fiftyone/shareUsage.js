@@ -20,14 +20,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const require51 = (requestedPackage) => {
-  try {
-    return require(__dirname + '/../' + requestedPackage);
-  } catch (e) {
-    return require(requestedPackage);
-  }
-};
-
 const engines = require('fiftyone.pipeline.engines');
 
 const Engine = engines.Engine;
@@ -58,29 +50,30 @@ class ShareUsage extends Engine {
    * Constructor for ShareUsage engine
    *
    * @param {object} options settings object for share usage.
-   * @param {number} options.interval If exactly the same evidence values 
-   * are seen multiple times within this time limit (in milliseconds) then 
+   * @param {number} options.interval If exactly the same evidence values
+   * are seen multiple times within this time limit (in milliseconds) then
    * they will only be shared once.
-   * @param {number} options.requestedPackageSize The usage element 
+   * @param {number} options.requestedPackageSize The usage element
    * will group data into single requests before sending it.
    * This setting controls the minimum number of entries before
    * data is sent.
-   * If you are sharing large amounts of data, increasing this value 
-   * is recommended in order to reduce the overhead of sending HTTP 
+   * If you are sharing large amounts of data, increasing this value
+   * is recommended in order to reduce the overhead of sending HTTP
    * messages.
    * For example, the 51Degrees cloud service uses a value of 2500.
    * @param {string} options.cookie if a cookie is being used to identify
-   * user sessions, it can be specified here in order to reduce the 
+   * user sessions, it can be specified here in order to reduce the
    * sharing of duplicated data.
-   * @param {Array} options.queryWhitelist By default query string 
+   * @param {Array} options.queryWhitelist By default query string
    * and HTTP form parameters are not shared unless prefixed with '51D_'.
-   * If you need to share query string parameters, a list can be 
+   * If you need to share query string parameters, a list can be
    * specified here.
    * @param {Array} options.headerBlacklist By default, all HTTP headers
-   * (except a few, such as Cookies) are shared. Individual headers can 
+   * (except a few, such as Cookies) are shared. Individual headers can
    * be excluded from sharing by adding them to this list.
    * @param {number} options.sharePercentage approximate proportion of
    * requests to be shared. 1 = 100%, 0.5 = 50%, etc..
+   * @param options.endpoint
    */
   constructor (
     {
@@ -98,14 +91,14 @@ class ShareUsage extends Engine {
 
     this.evidenceKeyFilter = new ShareUsageEvidenceKeyFilter(
       {
-        cookie: cookie,
-        queryWhitelist: queryWhitelist,
-        headerBlacklist: headerBlacklist
+        cookie,
+        queryWhitelist,
+        headerBlacklist
       });
 
     this.dataKey = 'shareUsage';
 
-    this.tracker = new ShareUsageTracker({ interval: interval });
+    this.tracker = new ShareUsageTracker({ interval });
 
     this.requestedPackageSize = requestedPackageSize;
 
@@ -114,7 +107,7 @@ class ShareUsage extends Engine {
     this.shareData = [];
 
     if (endpoint.includes('https://') === false &&
-      endpoint.includes('http://') == false) {
+      endpoint.includes('http://') === false) {
       endpoint = 'https://' + endpoint;
     }
     this.endpoint = url.parse(endpoint);
@@ -135,7 +128,6 @@ class ShareUsage extends Engine {
    * @param {FlowData} flowData flowData to process
    */
   processInternal (flowData) {
-
     if (Math.random() <= this.sharePercentage) {
       const cacheKey = this.evidenceKeyFilter
         .filterEvidence(flowData.evidence.getAll());
@@ -152,11 +144,12 @@ class ShareUsage extends Engine {
   /**
    * Creates a ShareUsageData instance populated from the evidence
    * within the flow data provided.
+   *
    * @param {FlowData} flowData the flow data containing the evidence to use
    * @returns a new ShareUsageData instance, populated from the evidence
-   * provided 
+   * provided
    */
-   getDataFromEvidence(flowData) {
+  getDataFromEvidence (flowData) {
     const data = new ShareUsageData();
 
     Object.keys(flowData.evidence.getAll()).forEach(key => {
@@ -170,26 +163,25 @@ class ShareUsage extends Engine {
         data.sessionId = value;
       } else if (key === 'query.sequence') {
         // The Sequence is dealt with separately.
-        var sequence = parseInt(value);
+        const sequence = parseInt(value);
 
         if (isNaN(sequence) === false) {
-            data.sequence = sequence;
-        }
-        else {
+          data.sequence = sequence;
+        } else {
           this._log('error',
             `The value '${value}' could not be parsed to an integer.`);
         }
       } else {
         // Check if we can send this piece of evidence
         if (this.evidenceKeyFilter.filterEvidenceKey(key)) {
-            data.tryAddToData(key, value);
+          data.tryAddToData(key, value);
         }
       }
     });
     return data;
   }
 
-  getConstantXml() {
+  getConstantXml () {
     if (!this.constantXml) {
       const osVersion = `${new ReplacedString(process.platform).result} ${new ReplacedString(os.release()).result}`;
       const nodeVersion = new ReplacedString(process.versions.node).result;
@@ -197,14 +189,14 @@ class ShareUsage extends Engine {
       let xml = '';
 
       // The version number of the Pipeline API
-      xml += `<Version>4.4.7</Version>`;
+      xml += '<Version>4.4.7</Version>';
       // Write Pipeline information
       // The product name
       xml += '<Product>Pipeline</Product>';
       // The flow elements in the current pipeline
       this.getFlowElements().forEach(element => {
         xml += `<FlowElement>${element}</FlowElement>`;
-      })
+      });
       xml += '<Language>Node.JS</Language>';
       // The software language version
       xml += `<LanguageVersion>${nodeVersion}</LanguageVersion>`;
@@ -223,7 +215,7 @@ class ShareUsage extends Engine {
    */
   addToShareUsage (data) {
     let xml = '';
-    
+
     xml += '<Device>';
 
     // --- write invariant data
@@ -236,9 +228,9 @@ class ShareUsage extends Engine {
     xml += `<Sequence>${data.sequence}</Sequence>`;
     // The client IP of the request
     xml += `<ClientIP>${data.clientIP}</ClientIP>`;
-    
+
     // The UTC date/time this entry was written
-    const date = new Date().toISOString()
+    const date = new Date().toISOString();
 
     xml += `<DateSent>${date}</DateSent>`;
 
@@ -277,7 +269,7 @@ class ShareUsage extends Engine {
     xml += '</Device>';
 
     this.shareData.push(xml);
-    
+
     if (this.shareData.length >= this.requestedPackageSize) {
       this.sendShareUsage();
     }
@@ -288,9 +280,9 @@ class ShareUsage extends Engine {
    */
   sendShareUsage () {
     const usageEngine = this;
-    var shareData = this.shareData;
+    const shareData = this.shareData;
     this.shareData = [];
-    var data = `<Devices version="${SHARE_USAGE_VERSION}">${shareData.join()}</Devices>`;
+    const data = `<Devices version="${SHARE_USAGE_VERSION}">${shareData.join()}</Devices>`;
 
     const options = {
       hostname: this.endpoint.hostname,
@@ -304,7 +296,7 @@ class ShareUsage extends Engine {
       if (err) {
         usageEngine._log('warning', err);
       }
-      var req = usageEngine.http.request(options, function (res) {
+      const req = usageEngine.http.request(options, function (res) {
         usageEngine._log('debug', `Usage data sent. Response code ${res.statusCode}`);
       });
       req.on('error', function (e) {
@@ -315,50 +307,53 @@ class ShareUsage extends Engine {
     });
   }
 
-  
-    /**
-     * Return a list of FlowElements in the pipeline.
-     * If the list is null then populate from the pipeline.
-     * If there are multiple or no pipelines then log an error.
-     * @returns list of flow elements
-     */
-    getFlowElements() {
-        if (!this.flowElements) {
-            if (this.pipelines.length === 1) {
-                const list = [];
-                for (const [key, value] of Object.entries(this.pipelines[0].flowElements)) {
-                  list.push(value.constructor.name);
-                }
-                this.flowElements = list;
-            } else {
-                // This element has somehow been registered to too
-                // many (or zero) pipelines.
-                // This means we cannot know the flow elements that
-                // make up the pipeline so a warning is logged
-                // but otherwise, the system can continue as normal.
-                this._log('warn', 'Share usage element registered ' +
-                    `to ${this.pipelines.length > 0 ? "too many" : "no"}` +
-                    ' pipelines. Unable to send share usage information.');
-                this.flowElements = [];
-            }
+  /**
+   * Return a list of FlowElements in the pipeline.
+   * If the list is null then populate from the pipeline.
+   * If there are multiple or no pipelines then log an error.
+   *
+   * @returns list of flow elements
+   */
+  getFlowElements () {
+    if (!this.flowElements) {
+      if (this.pipelines.length === 1) {
+        const list = [];
+        for (const [, value] of Object.entries(this.pipelines[0].flowElements)) {
+          list.push(value.constructor.name);
         }
-        return this.flowElements;
+        this.flowElements = list;
+      } else {
+        // This element has somehow been registered to too
+        // many (or zero) pipelines.
+        // This means we cannot know the flow elements that
+        // make up the pipeline so a warning is logged
+        // but otherwise, the system can continue as normal.
+        this._log('warn', 'Share usage element registered ' +
+                    `to ${this.pipelines.length > 0 ? 'too many' : 'no'}` +
+                    ' pipelines. Unable to send share usage information.');
+        this.flowElements = [];
+      }
     }
+    return this.flowElements;
+  }
 }
 
 // a set of valid XML character values (ignoring valid controls x09, x0a, x0d, x85)
-const VALID_XML_CHARS = 
-  Array.from({length: parseInt('0x7F', 16) - parseInt('0x20', 16)}, (v, k) => k + parseInt('0x20', 16))
-  .concat(
-    Array.from({length: parseInt('0x100', 16) - parseInt('0x40', 16)}, (v, k) => k + parseInt('0x40', 16)));
+const VALID_XML_CHARS =
+  Array.from({ length: parseInt('0x7F', 16) - parseInt('0x20', 16) }, (v, k) => k + parseInt('0x20', 16))
+    .concat(
+      Array.from({ length: parseInt('0x100', 16) - parseInt('0x40', 16) }, (v, k) => k + parseInt('0x40', 16)));
 
 // an array describing whether a character value is valid
 const IS_VALID_XML_CHAR = __getIsValidCharMap();
 
-function __getIsValidCharMap() {
+/**
+ *
+ */
+function __getIsValidCharMap () {
   const maxChar = parseInt('0x100', 16);
   const isValidChar = {};
-  for (var c = 0; c <= maxChar; c++) {
+  for (let c = 0; c <= maxChar; c++) {
     isValidChar[c] = VALID_XML_CHARS.includes(c);
   }
   return isValidChar;
@@ -368,8 +363,7 @@ function __getIsValidCharMap() {
  * Replace characters that cause problems in XML with the "Replacement character"
  */
 class ReplacedString {
-
-  constructor(text) {
+  constructor (text) {
     this.result = '';
     this.replaced = false;
     this.truncated = false;
@@ -399,23 +393,22 @@ class ReplacedString {
  * prior to it being sent to 51Degrees.
  */
 class ShareUsageData {
-
-  constructor() {
+  constructor () {
     this.evidenceData = {};
     this.sessionId = '';
     this.clientIp = '';
     this.sequence = '';
   }
 
-  tryAddToData(key, value) {
+  tryAddToData (key, value) {
     // Get the category and field names from the evidence key.
     let category = '';
     let field = key;
 
     const firstSeparator = key.indexOf('.');
     if (firstSeparator > 0) {
-        category = key.substring(0, firstSeparator);
-        field = key.substring(firstSeparator + 1);
+      category = key.substring(0, firstSeparator);
+      field = key.substring(firstSeparator + 1);
     }
 
     // Add the evidence to the dictionary.

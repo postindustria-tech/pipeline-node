@@ -20,14 +20,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-const require51 = (requestedPackage) => {
-  try {
-    return require(__dirname + '/../' + requestedPackage);
-  } catch (e) {
-    return require(requestedPackage);
-  }
-};
-
 const EvidenceKeyFilter = require('fiftyone.pipeline.core').EvidenceKeyFilter;
 
 /**
@@ -55,8 +47,7 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
       (!queryWhitelist || queryWhitelist.length === 0) &&
       (!headerBlacklist || headerBlacklist.length === 0)) {
       this.shareAll = true;
-    }
-    else {
+    } else {
       this.shareAll = false;
     }
   }
@@ -75,32 +66,32 @@ class ShareUsageEvidenceKeyFilter extends EvidenceKeyFilter {
 
     if (!this.shareAll) {
       if (prefix === 'header') {
-        // Add the header to the list if the header name does not 
+        // Add the header to the list if the header name does not
         // appear in the list of blocked headers.
         result = this.blockedHttpHeaders
           .includes(suffix) === false;
       } else if (prefix === 'cookie') {
-          // Only add cookies that start with the 51Degrees cookie 
-          // prefix.
-          result = suffix.indexOf('51d_') === 0 ||
+        // Only add cookies that start with the 51Degrees cookie
+        // prefix.
+        result = suffix.indexOf('51d_') === 0 ||
           (this.includeSession && suffix === this.cookie);
       } else if (prefix === 'session') {
-          // Only add session values that start with the 51Degrees
-          // cookie prefix.
-          result = suffix.indexOf('51d_') === 0;
+        // Only add session values that start with the 51Degrees
+        // cookie prefix.
+        result = suffix.indexOf('51d_') === 0;
       } else if (prefix === 'query') {
-          // If no query string parameter filter was specified 
-          // then share all of them.
-          // Otherwise, only include query string parameters that 
-          // start with 51d_ or that have been specified in 
-          // the constructor.
-          result = this.includedQueryStringParams === null ||
+        // If no query string parameter filter was specified
+        // then share all of them.
+        // Otherwise, only include query string parameters that
+        // start with 51d_ or that have been specified in
+        // the constructor.
+        result = this.includedQueryStringParams === null ||
           suffix.indexOf('51d_') === 0 ||
             this.includedQueryStringParams.includes(suffix);
       } else {
-          // Add anything that is not a cookie, header, session 
-          // variable or query string parameter.
-          result = true;
+        // Add anything that is not a cookie, header, session
+        // variable or query string parameter.
+        result = true;
       }
     }
     return result;

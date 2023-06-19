@@ -26,4 +26,4 @@ module.exports = {
   genericMissingProperties: 'Property "%s" not found',
   noReasonUnknown: ' Please check that the element and property names ' +
   'are correct.'
-}
+};
