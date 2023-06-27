@@ -21,7 +21,7 @@
  * ********************************************************************* */
 
 const util = require('util');
-const errorMessages = require('./errorMessages')
+const errorMessages = require('./errorMessages');
 
 /**
  * @typedef {import('./flowElement')} FlowElement
@@ -32,7 +32,6 @@ const errorMessages = require('./errorMessages')
  * Stored in flowData
  */
 class ElementData {
-
   /**
    * Constructor for elementData
    *
@@ -54,18 +53,18 @@ class ElementData {
         // This proxy can end up getting called by anything that tries
         // to access methods & properties on the object.
         // This can include things like the inspector if you do something like
-        // console.log(flowData.location) 
-        // In future, this mechanism will be superseded by a less problematic 
+        // console.log(flowData.location)
+        // In future, this mechanism will be superseded by a less problematic
         // approach. For now, we work around this by only passing string keys
         // to the data getters.
-        if (typeof(key) === 'string' || key == Symbol.iterator) {
+        if (typeof (key) === 'string' || key === Symbol.iterator) {
           try {
             return data[key] || data.get(key);
-          } catch(e) {
-            // If the key was 'inspect' and an error was thrown then we 
+          } catch (e) {
+            // If the key was 'inspect' and an error was thrown then we
             // can ignore it. Otherwise, throw the error back up the stack.
-            if(key != 'inspect') {
-              throw(e);
+            if (key !== 'inspect') {
+              throw (e);
             }
           }
         }
@@ -92,10 +91,12 @@ class ElementData {
    * @returns {mixed} value
    */
   get (key) {
-    let value = this.getInternal(key);
+    const value = this.getInternal(key);
     if (typeof value === 'undefined') {
-      throw util.format(errorMessages.genericMissingProperties, key) + 
-        (typeof this.flowElement === 'undefined' ? '' : ' in data for element "' +
+      throw util.format(errorMessages.genericMissingProperties, key) +
+        (typeof this.flowElement === 'undefined'
+          ? ''
+          : ' in data for element "' +
           this.flowElement.dataKey) + '".' +
         util.format(errorMessages.noReasonUnknown);
     }

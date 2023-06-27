@@ -52,7 +52,7 @@ class Async extends FlowElement {
         const contents = { string: 'hello' };
 
         const data = new ElementDataDictionary(
-          { flowElement: flowElement, contents: contents }
+          { flowElement, contents }
         );
 
         flowData.setElementData(data);

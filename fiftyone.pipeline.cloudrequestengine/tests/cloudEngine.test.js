@@ -61,8 +61,8 @@ const flowData = pipeline.createFlowData();
 test('missing property service - invalid resource key', done => {
   pipeline.suppressProcessExceptions = true;
   flowData.process().then(function () {
-    var errorFound = false;
-    error = flowData.errors.CloudEngineBase[0];
+    let errorFound = false;
+    const error = flowData.errors.CloudEngineBase[0];
     errorFound = error.message.includes(testResourceKey) &&
     error.message.includes('is not a valid Resource Key');
     expect(errorFound).toBe(true);

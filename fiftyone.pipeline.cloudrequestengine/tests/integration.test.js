@@ -22,9 +22,7 @@
 
 const path = require('path');
 const CloudRequestEngine = require('../cloudRequestEngine');
-const { hasUncaughtExceptionCaptureCallback } = require('process');
-const { doesNotMatch, fail } = require('assert');
-const { exception } = require('console');
+const { fail } = require('assert');
 
 // CloudEngine does not use relative path to import module so update the module
 // lookups path here via setting of NODE_PATH environment variable.
@@ -33,7 +31,7 @@ require('module').Module._initPaths();
 
 const CloudEngine = require(__dirname + '/../cloudEngine');
 const PipelineBuilder = require(
-    __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
+  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
 );
 const myResourceKey = process.env.RESOURCE_KEY || '!!YOUR_RESOURCE_KEY!!';
 
@@ -44,30 +42,30 @@ const myResourceKey = process.env.RESOURCE_KEY || '!!YOUR_RESOURCE_KEY!!';
  * of this test.
  */
 test('valid response', done => {
-    if (myResourceKey === "!!YOUR_RESOURCE_KEY!!") {
-        fail("You need to create a resource key at " +
-        "https://configure.51degrees.com and paste it into the " + 
-        "code, replacing !!YOUR_RESOURCE_KEY!!. Please make sure " +
-        "to include IsMobile property.");
-    }
-    const cloud = new CloudRequestEngine({
-        resourceKey: myResourceKey,
-        baseURL: "http://cloud.51degrees.com/api/v4"
-    })  
-    const engine = new CloudEngine();
-    engine.dataKey = "device";
-    const pipeline = new PipelineBuilder()
-        .add(cloud)
-        .add(engine)
-        .build();
-    
-    var data = pipeline.createFlowData();
-    data.evidence.add("header.user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0")
-    data.process().then(data => {
-        expect(data.device.ismobile.hasValue).toBe(true);
-        done();
-    });
-})
+  if (myResourceKey === '!!YOUR_RESOURCE_KEY!!') {
+    fail('You need to create a resource key at ' +
+        'https://configure.51degrees.com and paste it into the ' +
+        'code, replacing !!YOUR_RESOURCE_KEY!!. Please make sure ' +
+        'to include IsMobile property.');
+  }
+  const cloud = new CloudRequestEngine({
+    resourceKey: myResourceKey,
+    baseURL: 'http://cloud.51degrees.com/api/v4'
+  });
+  const engine = new CloudEngine();
+  engine.dataKey = 'device';
+  const pipeline = new PipelineBuilder()
+    .add(cloud)
+    .add(engine)
+    .build();
+
+  const data = pipeline.createFlowData();
+  data.evidence.add('header.user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0');
+  data.process().then(data => {
+    expect(data.device.ismobile.hasValue).toBe(true);
+    done();
+  });
+});
 
 /**
  * Verify that making POST request with SequenceElement evidence
@@ -77,26 +75,26 @@ test('valid response', done => {
  * of this test.
  */
 test('post with sequence evidence', done => {
-    if (myResourceKey === "!!YOUR_RESOURCE_KEY!!") {
-        fail("You need to create a resource key at " +
-        "https://configure.51degrees.com and paste it into the " + 
-        "code, replacing !!YOUR_RESOURCE_KEY!!. Please make sure " +
-        "to include IsMobile property.");
-    }
+  if (myResourceKey === '!!YOUR_RESOURCE_KEY!!') {
+    fail('You need to create a resource key at ' +
+        'https://configure.51degrees.com and paste it into the ' +
+        'code, replacing !!YOUR_RESOURCE_KEY!!. Please make sure ' +
+        'to include IsMobile property.');
+  }
 
-    const cloud = new CloudRequestEngine({resourceKey: myResourceKey});
-    const engine = new CloudEngine();
-    engine.dataKey = 'device';
-    const pipeline = new PipelineBuilder()
-        .add(cloud)
-        .add(engine)
-        .build();
-    
-    var data = pipeline.createFlowData();
-    data.evidence.add("query.session-id", "8b5461ac-68fc-4b18-a660-7bd463b2537a");
-    data.evidence.add("query.sequence", 1);
-    data.process().then(result => {
-        expect(Object.entries(result.errors).length).toBe(0);
-        done();
-    })
+  const cloud = new CloudRequestEngine({ resourceKey: myResourceKey });
+  const engine = new CloudEngine();
+  engine.dataKey = 'device';
+  const pipeline = new PipelineBuilder()
+    .add(cloud)
+    .add(engine)
+    .build();
+
+  const data = pipeline.createFlowData();
+  data.evidence.add('query.session-id', '8b5461ac-68fc-4b18-a660-7bd463b2537a');
+  data.evidence.add('query.sequence', 1);
+  data.process().then(result => {
+    expect(Object.entries(result.errors).length).toBe(0);
+    done();
+  });
 });

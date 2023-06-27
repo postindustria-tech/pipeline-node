@@ -61,7 +61,7 @@ class PipelineBuilder {
 
     if (settings.dataFileUpdateService) {
       this.dataFileUpdateService = settings.dataFileUpdateService;
-      }
+    }
 
     if (typeof settings.addJavaScriptBuilder !== 'undefined') {
       this.addJavaScriptBuilder = settings.addJavaScriptBuilder;
@@ -131,7 +131,7 @@ class PipelineBuilder {
     return new Pipeline(flowElements, false, this.dataFileUpdateService);
   }
 
-  addRequiredElements(flowElements) {
+  addRequiredElements (flowElements) {
     return flowElements
       .concat(this.getJavaScriptElements())
       .concat(this.getHttpElements());
@@ -178,7 +178,7 @@ class PipelineBuilder {
    * @returns {FlowElement[]} list of HTTP related
    * FlowElements
    */
-   getHttpElements () {
+  getHttpElements () {
     const flowElements = [];
 
     if (this.useSetHeaderProperties) {

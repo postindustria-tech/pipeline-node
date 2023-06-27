@@ -38,8 +38,9 @@ class Pipeline {
    *
    * @param {FlowElement[]} flowElements list of FlowElements to
    * add to the Pipeline
-   * @param {Boolean} suppressProcessExceptions If true then pipeline 
+   * @param {boolean} suppressProcessExceptions If true then pipeline
    * will suppress exceptions added to FlowData.
+   * @param dataFileUpdateService
    */
   constructor (flowElements = [], suppressProcessExceptions = false, dataFileUpdateService = null) {
     const pipeline = this;
@@ -137,10 +138,10 @@ class Pipeline {
               })
               .catch(setError);
 
-            if (flowData.errors !== undefined && Object.entries(flowData.errors).length !== 0  && !pipeline.suppressProcessExceptions) {              
-              throw Object.values(flowData.errors)[0];    
+            if (flowData.errors !== undefined && Object.entries(flowData.errors).length !== 0 && !pipeline.suppressProcessExceptions) {
+              throw Object.values(flowData.errors)[0];
             }
-          });         
+          });
         };
       };
 
@@ -217,8 +218,8 @@ class Pipeline {
   }
 
   /**
-   * 
-   * @param {FlowElement} flowElement 
+   *
+   * @param {FlowElement} flowElement
    * @returns {void}
    */
   updatePropertyDataBaseForElement (flowElement) {
@@ -267,7 +268,7 @@ class Pipeline {
             }
 
             pipeline.propertyDatabase[metaKey][metaValue][propertyKey] = {
-              propertyName: propertyName,
+              propertyName,
               flowElementKey: flowElementDataKey
             };
           });
