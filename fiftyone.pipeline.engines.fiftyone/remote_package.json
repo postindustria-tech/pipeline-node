@@ -11,8 +11,8 @@
   },
   "author": "51Degrees <support@51Degrees.com>",
   "dependencies": {
-    "fiftyone.pipeline.core": "^4.4.34",
-    "fiftyone.pipeline.engines": "^4.4.34"
+    "fiftyone.pipeline.core": "^4.4.35",
+    "fiftyone.pipeline.engines": "^4.4.35"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
