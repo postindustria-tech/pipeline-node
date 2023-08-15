@@ -26,7 +26,7 @@
     "eslint-plugin-standard": "^4.1.0",
     "jest": "^27.5.1",
     "jest-each": "^27.5.1",
-    "node-mocks-http": "^1.12.2"
+    "node-mocks-http": "^1.13.0"
   },
   "contributors": [
     "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",
