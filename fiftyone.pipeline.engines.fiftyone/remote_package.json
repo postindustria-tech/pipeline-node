@@ -11,13 +11,13 @@
   },
   "author": "51Degrees <support@51Degrees.com>",
   "dependencies": {
-    "fiftyone.pipeline.core": "^4.4.7",
-    "fiftyone.pipeline.engines": "^4.4.7"
+    "fiftyone.pipeline.core": "^4.4.45",
+    "fiftyone.pipeline.engines": "^4.4.45"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
