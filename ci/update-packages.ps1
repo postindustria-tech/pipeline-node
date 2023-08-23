@@ -3,7 +3,7 @@ param (
     [string]$RepoName
 )
 
-$packages = "fiftyone.pipeline.cloudrequestengine", "fiftyone.pipeline.core", "fiftyone.pipeline.engines", "fiftyone.pipeline.engines.fiftyone"
+$packages = ""
 
 ./node/update-packages.ps1 -RepoName $RepoName -Packages $packages
 
