@@ -32,7 +32,23 @@ require('module').Module._initPaths();
 
 const noCheck = function () {};
 
-let INITIAL_PORT = 3000;
+let GET_PORT = 3000;
+let POST_PORT = 4000;
+
+let server;
+
+afterEach(() => { // eslint-disable-line
+  if (server) {
+    GET_PORT++;
+    POST_PORT++;
+    server.close();
+    server = undefined;
+  }
+});
+
+beforeEach(() => { // eslint-disable-line
+  if (!server) server = http.createServer();
+});
 
 const getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
   const client = new RequestClient();
@@ -40,15 +56,11 @@ const getTest = function (origin, writeResponse, checkRequest, checkResponse, do
     checkRequest(req);
     writeResponse(res);
   };
-
-  let server = http.createServer(requestListener);
-  server.listen(INITIAL_PORT, () => {
-    const response = client.get(`http://localhost:${INITIAL_PORT}`, origin);
+  server.addListener('request', requestListener);
+  server.listen(GET_PORT, () => {
+    const response = client.get(`http://localhost:${GET_PORT}`, origin);
     checkResponse(response)
       .finally(() => {
-        INITIAL_PORT++;
-        server.close();
-        server = undefined;
         done();
       });
   });
@@ -61,14 +73,11 @@ const postTest = function (data, origin, writeResponse, checkRequest, checkRespo
     writeResponse(res);
   };
 
-  let server = http.createServer(requestListener);
-  server.listen(INITIAL_PORT, () => {
-    const response = client.post(`http://localhost:${INITIAL_PORT}`, data, origin);
+  server.addListener('request', requestListener);
+  server.listen(POST_PORT, () => {
+    const response = client.post(`http://localhost:${POST_PORT}`, data, origin);
     checkResponse(response)
       .finally(() => {
-        INITIAL_PORT++;
-        server.close();
-        server = undefined;
         done();
       });
   });
@@ -202,4 +211,3 @@ test('post - data', done => {
     },
     done);
 });
-
