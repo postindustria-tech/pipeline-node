@@ -32,13 +32,22 @@ require('module').Module._initPaths();
 
 const noCheck = function () {};
 
+let GET_PORT = 3000;
+let POST_PORT = 4000;
+
 let server;
 
 afterEach(() => { // eslint-disable-line
   if (server) {
+    GET_PORT++;
+    POST_PORT++;
     server.close();
     server = undefined;
   }
+});
+
+beforeEach(() => { // eslint-disable-line
+  if (!server) server = http.createServer();
 });
 
 const getTest = function (origin, writeResponse, checkRequest, checkResponse, done) {
@@ -47,10 +56,9 @@ const getTest = function (origin, writeResponse, checkRequest, checkResponse, do
     checkRequest(req);
     writeResponse(res);
   };
-
-  server = http.createServer(requestListener);
-  server.listen(3000, () => {
-    const response = client.get('http://localhost:3000', origin);
+  server.addListener('request', requestListener);
+  server.listen(GET_PORT, () => {
+    const response = client.get(`http://localhost:${GET_PORT}`, origin);
     checkResponse(response)
       .finally(() => {
         done();
@@ -65,9 +73,9 @@ const postTest = function (data, origin, writeResponse, checkRequest, checkRespo
     writeResponse(res);
   };
 
-  server = http.createServer(requestListener);
-  server.listen(3000, () => {
-    const response = client.post('http://localhost:3000', data, origin);
+  server.addListener('request', requestListener);
+  server.listen(POST_PORT, () => {
+    const response = client.post(`http://localhost:${POST_PORT}`, data, origin);
     checkResponse(response)
       .finally(() => {
         done();
