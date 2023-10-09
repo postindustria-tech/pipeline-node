@@ -74,6 +74,7 @@ class DataFileUpdateService {
    */
   updateDataFile (dataFile) {
     const dataFileUpdateService = this;
+    dataFile.attemptedDownload = true;
 
     if (dataFile.updating) {
       return false;
@@ -331,7 +332,7 @@ class DataFileUpdateService {
       interval += dataFile.getNextUpdate().getMilliseconds();
 
       // Run update on start if specified to do so
-      if (dataFile.updateOnStart) {
+      if (dataFile.updateOnStart && !dataFile.attemptedDownload) {
         dataFileUpdateService.updateDataFile(dataFile);
       } else {
         setTimeout(function () {
