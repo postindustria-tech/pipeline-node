@@ -156,6 +156,28 @@ test('validate error handling JSON errors', async () => {
 });
 
 /**
+ * Test cloud request engine handles unavailability of cloud service
+ * as expected.
+ * An exception should be thrown by the cloud request engine
+ * containing the errors from the cloud service in the JSON object.
+ */
+test('validate case when cloud unavailable', async () => {
+  const errorMessage = 'Internal server error';
+  const client = new MockRequestClient({
+    resourceKey: 'resourceKey',
+    error: '{ "status":"500", "errors": ["' + errorMessage + '"] }'
+  });
+
+  const e = () => {
+    return new CloudRequestEngine({
+      resourceKey: testResourceKey,
+      requestClient: client
+    }).ready();
+  };
+  await expect(e()).rejects.toEqual([new CloudRequestError(errorMessage)]);
+});
+
+/**
  *
  * @param properties
  * @param name

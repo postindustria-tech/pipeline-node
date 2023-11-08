@@ -97,25 +97,47 @@ class CloudRequestEngine extends Engine {
 
     // Properties of connected FlowElements
     this.flowElementProperties = {};
+  }
 
+  /**
+   * Check if the keys and properties have been fetched.
+   *
+   * This computed property determines whether the keys of a 'flowElementProperties' object and the 'evidenceKeyFilter'
+   * array both have elements, indicating that the necessary data has been fetched and is ready for use.
+   *
+   * @returns {boolean} True if the keys and properties are fetched and ready; otherwise, false.
+   */
+  get keysAndPropertiesFetched () {
+    return Object.keys(this.flowElementProperties).length > 0 && this.evidenceKeyFilter.length > 0;
+  }
+
+  /**
+   * Fetches evidence keys and properties data.
+   *
+   * This method asynchronously fetches evidence keys and properties required for the operation.
+   * It uses Promises to handle data retrieval and provides callback functions for success and failure scenarios.
+   *
+   * @param {Function} resolveCallback - A callback function to be called when the data is successfully fetched.
+   * It will receive the current instance as a parameter.
+   *
+   * @param {Function} rejectCallback - A callback function to be called when an error occurs during data retrieval.
+   * It will receive the error information as a parameter.
+   */
+  fetchEvidenceKeysAndProperties (resolveCallback, rejectCallback) {
     const self = this;
-
     Promise.all([this.getEvidenceKeys(), this.fetchProperties()]).then(function () {
-      self.initialised = true;
+      resolveCallback(self);
     }).catch(function (errors) {
-      self.initialised = false;
-
       self.errors = errors;
-
       if (self.pipelines) {
         // Log error on all pipelines engine is attached to
-
         self.pipelines.map(function (pipeline) {
           pipeline.log('error', {
             source: 'CloudRequestEngine',
             message: self.errors
           });
         });
+        rejectCallback(self.errors);
       }
     });
   }
@@ -129,20 +151,10 @@ class CloudRequestEngine extends Engine {
   ready () {
     const self = this;
     return new Promise(function (resolve, reject) {
-      if (self.initialised === true) {
+      if (self.keysAndPropertiesFetched) {
         resolve(self);
-      } else if (self.initialised === false) {
-        reject(self.errors);
       } else {
-        const readyCheck = setInterval(function () {
-          if (self.initialised === true) {
-            clearInterval(readyCheck);
-            resolve(self);
-          } else if (self.initialised === false) {
-            reject(self.errors);
-            clearInterval(readyCheck);
-          }
-        });
+        self.fetchEvidenceKeysAndProperties(resolve, reject);
       }
     });
   }
