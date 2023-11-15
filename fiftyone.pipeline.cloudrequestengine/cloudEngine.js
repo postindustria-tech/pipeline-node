@@ -38,55 +38,61 @@ class CloudEngine extends Engine {
   constructor () {
     super(...arguments);
 
-    this.dataKey = 'CloudEngineBase'; // This should be overriden
+    this.dataKey = 'CloudEngineBase'; // This should be overridden
 
-    const engine = this;
-
-    this.registrationCallbacks.push(function (pipeline, flowElement) {
-      const cloudRequestEngine = pipeline.flowElements.cloud;
-
-      if (!cloudRequestEngine) {
-        pipeline.log('error', 'No CloudRequestEngine in Pipeline');
-      }
-
-      cloudRequestEngine.ready().then(function () {
-        flowElement.properties = cloudRequestEngine.flowElementProperties[flowElement.dataKey];
-        engine.updateProperties();
-        flowElement.evidenceKeyFilter = new BasicListEvidenceKeyFilter(cloudRequestEngine.evidenceKeys);
-        engine.initialised = true;
-      }).catch(function (error) {
-        // throw error;
-
-        engine.errors = error;
-
-        engine.initialised = false;
-      });
+    this.registrationCallbacks.push((pipeline, flowElement) => {
+      this.handlePipelineRegistration(pipeline, flowElement);
     });
   }
 
   /**
-   * Function for testing if the cloud engine is ready
-   * Checks to see if properties and evidence keys have been fetched
+   * Handles the registration of the Cloud Engine in a pipeline.
+   * This method is called when a pipeline is registered,
+   * and it ensures that the CloudRequestEngine is present in the pipeline.
    *
-   * @returns {Promise} whether ready
+   * @param {Pipeline} pipeline - The pipeline being registered.
+   * @param {FlowElement} flowElement - The flow element associated with the Cloud Engine.
+   */
+  handlePipelineRegistration (pipeline, flowElement) {
+    if (!pipeline.flowElements.cloud) {
+      pipeline.log('error', 'No CloudRequestEngine in Pipeline');
+    }
+
+    this._cloudRequestEngine = pipeline.flowElements.cloud;
+    this._flowElement = flowElement;
+  }
+
+  /**
+   * Updates the Cloud Engine when the CloudRequestEngine is ready.
+   * This method fetches properties and evidence keys from the CloudRequestEngine,
+   * updating the Cloud Engine accordingly.
+   *
+   * @param {Function} resolve - Callback to be called on successful completion.
+   * @param {Function} reject - Callback to be called if there is an error.
+   */
+  updateEngineWhenCloudRequestEngineReady (resolve, reject) {
+    this._cloudRequestEngine.ready()
+      .then(() => {
+        this._flowElement.properties = this._cloudRequestEngine.flowElementProperties[this._flowElement.dataKey];
+        this.updateProperties();
+        this._flowElement.evidenceKeyFilter = new BasicListEvidenceKeyFilter(this._cloudRequestEngine.evidenceKeys);
+        resolve(this);
+      })
+      .catch((error) => {
+        this.errors = error;
+        reject(this.errors);
+      });
+  }
+
+  /**
+   * Checks if the Cloud Engine is ready.
+   * This method returns a Promise that resolves if the CloudRequestEngine is ready,
+   * indicating that properties and evidence keys have been successfully fetched.
+   *
+   * @returns {Promise} A Promise that resolves if the CloudRequestEngine is ready and rejects if there is an error.
    */
   ready () {
-    const self = this;
-    return new Promise(function (resolve, reject) {
-      if (self.initialised === true) {
-        resolve(self);
-      } else {
-        const readyCheck = setInterval(function () {
-          if (self.initialised === true) {
-            clearInterval(readyCheck);
-            resolve(self);
-          } else if (self.initialised === false) {
-            clearInterval(readyCheck);
-            reject(self.errors);
-          }
-        });
-      }
-    });
+    return new Promise((resolve, reject) => this.updateEngineWhenCloudRequestEngineReady(resolve, reject));
   }
 
   /**
