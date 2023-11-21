@@ -21,6 +21,7 @@
  * ********************************************************************* */
 
 const path = require('path');
+const http = require('http');
 const MockRequestClient = require('./classes/mockRequestClient');
 const CloudRequestEngine = require('../cloudRequestEngine');
 const CloudRequestError = require('../cloudRequestError');
@@ -153,6 +154,64 @@ test('validate error handling JSON errors', async () => {
     }).ready();
   };
   await expect(e()).rejects.toEqual([new CloudRequestError(errorMessage)]);
+});
+
+/**
+ * Test cloud request engine handles unavailability of cloud service
+ * as expected.
+ * An exception should be thrown by the cloud request engine
+ * containing the errors from the cloud service in the JSON object.
+ */
+
+test('validate case when cloud unavailable', (done) => {
+  const SERVER_PORT = 3000;
+  const errorMessage = 'Cloud server internal error';
+
+  const server = http.createServer((req, res) => {
+    const client = new MockRequestClient({
+      resourceKey: 'resourceKey',
+      error: '{ "status":"500", "errors": ["' + errorMessage + '"] }'
+    });
+
+    const requestEngine = new CloudRequestEngine({
+      resourceKey: testResourceKey,
+      requestClient: client
+    });
+
+    requestEngine.ready().then(engine => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(engine.device));
+    }).catch(error => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(error));
+    });
+  }).listen(SERVER_PORT, () => {
+    const options = {
+      hostname: 'localhost',
+      port: SERVER_PORT,
+      path: '/',
+      method: 'GET'
+    };
+
+    const req = http.request(options, (res) => {
+      let response = '';
+
+      res.on('data', (chunk) => {
+        response += chunk;
+      });
+
+      res.on('end', () => {
+        const error = JSON.parse(response)[0];
+        expect(error.errorMessage).toBe(errorMessage);
+        expect(error.name).toBe('CloudRequestError');
+        server.close(); // Close the server after the request is complete.
+        done();
+      });
+    });
+    req.end();
+  });
 });
 
 /**
