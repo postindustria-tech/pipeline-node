@@ -162,6 +162,7 @@ class JavaScriptBuilderElement extends FlowElement {
       }
 
       const urlQuery = querystring.stringify(query);
+      settings._parameters = JSON.stringify(query);
 
       // Does the URL already have a query string in it?
 
