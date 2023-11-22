@@ -25,7 +25,7 @@ const fs = require('fs');
 const querystring = require('querystring');
 
 const template = fs.readFileSync(
-  __dirname + '/JavaScriptResource.mustache',
+  __dirname + '/javascript-templates/JavaScriptResource.mustache',
   'utf8'
 );
 
