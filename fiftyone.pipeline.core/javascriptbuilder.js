@@ -194,6 +194,9 @@ class JavaScriptBuilderElement extends FlowElement {
 
     settings._hasDelayedProperties = settings._jsonObject.includes('delayexecution');
 
+    settings._sessionId = flowData.evidence.get('query.session-id');
+    settings._sequence = flowData.evidence.get('query.sequence');
+
     let output = mustache.render(template, settings);
 
     if (settings._minify) {
