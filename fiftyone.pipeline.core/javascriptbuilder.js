@@ -25,7 +25,7 @@ const fs = require('fs');
 const querystring = require('querystring');
 
 const template = fs.readFileSync(
-  __dirname + '/JavaScriptResource.mustache',
+  __dirname + '/javascript-templates/JavaScriptResource.mustache',
   'utf8'
 );
 
@@ -162,6 +162,7 @@ class JavaScriptBuilderElement extends FlowElement {
       }
 
       const urlQuery = querystring.stringify(query);
+      settings._parameters = JSON.stringify(query);
 
       // Does the URL already have a query string in it?
 
@@ -193,6 +194,9 @@ class JavaScriptBuilderElement extends FlowElement {
     settings._supportsPromises = promises;
 
     settings._hasDelayedProperties = settings._jsonObject.includes('delayexecution');
+
+    settings._sessionId = flowData.evidence.get('query.session-id');
+    settings._sequence = flowData.evidence.get('query.sequence');
 
     let output = mustache.render(template, settings);
 
