@@ -1,4 +1,4 @@
-name: Nightly Documentation Update
+name: Nightly Submodule Update
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         type: boolean
         description: Dry Run
   schedule:
-    - cron: '30 3 * * *'
+    - cron: '0 1 * * *'
 
 jobs:
-  Nightly_Documentation_Update:
-    uses: postindustria-tech/common-ci/.github/workflows/nightly-documentation-update.yml@main
+  Nightly_Submodule_Update:
+    uses: 51Degrees/common-ci/.github/workflows/nightly-submodule-update.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}

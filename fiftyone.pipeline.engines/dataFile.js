@@ -118,6 +118,7 @@ class DataFile {
     this.verifyIfModifiedSince = verifyIfModifiedSince;
     this.updateOnStart = updateOnStart;
     this.isRegistered = isRegistered;
+    this.attemptedDownload = false;
 
     if (refresh) {
       this.refresh = refresh;

@@ -1,5 +1,8 @@
 name: Nightly Package Update
 
+
+# Scheduled runs are temporarily disabled, because right now they cause
+# an eternal cycle of dependency updates
 on:
   workflow_dispatch:
     inputs:
@@ -7,8 +10,8 @@ on:
         default: false
         type: boolean
         description: Dry Run
-  schedule:
-    - cron: '0 1 * * *'
+#  schedule:
+#    - cron: '0 0 * * *'
 
 
 jobs:

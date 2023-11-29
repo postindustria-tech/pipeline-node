@@ -7,8 +7,9 @@ on:
         default: false
         type: boolean
         description: Dry Run
-  schedule:
-    - cron: '0 1 * * *'
+  workflow_run:
+    workflows: [Nightly PRs to Main]
+    types: [completed]
 
 jobs:
   Nightly_Publish_Main:
@@ -20,4 +21,6 @@ jobs:
       build-platform: ubuntu-latest
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
-      asset-keys: '{"DeviceDetection": "${{ secrets.DEVICE_DETECTION_KEY }}", "TestResourceKey": "${{ secrets.SUPER_RESOURCE_KEY}}", "NPMAuthToken": "${{ secrets.NPM_AUTH_TOKEN}}"}'
+      DeviceDetection: ${{ secrets.DEVICE_DETECTION_KEY }}
+      TestResourceKey: ${{ secrets.SUPER_RESOURCE_KEY}}
+      NPMAuthToken: ${{ secrets.NPM_AUTH_TOKEN}}
