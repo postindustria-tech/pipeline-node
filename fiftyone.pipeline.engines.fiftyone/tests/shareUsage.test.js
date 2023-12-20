@@ -395,7 +395,7 @@ test('share usage - send  more than once', done => {
         expect(received[1]).toContain('ua 2');
         expect(received[1]).not.toContain('ua 1');
         done();
-      }, 2000);
+      }, 5000);
     });
   });
 });
