@@ -18,7 +18,7 @@ $packageJSON = @"
     "repository": {
         "type": "git", "url": "https://github.com/51Degrees/pipeline-node"
     },
-    "author": "51Degrees",
+    "author": "51Degrees Engineering <engineering@51degrees.com>",
     "dependencies": {
         "jest": "^27.0.6",
         "node-mocks-http": "^1.10.1",
