@@ -2,6 +2,7 @@
   "name": "fiftyone.pipeline.cloudrequestengine",
   "version": "1.0.21",
   "description": "Cloud request engine for the 51Degrees Pipeline API",
+  "keywords": ["51degrees", "pipeline", "data", "service", "cloud"],
   "main": "index.js",
   "directories": {
     "test": "tests"
