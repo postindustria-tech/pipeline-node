@@ -10,7 +10,7 @@
   "scripts": {
     "test": "jest"
   },
-  "author": "51Degrees <support@51Degrees.com>",
+  "author": "51Degrees Engineering <engineering@51degrees.com>",
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
@@ -24,12 +24,6 @@
     "fiftyone.pipeline.core": "4.4.x",
     "fiftyone.pipeline.engines": "4.4.x"
   },
-  "contributors": [
-    "Filip Hnízdo <filip@octophin.com> (https://octophindigital.com/)",
-    "Steve Ballantine <stephen@51degrees.com> (https://51degrees.com)",
-    "Ben Shilito <ben@51degrees.com> (https://51degrees.com)",
-    "Joseph Dix <joseph@51degrees.com> (https://51degrees.com)"
-  ],
   "license": "EUPL-1.2",
   "bugs": {
     "url": "https://github.com/51Degrees/pipeline-node/issues"
