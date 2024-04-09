@@ -25,7 +25,7 @@ $packageJSON = @"
         "jest-junit": "^12.2.0",
         "mustache": "^4.0.1",
         "uglify-js": "^3.8.1",
-        "eslint": "6.8.0",
+        "eslint": "8.57.0",
         "eslint-config-standard": "14.1.1",
         "eslint-plugin-import": "2.20.2",
         "eslint-plugin-node": "11.1.0",
