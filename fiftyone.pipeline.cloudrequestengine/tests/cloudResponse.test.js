@@ -28,12 +28,12 @@ const CloudRequestError = require('../cloudRequestError');
 
 // CloudEngine does not use relative path to import module so update the module
 // lookups path here via setting of NODE_PATH environment variable.
-process.env.NODE_PATH = __dirname + '/../..' + path.delimiter + process.env.NODE_PATH;
+const parentDir = path.resolve(__dirname, '../..');
+process.env.NODE_PATH = parentDir + path.delimiter + process.env.NODE_PATH;
 require('module').Module._initPaths();
 
-const PipelineBuilder = require(
-  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
-);
+const pipelineBuilderPath = path.resolve(__dirname, '../../fiftyone.pipeline.core/pipelineBuilder');
+const PipelineBuilder = require(pipelineBuilderPath);
 
 // Invalid resource key
 const testResourceKey = 'AAAAAAAAAAAA';

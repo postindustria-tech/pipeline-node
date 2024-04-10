@@ -25,22 +25,21 @@ const path = require('path');
 
 // CloudEngine does not use relative path to import module so update the module
 // lookups path here via setting of NODE_PATH environment variable.
-process.env.NODE_PATH = __dirname + '/../..' + path.delimiter + process.env.NODE_PATH;
+const parentDir = path.resolve(__dirname, '../..');
+process.env.NODE_PATH = parentDir + path.delimiter + process.env.NODE_PATH;
 require('module').Module._initPaths();
 
-const CloudEngine = require(__dirname + '/../cloudEngine');
-const PipelineBuilder = require(
-  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
-);
-const AspectDataDictionary = require(
-  __dirname + '/../../fiftyone.pipeline.engines/aspectDataDictionary'
-);
-const coreErrorMessages = require(
-  __dirname + '/../../fiftyone.pipeline.core/errorMessages'
-);
-const engineErrorMessages = require(
-  __dirname + '/../../fiftyone.pipeline.engines/errorMessages'
-);
+const cloudEnginePath = path.resolve(__dirname, '../cloudEngine');
+const pipelineBuilderPath = path.resolve(__dirname, '../../fiftyone.pipeline.core/pipelineBuilder');
+const aspectDataDictionaryPath = path.resolve(__dirname, '../../fiftyone.pipeline.engines/aspectDataDictionary');
+const coreErrorMessagesPath = path.resolve(__dirname, '../../fiftyone.pipeline.core/errorMessages');
+const engineErrorMessagesPath = path.resolve(__dirname, '../../fiftyone.pipeline.engines/errorMessages');
+
+const CloudEngine = require(cloudEnginePath);
+const PipelineBuilder = require(pipelineBuilderPath);
+const AspectDataDictionary = require(aspectDataDictionaryPath);
+const coreErrorMessages = require(coreErrorMessagesPath);
+const engineErrorMessages = require(engineErrorMessagesPath);
 
 // Test cloud engine class
 class TestCloudEngine extends CloudEngine {
