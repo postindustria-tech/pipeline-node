@@ -163,17 +163,17 @@ class DataFileUpdateService {
         dataFileUpdateService.checkNextUpdate(dataFile);
 
         return false;
-      }
+      };
 
       const filename = dataFile.tempDataDirectory +
         '/' + dataFile.identifier +
         Date.now();
 
+
       response.pipe(fs.createWriteStream(filename));
 
       response.on('end', function () {
         // Open file
-
         if (dataFile.verifyMD5) {
           const headerMD5 = response.headers['content-md5'];
 
@@ -304,6 +304,9 @@ class DataFileUpdateService {
 
           fs.writeFile(doneFileName, data, function () {
             dataFileUpdateService.fileReady(dataFile, doneFileName);
+            fs.unlink(filename, function (err) {
+              if (err) dataFileUpdateService.pipeline.log('error', err);
+            });
           });
         });
       });
@@ -322,26 +325,28 @@ class DataFileUpdateService {
     try {
       const dataFileUpdateService = this;
 
-      let interval = minToMs(
-        (Math.floor(Math.random() *
-        dataFile.updateTimeMaximumRandomisation) +
-        1) +
-        dataFile.pollingInterval
-      );
-
-      interval += dataFile.getNextUpdate().getMilliseconds();
-
       // Run update on start if specified to do so
       if (dataFile.updateOnStart && !dataFile.attemptedDownload) {
         dataFileUpdateService.updateDataFile(dataFile);
-      } else {
+        return;
+      }
+
+      if(dataFile.autoUpdate) {
+        let interval = minToMs(
+          (Math.floor(Math.random() *
+              dataFile.updateTimeMaximumRandomisation) +
+            1) +
+          dataFile.pollingInterval
+        );
+
+        interval += dataFile.getNextUpdate().getMilliseconds();
         setTimeout(function () {
           dataFileUpdateService.updateDataFile(dataFile);
         }, interval);
+        return;
       }
     } catch (e) {
       // Catch any extra errors with datafile updates
-
       this.pipeline.log('error', e);
     }
   }
@@ -353,7 +358,6 @@ class DataFileUpdateService {
    */
   registerDataFile (dataFile) {
     dataFile.registered = true;
-
     if (dataFile.updateOnStart) {
       this.updateDataFile(dataFile);
     } else {

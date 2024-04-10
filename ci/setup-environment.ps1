@@ -13,7 +13,8 @@ $packageJSON = @"
     "main": "index.js",
     "scripts": {
         "unit-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testPathIgnorePatterns '.*integration.*'",
-        "integration-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testMatch '**/*integration*.js'"
+        "integration-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testMatch '**/*integration*.js'",
+        "lint": "eslint . --ext .js"
     },
     "repository": {
         "type": "git", "url": "https://github.com/51Degrees/pipeline-node"
@@ -25,7 +26,7 @@ $packageJSON = @"
         "jest-junit": "^12.2.0",
         "mustache": "^4.0.1",
         "uglify-js": "^3.8.1",
-        "eslint": "6.8.0",
+        "eslint": "8.57.0",
         "eslint-config-standard": "14.1.1",
         "eslint-plugin-import": "2.20.2",
         "eslint-plugin-node": "11.1.0",
