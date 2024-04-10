@@ -19,20 +19,21 @@
  * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
+const path = require('path');
 
 const util = require('util');
-const errorMessages = require(__dirname +
-  '/../errorMessages');
-const Engine = require(__dirname + '/../../fiftyone.pipeline.engines/engine');
-const PipelineBuilder = require(
-  __dirname + '/../pipelineBuilder'
-);
-const ElementDataDictionary = require(
-  __dirname + '/../elementDataDictionary'
-);
-const BasicListEvidenceKeyFilter = require(
-  __dirname + '/../basicListEvidenceKeyFilter'
-);
+
+const errorMessagesPath = path.resolve(__dirname, '../errorMessages');
+const enginePath = path.resolve(__dirname, '../../fiftyone.pipeline.engines/engine');
+const pipelineBuilderPath = path.resolve(__dirname, '../pipelineBuilder');
+const elementDataDictionaryPath = path.resolve(__dirname, '../elementDataDictionary');
+const basicListEvidenceKeyFilterPath = path.resolve(__dirname, '../basicListEvidenceKeyFilter');
+
+const errorMessages = require(errorMessagesPath);
+const Engine = require(enginePath);
+const PipelineBuilder = require(pipelineBuilderPath);
+const ElementDataDictionary = require(elementDataDictionaryPath);
+const BasicListEvidenceKeyFilter = require(basicListEvidenceKeyFilterPath);
 
 const testEngine = new Engine(
   {

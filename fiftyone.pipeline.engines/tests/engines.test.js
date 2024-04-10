@@ -21,21 +21,15 @@
  * ********************************************************************* */
 
 const util = require('util');
-const coreErrorMessages = require(
-  __dirname + '/../../fiftyone.pipeline.core/errorMessages'
-);
-const errorMessages = require('../errorMessages');
-const Engine = require(__dirname + '/../engine');
-const PipelineBuilder = require(
-  __dirname + '/../../fiftyone.pipeline.core/pipelineBuilder'
-);
-const AspectDataDictionary = require(
-  __dirname + '/../aspectDataDictionary'
-);
-const BasicListEvidenceKeyFilter = require(
-  __dirname + '/../../fiftyone.pipeline.core/basicListEvidenceKeyFilter'
-);
-const LruCache = require(__dirname + '/../lruCache');
+const path = require('path');
+
+const coreErrorMessages = require(path.resolve(__dirname, '../../fiftyone.pipeline.core/errorMessages'));
+const errorMessages = require(path.resolve(__dirname, '../errorMessages'));
+const Engine = require(path.resolve(__dirname, '../engine'));
+const PipelineBuilder = require(path.resolve(__dirname, '../../fiftyone.pipeline.core/pipelineBuilder'));
+const AspectDataDictionary = require(path.resolve(__dirname, '../aspectDataDictionary'));
+const BasicListEvidenceKeyFilter = require(path.resolve(__dirname, '../../fiftyone.pipeline.core/basicListEvidenceKeyFilter'));
+const LruCache = require(path.resolve(__dirname, '../lruCache'));
 
 const cache = new LruCache({ size: 1 });
 

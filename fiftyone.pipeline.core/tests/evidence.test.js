@@ -19,8 +19,9 @@
  * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
+const path = require('path');
 
-const setup = require(__dirname + '/coreTestSetup.js');
+const setup = require(path.resolve(__dirname, 'coreTestSetup.js'));
 const PipelineBuilder = require('../pipelineBuilder');
 
 const syncPipeline = new PipelineBuilder()

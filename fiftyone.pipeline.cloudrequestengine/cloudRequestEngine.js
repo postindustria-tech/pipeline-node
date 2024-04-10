@@ -131,7 +131,7 @@ class CloudRequestEngine extends Engine {
       self.errors = errors;
       if (self.pipelines) {
         // Log error on all pipelines engine is attached to
-        self.pipelines.map(function (pipeline) {
+        self.pipelines.forEach(function (pipeline) {
           pipeline.log('error', {
             source: 'CloudRequestEngine',
             message: self.errors

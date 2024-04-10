@@ -19,7 +19,9 @@
  * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
-const LruCache = require(__dirname + '/../lruCache');
+const path = require('path');
+
+const LruCache = require(path.resolve(__dirname, '..', 'lruCache'));
 
 /**
  * Check that an entry keyed on a simple string can be added

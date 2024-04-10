@@ -111,7 +111,7 @@ test('share usage - data correct', done => {
       expect(received[0]).not.toBeNull();
       expect(received[0].length).toBeGreaterThan(0);
       expect(received[0]).toMatch(new RegExp(`^<Devices version="${shareUsageVersion}"><Device>.*`));
-      expect(received[0]).toMatch(new RegExp('.*</Device></Devices>$'));
+      expect(received[0]).toMatch(/.*<\/Device><\/Devices>$/);
       expect(received[0]).toContain('<Language>Node.JS</Language>');
       expect(received[0]).toContain(`<LanguageVersion>${process.versions.node}</LanguageVersion>`);
       expect(received[0]).toContain(`<Platform>${process.platform} ${os.release()}</Platform>`);

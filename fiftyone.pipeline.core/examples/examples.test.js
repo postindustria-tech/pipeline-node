@@ -52,19 +52,19 @@ const testExample = function ({ file, portNumber }) {
 };
 
 test('pipeline functionality example', () => {
-  testExample({ file: __dirname + '/pipelines.js', portNumber: 3002 });
+  testExample({ file: path.resolve(__dirname, 'pipelines.js'), portNumber: 3002 });
 });
 
 test('custom flowElements 1', () => {
   testExample(
-    { file: __dirname + '/customFlowElements/simpleEvidenceFlowElement.js', portNumber: 3003 }
+    { file: path.resolve(__dirname, 'customFlowElements', 'simpleEvidenceFlowElement.js'), portNumber: 3003 }
   );
 });
 
 test('custom flowElements 2', () => {
   testExample(
     {
-      file: __dirname + '/customFlowElements/clientSideEvidenceFlowElement.js',
+      file: path.resolve(__dirname, 'customFlowElements', 'clientSideEvidenceFlowElement.js'),
       port: 3004
     }
   );

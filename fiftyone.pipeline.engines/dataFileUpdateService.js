@@ -82,7 +82,7 @@ class DataFileUpdateService {
       dataFile.updating = true;
     }
 
-    const urlParts = url.parse(dataFile.updateUrl);
+    const urlParts = url.URL(dataFile.updateUrl);
 
     const requestOptions = urlParts;
 
@@ -168,8 +168,6 @@ class DataFileUpdateService {
       const filename = dataFile.tempDataDirectory +
         '/' + dataFile.identifier +
         Date.now();
-
-
       response.pipe(fs.createWriteStream(filename));
 
       response.on('end', function () {
@@ -331,7 +329,7 @@ class DataFileUpdateService {
         return;
       }
 
-      if(dataFile.autoUpdate) {
+      if (dataFile.autoUpdate) {
         let interval = minToMs(
           (Math.floor(Math.random() *
               dataFile.updateTimeMaximumRandomisation) +
@@ -343,7 +341,6 @@ class DataFileUpdateService {
         setTimeout(function () {
           dataFileUpdateService.updateDataFile(dataFile);
         }, interval);
-        return;
       }
     } catch (e) {
       // Catch any extra errors with datafile updates
