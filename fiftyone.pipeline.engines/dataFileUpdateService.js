@@ -82,7 +82,7 @@ class DataFileUpdateService {
       dataFile.updating = true;
     }
 
-    const urlParts = url.URL(dataFile.updateUrl);
+    const urlParts = new URL(dataFile.updateUrl);
 
     const requestOptions = urlParts;
 
