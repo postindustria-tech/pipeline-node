@@ -13,7 +13,7 @@ on:
 
 jobs:
   Nightly_Publish_Main:
-    uses: 51Degrees/common-ci/.github/workflows/nightly-publish-main.yml@main
+    uses: postindustria-tech/common-ci/.github/workflows/nightly-publish-main.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}
