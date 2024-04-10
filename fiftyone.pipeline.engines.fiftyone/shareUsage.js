@@ -110,7 +110,7 @@ class ShareUsage extends Engine {
       endpoint.includes('http://') === false) {
       endpoint = 'https://' + endpoint;
     }
-    this.endpoint = url.parse(endpoint);
+    this.endpoint = new url.URL(endpoint);
     switch (this.endpoint.protocol) {
       case 'http:':
         this.http = require('http');
@@ -377,7 +377,7 @@ class ReplacedString {
       const length = Math.min(escapedText.length, SHARE_USAGE_MAX_EVIDENCE_LENGTH);
       this.truncated = escapedText.length > SHARE_USAGE_MAX_EVIDENCE_LENGTH;
       Array.from(escapedText.substring(0, length))
-        .map(c => {
+        .forEach(c => {
           if (c.charCodeAt(0) < Object.keys(IS_VALID_XML_CHAR).length && IS_VALID_XML_CHAR[c.charCodeAt(0)]) {
             this.result += c;
           } else {

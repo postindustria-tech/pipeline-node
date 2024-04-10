@@ -111,6 +111,7 @@ fiftyoneDegreesManager = function () { // eslint-disable-line
   const completedCallback = function (resolve, reject) {
     callbackCounter--;
     if (callbackCounter === 0) {
+      resolve();
     } else if (callbackCounter < 0) {
       reject('Too many callbacks.');
     }

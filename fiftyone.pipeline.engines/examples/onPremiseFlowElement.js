@@ -30,12 +30,13 @@ datafile update service. In this case the file has a simple watcher which
 checks if the file has changed.
 
  */
+const path = require('path');
 
 // Require the filesystem module for datafile reading
 const fs = require('fs');
 
 // First require the core Pipeline
-const FiftyOnePipelineCore = require(__dirname + '/../../fiftyone.pipeline.core');
+const FiftyOnePipelineCore = require(path.resolve(__dirname, '../../fiftyone.pipeline.core'));
 
 // Next require the engines extension that extends flowElements to support
 // functionality such as auto updating datafiles,
@@ -45,7 +46,7 @@ const FiftyOnePipelineCore = require(__dirname + '/../../fiftyone.pipeline.core'
 // source repository. If this code has been copied to run standalone
 // then you'll need to replace the require below with the commented
 // out version below it.
-const FiftyOnePipelineEngines = require(__dirname + '/../');
+const FiftyOnePipelineEngines = require(path.resolve(__dirname, '..'));
 // const FiftyOnePipelineEngines = require("fiftyone.pipeline.engines");
 
 //! [class]
@@ -154,7 +155,7 @@ class Astrology extends FiftyOnePipelineEngines.Engine {
           return false;
         }
       })[0].starsign;
-    };
+    }
 
     // Save the data into an extension of the elementData class
     // (in this case a simple dictionary subclass)
@@ -196,7 +197,7 @@ const server = http.createServer((req, res) => {
   
           ${flowData.astrology.starSign
             ? '<p>Your starsign is ' +
-            flowData.astrology.starSign + ' </p>'
+              flowData.astrology.starSign + ' </p>'
             : '<p>Add your date of birth to get your starsign</p>'
           }
   
