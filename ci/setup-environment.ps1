@@ -27,12 +27,13 @@ $packageJSON = @"
         "mustache": "^4.0.1",
         "uglify-js": "^3.8.1",
         "eslint": "8.57.0",
-        "eslint-config-standard": "14.1.1",
-        "eslint-plugin-import": "2.20.2",
-        "eslint-plugin-node": "11.1.0",
-        "eslint-plugin-promise": "4.2.1",
-        "eslint-plugin-standard": "4.0.1",
-        "eslint-plugin-jsdoc": "25.4.0"
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsdoc": "^38.1.6",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-jest": "^23.13.2",
+        "eslint-plugin-n": "^15.0.0"
     },
     "jest":{
         "setupFilesAfterEnv": ["./setup.js"]
