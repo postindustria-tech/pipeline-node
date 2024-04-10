@@ -110,7 +110,7 @@ class ShareUsage extends Engine {
       endpoint.includes('http://') === false) {
       endpoint = 'https://' + endpoint;
     }
-    this.endpoint = new URL(endpoint);
+    this.endpoint = new url.URL(endpoint);
     switch (this.endpoint.protocol) {
       case 'http:':
         this.http = require('http');

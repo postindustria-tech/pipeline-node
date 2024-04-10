@@ -135,7 +135,7 @@ class Evidence {
     if (request.headers.referer) {
       evidence.add(
         'header.protocol',
-        new URL(request.headers.referer).protocol.replace(':', '')
+        new url.URL(request.headers.referer).protocol.replace(':', '')
       );
     }
 
@@ -150,7 +150,7 @@ class Evidence {
 
     // Get querystring data
 
-    const params = new URL(request.url, true);
+    const params = new url.URL(request.url, true);
 
     const query = params.query;
 
