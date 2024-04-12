@@ -150,9 +150,9 @@ class Evidence {
 
     // Get querystring data
 
-    const params = new url.URL(request.url, true);
+    const params = new url.URL(request.url);
 
-    const query = params.query;
+    const query = params.searchParams;
 
     Object.keys(query).forEach(function (key) {
       const value = query[key];
