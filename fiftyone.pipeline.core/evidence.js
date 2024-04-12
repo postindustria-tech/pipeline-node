@@ -148,11 +148,23 @@ class Evidence {
 
     evidence.add('server.host-ip', request.connection.localAddress.toString());
 
+    // Parsing URL using new URL constructor
+
+    const protocol = request.protocol || 'http';
+    const hostname = request.hostname || 'localhost'; // Use a default hostname if not available
+    const port = request.socket.localPort || ''; // Port may not be available in some cases
+    const searchParams = request.query || ''; // Assuming query parameters are in req.query
+
+    let fullURL = `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
+
+    if (searchParams) {
+      fullURL += `?${searchParams}`;
+    }
+
     // Get querystring data
 
-    const params = new url.URL(request.url);
-
-    const query = params.searchParams;
+    const URL = new url.URL(fullURL);
+    const query = URL.searchParams;
 
     Object.keys(query).forEach(function (key) {
       const value = query[key];
