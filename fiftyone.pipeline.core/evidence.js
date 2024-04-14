@@ -62,6 +62,7 @@ class Evidence {
     if (keep) {
       this.flowData.pipeline.log('debug', key + ' added to evidence');
 
+
       this.evidenceStore[key] = value;
     } else {
       this.flowData.pipeline.log(
@@ -153,22 +154,17 @@ class Evidence {
     const protocol = request.protocol || 'http';
     const hostname = request.hostname || 'localhost'; // Use a default hostname if not available
     const port = request.socket?.localPort || ''; // Port may not be available in some cases
-    const searchParams = request.query || ''; // Assuming query parameters are in req.query
 
-    let fullURL = `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
-
-    if (searchParams) {
-      fullURL += `?${searchParams}`;
-    }
+    // If request.url already contains the protocol, hostname, and port, use it as is
+    let fullURL = request.url.includes('://') ? request.url : `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
 
     // Get querystring data
 
     const URL = new url.URL(fullURL);
     const query = URL.searchParams;
 
-    Object.keys(query).forEach(function (key) {
-      const value = query[key];
-      evidence.add('query.' + key, value);
+    query.forEach(function (value, param) {
+      evidence.add('query.' + param, value);
     });
 
     return this;

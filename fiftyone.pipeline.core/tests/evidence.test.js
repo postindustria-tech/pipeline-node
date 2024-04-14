@@ -77,8 +77,9 @@ test('evidence addFromRequest', () => {
   // Mock request object
   const mockRequest = new EventEmitter();
   mockRequest.method = 'POST'; // Example HTTP method
-  mockRequest.url = '/'; // Example request URL
+  mockRequest.url = '/?some-value=some'; // Example request URL
   mockRequest.httpVersion = '1.1'; // Example HTTP version
+  mockRequest.hostname = 'test.url';
   mockRequest.headers = {
     'Content-Type': 'application/json',
     'Content-Length': 18
@@ -96,4 +97,5 @@ test('evidence addFromRequest', () => {
   };
 
   expect(() => syncFlowData.evidence.addFromRequest(mockRequest)).not.toThrow();
+  expect(syncFlowData.evidence.get('query.some-value')).toBe('some');
 });
