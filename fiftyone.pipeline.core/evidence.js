@@ -62,7 +62,6 @@ class Evidence {
     if (keep) {
       this.flowData.pipeline.log('debug', key + ' added to evidence');
 
-
       this.evidenceStore[key] = value;
     } else {
       this.flowData.pipeline.log(
@@ -156,7 +155,7 @@ class Evidence {
     const port = request.socket?.localPort || ''; // Port may not be available in some cases
 
     // If request.url already contains the protocol, hostname, and port, use it as is
-    let fullURL = request.url.includes('://') ? request.url : `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
+    const fullURL = request.url.includes('://') ? request.url : `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
 
     // Get querystring data
 

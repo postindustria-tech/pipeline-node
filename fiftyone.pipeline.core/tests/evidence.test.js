@@ -23,7 +23,6 @@ const path = require('path');
 
 const setup = require(path.resolve(__dirname, 'coreTestSetup.js'));
 const PipelineBuilder = require('../pipelineBuilder');
-const {EventEmitter} = require("events");
 
 const syncPipeline = new PipelineBuilder()
   .add(setup.async)
