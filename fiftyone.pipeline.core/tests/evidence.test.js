@@ -23,6 +23,7 @@ const path = require('path');
 
 const setup = require(path.resolve(__dirname, 'coreTestSetup.js'));
 const PipelineBuilder = require('../pipelineBuilder');
+const {EventEmitter} = require("events");
 
 const syncPipeline = new PipelineBuilder()
   .add(setup.async)
@@ -71,13 +72,42 @@ test('evidenceKeyFilter', () => {
  * Check that evidence addFromRequest
  * can correctly handle Incoming Request object */
 
-test('evidence addFromRequest', () => {
+test('evidence addFromRequest partial url', () => {
   const { EventEmitter } = require('events');
 
   // Mock request object
   const mockRequest = new EventEmitter();
   mockRequest.method = 'POST'; // Example HTTP method
   mockRequest.url = '/?some-value=some'; // Example request URL
+  mockRequest.httpVersion = '1.1'; // Example HTTP version
+  mockRequest.hostname = 'test.url';
+  mockRequest.headers = {
+    'Content-Type': 'application/json',
+    'Content-Length': 18
+  }; // Example request headers
+
+  // Simulating request body data
+  const mockBodyData = JSON.stringify({ evidence: 'sample' });
+  mockRequest.emit('data', mockBodyData);
+  mockRequest.emit('end');
+
+  // Simulating connection object
+  mockRequest.connection = {
+    remoteAddress: '127.0.0.1',
+    localAddress: '127.0.0.1'
+  };
+
+  expect(() => syncFlowData.evidence.addFromRequest(mockRequest)).not.toThrow();
+  expect(syncFlowData.evidence.get('query.some-value')).toBe('some');
+});
+
+test('evidence addFromRequest full url', () => {
+  const { EventEmitter } = require('events');
+
+  // Mock request object
+  const mockRequest = new EventEmitter();
+  mockRequest.method = 'POST'; // Example HTTP method
+  mockRequest.url = 'http://test.com/path?some-value=some'; // Example request URL
   mockRequest.httpVersion = '1.1'; // Example HTTP version
   mockRequest.hostname = 'test.url';
   mockRequest.headers = {
