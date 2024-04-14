@@ -66,3 +66,34 @@ test('evidenceKeyFilter', () => {
   )
     .toBe('header.user_agent');
 });
+
+/**
+ * Check that evidence addFromRequest
+ * can correctly handle Incoming Request object */
+
+test('evidence addFromRequest', () => {
+  const { EventEmitter } = require('events');
+
+  // Mock request object
+  const mockRequest = new EventEmitter();
+  mockRequest.method = 'POST'; // Example HTTP method
+  mockRequest.url = '/'; // Example request URL
+  mockRequest.httpVersion = '1.1'; // Example HTTP version
+  mockRequest.headers = {
+    'Content-Type': 'application/json',
+    'Content-Length': 18
+  }; // Example request headers
+
+  // Simulating request body data
+  const mockBodyData = JSON.stringify({ evidence: 'sample' });
+  mockRequest.emit('data', mockBodyData);
+  mockRequest.emit('end');
+
+  // Simulating connection object
+  mockRequest.connection = {
+    remoteAddress: '127.0.0.1',
+    localAddress: '127.0.0.1'
+  };
+
+  expect(() => syncFlowData.evidence.addFromRequest(mockRequest)).not.toThrow();
+});

@@ -152,7 +152,7 @@ class Evidence {
 
     const protocol = request.protocol || 'http';
     const hostname = request.hostname || 'localhost'; // Use a default hostname if not available
-    const port = request.socket.localPort || ''; // Port may not be available in some cases
+    const port = request.socket?.localPort || ''; // Port may not be available in some cases
     const searchParams = request.query || ''; // Assuming query parameters are in req.query
 
     let fullURL = `${protocol}://${hostname}${port ? `:${port}` : ''}${request.url}`;
