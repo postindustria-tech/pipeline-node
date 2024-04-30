@@ -89,7 +89,7 @@ class DataFileUpdateService {
     if (dataFile.verifyIfModifiedSince) {
       try {
         requestOptions.headers = {
-          'If-Modified-Since': dataFile.getDatePublished()
+          'If-Modified-Since': dataFile.getDatePublished().toUTCString()
         };
       } catch (e) {
 
