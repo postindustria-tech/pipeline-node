@@ -25,6 +25,7 @@ module.exports = {
   ElementData: require('./elementData'),
   ElementDataDictionary: require('./elementDataDictionary'),
   ErrorMessages: require('./errorMessages'),
+  Constants: require('./constants.js'),
   Evidence: require('./evidence'),
   EvidenceKeyFilter: require('./evidenceKeyFilter'),
   FlowData: require('./flowData'),
