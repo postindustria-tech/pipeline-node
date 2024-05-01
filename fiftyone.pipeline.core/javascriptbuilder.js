@@ -33,6 +33,7 @@ const template = fs.readFileSync(
 const FlowElement = require('./flowElement.js');
 const EvidenceKeyFilter = require('./evidenceKeyFilter.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
+const Constants = require('./constants.js');
 const uglifyJS = require('uglify-js');
 
 /**
@@ -203,12 +204,12 @@ class JavaScriptBuilderElement extends FlowElement {
     settings._sequence = flowData.evidence.get('query.sequence');
 
     // Try and get the requested enable cookies from evidence.
-    let enableCookies = flowData.evidence.get(core.constants.evidenceEnableCookies);
+    let enableCookies = flowData.evidence.get(Constants.evidenceEnableCookies);
     if (enableCookies !== undefined) {
       settings._enableCookies = (enableCookies?.toLowerCase?.() === 'true');
     }
     // Try and get the requested object name from evidence.
-    let objName = flowData.evidence.get(core.constants.evidenceObjectName);
+    let objName = flowData.evidence.get(Constants.evidenceObjectName);
     if (objName !== undefined) {
       settings._objName = (objName);
     }

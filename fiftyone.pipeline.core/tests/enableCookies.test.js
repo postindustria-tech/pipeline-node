@@ -62,7 +62,7 @@ each([
         .build();
 
     const flowData = pipeline.createFlowData();
-    flowData.evidence.add(core.constants.evidenceEnableCookies, enableInEvidence.toString());
+    flowData.evidence.add(core.Constants.evidenceEnableCookies, enableInEvidence.toString());
     flowData.process().then(function () {
         const js = flowData.javascriptbuilder.javascript;
         const matches = [...js.matchAll(/document\.cookie/g)];
