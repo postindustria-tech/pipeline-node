@@ -33,6 +33,7 @@ const template = fs.readFileSync(
 const FlowElement = require('./flowElement.js');
 const EvidenceKeyFilter = require('./evidenceKeyFilter.js');
 const ElementDataDictionary = require('./elementDataDictionary.js');
+const Constants = require('./constants.js');
 const uglifyJS = require('uglify-js');
 
 /**
@@ -73,7 +74,10 @@ class JavaScriptBuilderElement extends FlowElement {
    * callback url. This can be overriden with header.host evidence.
    * @param {string} options.endPoint The endpoint of the client side
    * callback url
-   * @param {boolean} options.enableCookies whether cookies should be enabled
+   * @param {boolean} options.enableCookies Whether the client JavaScript
+   * stored results of client side processing in cookies. This can also
+   * be set per request, using the "query.fod-js-enable-cookies" evidence key.
+   * For more details on personal data policy, see http://51degrees.com/terms/client-services-privacy-policy/
    * @param {boolean} options.minify Whether to minify the JavaScript
    */
   constructor ({
@@ -198,6 +202,17 @@ class JavaScriptBuilderElement extends FlowElement {
 
     settings._sessionId = flowData.evidence.get('query.session-id');
     settings._sequence = flowData.evidence.get('query.sequence');
+
+    // Try and get the requested enable cookies from evidence.
+    const enableCookies = flowData.evidence.get(Constants.evidenceEnableCookies);
+    if (enableCookies !== undefined) {
+      settings._enableCookies = (enableCookies?.toLowerCase?.() === 'true');
+    }
+    // Try and get the requested object name from evidence.
+    const objName = flowData.evidence.get(Constants.evidenceObjectName);
+    if (objName !== undefined) {
+      settings._objName = (objName);
+    }
 
     let output = mustache.render(template, settings);
 
