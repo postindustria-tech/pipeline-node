@@ -30,8 +30,8 @@ const cookieElement = new core.FlowElement({
       type: 'javascript'
     }
   },
-  processInternal: function (flowData) {
 
+  processInternal: function (flowData) {
     const contents = { javascript: 'document.cookie =  "some cookie value"' };
 
     const data = new core.ElementDataDictionary({
@@ -41,37 +41,37 @@ const cookieElement = new core.FlowElement({
 
     flowData.setElementData(data);
   }
+
 });
 
 const sequenceElement = new core.SequenceElement();
 const jsonElement = new core.JsonBundler();
 each([
-    [false, false, false],
-    [true, false, false],
-    [false, true, true],
-    [true, true, true]
-  ])
-.test('JavaScript cookies', (enableInConfig, enableInEvidence, expectCookie, done) => {
-    const jsElement = new core.JavascriptBuilder({enableCookies: enableInConfig});
+  [false, false, false],
+  [true, false, false],
+  [false, true, true],
+  [true, true, true]
+])
+  .test('JavaScript cookies', (enableInConfig, enableInEvidence, expectCookie, done) => {
+    const jsElement = new core.JavascriptBuilder({ enableCookies: enableInConfig });
 
     const pipeline = new core.PipelineBuilder()
-        .add(cookieElement)
-        .add(sequenceElement)
-        .add(jsonElement)
-        .add(jsElement)
-        .build();
+      .add(cookieElement)
+      .add(sequenceElement)
+      .add(jsonElement)
+      .add(jsElement)
+      .build();
 
     const flowData = pipeline.createFlowData();
     flowData.evidence.add(core.Constants.evidenceEnableCookies, enableInEvidence.toString());
     flowData.process().then(function () {
-        const js = flowData.javascriptbuilder.javascript;
-        const matches = [...js.matchAll(/document\.cookie/g)];
-        if (expectCookie) {
-            expect(matches.length).toBe(2);
-        }
-        else {
-            expect(matches.length).toBe(1);
-        }
-        done();
+      const js = flowData.javascriptbuilder.javascript;
+      const matches = [...js.matchAll(/document\.cookie/g)];
+      if (expectCookie) {
+        expect(matches.length).toBe(2);
+      } else {
+        expect(matches.length).toBe(1);
+      }
+      done();
     });
-});
+  });

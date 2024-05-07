@@ -75,7 +75,7 @@ class JavaScriptBuilderElement extends FlowElement {
    * @param {string} options.endPoint The endpoint of the client side
    * callback url
    * @param {boolean} options.enableCookies Whether the client JavaScript
-   * stored results of client side processing in cookies. This can also 
+   * stored results of client side processing in cookies. This can also
    * be set per request, using the "query.fod-js-enable-cookies" evidence key.
    * For more details on personal data policy, see http://51degrees.com/terms/client-services-privacy-policy/
    * @param {boolean} options.minify Whether to minify the JavaScript
@@ -204,12 +204,12 @@ class JavaScriptBuilderElement extends FlowElement {
     settings._sequence = flowData.evidence.get('query.sequence');
 
     // Try and get the requested enable cookies from evidence.
-    let enableCookies = flowData.evidence.get(Constants.evidenceEnableCookies);
+    const enableCookies = flowData.evidence.get(Constants.evidenceEnableCookies);
     if (enableCookies !== undefined) {
       settings._enableCookies = (enableCookies?.toLowerCase?.() === 'true');
     }
     // Try and get the requested object name from evidence.
-    let objName = flowData.evidence.get(Constants.evidenceObjectName);
+    const objName = flowData.evidence.get(Constants.evidenceObjectName);
     if (objName !== undefined) {
       settings._objName = (objName);
     }
