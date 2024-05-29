@@ -21,18 +21,18 @@
  * ********************************************************************* */
 
 /**
-@example caching.js
-
-This example demonstrates how to add a cache to an aspect engine.
-The fiftyone.pipeline.engines module comes with an implementation
-of a Least Recently Used (lru) cache that can be used in
-place of the custom cache created in this example.
-
-To construct the lru cache pass in a size (in entries)
-parameter to its constructor.
-
-let lruCache = new engine.lruCache(100);
-
+ * @example caching.js
+ *
+ * This example demonstrates how to add a cache to an aspect engine.
+ * The fiftyone.pipeline.engines module comes with an implementation
+ * of a Least Recently Used (lru) cache that can be used in
+ * place of the custom cache created in this example.
+ *
+ * To construct the lru cache pass in a size (in entries)
+ * parameter to its constructor.
+ *
+ * let lruCache = new engine.lruCache(100);
+ *
  */
 
 const pipeline = require('fiftyone.pipeline.core');

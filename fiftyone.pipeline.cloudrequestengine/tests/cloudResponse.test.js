@@ -215,9 +215,10 @@ test('validate case when cloud unavailable', (done) => {
 });
 
 /**
+ *  Check if Properties contains name
  *
- * @param properties
- * @param name
+ * @param {object} properties Object of properties
+ * @param {string} name Name of the property
  */
 function propertiesContainName (properties, name) {
   expect(properties[name.toLowerCase()]).not.toBeUndefined();

@@ -21,39 +21,35 @@
  * ********************************************************************* */
 
 /**
-@example usageSharing/usageSharing.js
-
-@include{doc} example-usage-sharing-intro.txt
-
-Usage sharing is enabled by default if using some 51Degrees pipeline
-builders such as the [DeviceDetectionOnPremisePipelineBuilder](https://github.com/51Degrees/device-detection-node/blob/master/fiftyone.devicedetection.onpremise/deviceDetectionOnPremisePipelineBuilder.js)
-In this example, we show how to specifically add a shareUsage element to a
-Pipeline using configuration.
-
-As with all flow elements, this can also be handled in code, using
-the constructor parameters. The commented section in the example
-demonstrates this.
-
-The 51d.json file contains all the configuration options.
-These are all optional, so each can be omitted if the default
-for that option is sufficient:
-
-@include usageSharing/51d.json
-
-For details of what each setting does, see the constructor
-parameters in the reference documentation for the
-[share usage element](https://51degrees.com/pipeline-node/class_share_usage.html)
-
-This example is available in full on [GitHub](https://github.com/51Degrees/pipeline-node/tree/master/fiftyone.pipeline.engines.fiftyone/examples/usageSharing/usageSharing.js).
-
-Expected output
-```
-Constructing pipeline from configuration file.
-
-Pipeline created with share usage element. Evidence processed
-with this pipeline will now be shared with 51Degrees using the
-specified configuration.
-```
+ * @example usageSharing/usageSharing.js
+ *
+ * Usage sharing is enabled by default if using some 51Degrees pipeline
+ * builders such as the [DeviceDetectionOnPremisePipelineBuilder](https://github.com/51Degrees/device-detection-node/blob/master/fiftyone.devicedetection.onpremise/deviceDetectionOnPremisePipelineBuilder.js)
+ * In this example, we show how to specifically add a shareUsage element to a
+ * Pipeline using configuration.
+ *
+ * As with all flow elements, this can also be handled in code, using
+ * the constructor parameters. The commented section in the example
+ * demonstrates this.
+ *
+ * The 51d.json file contains all the configuration options.
+ * These are all optional, so each can be omitted if the default
+ * for that option is sufficient:
+ *
+ * For details of what each setting does, see the constructor
+ * parameters in the reference documentation for the
+ * [share usage element](https://51degrees.com/pipeline-node/class_share_usage.html)
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/pipeline-node/tree/master/fiftyone.pipeline.engines.fiftyone/examples/usageSharing/usageSharing.js).
+ *
+ * Expected output
+ * ```
+ * Constructing pipeline from configuration file.
+ *
+ * Pipeline created with share usage element. Evidence processed
+ * with this pipeline will now be shared with 51Degrees using the
+ * specified configuration.
+ * ```
  */
 
 const core = require('fiftyone.pipeline.core');

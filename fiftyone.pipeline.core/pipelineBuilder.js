@@ -49,9 +49,9 @@ class PipelineBuilder {
    * @param {boolean} settings.useSetHeaderProperties Whether to
    * automatically add the SetHeadersElement needed to request additional
    * HTTP headers from the client side. This is true by default.
-   * @param {typeof import('./javascriptbuilder').prototype.settings}
-   * settings.javascriptBuilderSettings The settings
-   * to pass to the JavaScriptBuilder. See JavaScriptBuilder class for details.
+   * @param {typeof import('./javascriptbuilder').prototype.settings} settings.javascriptBuilderSettings
+   * The settings to pass to the JavaScriptBuilder.
+   * See JavaScriptBuilder class for details.
    */
   constructor (settings = {}) {
     /**

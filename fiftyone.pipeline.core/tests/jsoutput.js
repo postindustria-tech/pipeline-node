@@ -77,10 +77,10 @@ fiftyoneDegreesManager = function () { // eslint-disable-line
     return keyValuePairs;
   };
 
-  // Delete a cookie.
   /**
+   * Delete a cookie.
    *
-   * @param name
+   * @param {string} name Name of a cookie
    */
   function deleteCookie (name) { // eslint-disable-line
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -198,7 +198,7 @@ fiftyoneDegreesManager = function () { // eslint-disable-line
     Object.getOwnPropertyNames(data).forEach(function (key) {
       self[key] = {};
       for (const i in data[key]) {
-        var obj = self[key];
+        const obj = self[key];
         (function (i) {
           Object.defineProperty(obj, i, {
             get: function () {

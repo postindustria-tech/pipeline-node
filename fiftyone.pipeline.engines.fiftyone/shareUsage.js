@@ -73,7 +73,8 @@ class ShareUsage extends Engine {
    * be excluded from sharing by adding them to this list.
    * @param {number} options.sharePercentage approximate proportion of
    * requests to be shared. 1 = 100%, 0.5 = 50%, etc..
-   * @param options.endpoint
+   * @param {string} options.endpoint The target destination for usage
+   * sharing data. The default is https://devices-v4.51degrees.com/new.ashx.
    */
   constructor (
     {
@@ -146,7 +147,7 @@ class ShareUsage extends Engine {
    * within the flow data provided.
    *
    * @param {FlowData} flowData the flow data containing the evidence to use
-   * @returns a new ShareUsageData instance, populated from the evidence
+   * @returns {ShareUsageData} New ShareUsageData instance, populated from the evidence
    * provided
    */
   getDataFromEvidence (flowData) {
@@ -312,7 +313,7 @@ class ShareUsage extends Engine {
    * If the list is null then populate from the pipeline.
    * If there are multiple or no pipelines then log an error.
    *
-   * @returns list of flow elements
+   * @returns {Array<FlowElement>} list of flow elements
    */
   getFlowElements () {
     if (!this.flowElements) {
@@ -344,11 +345,12 @@ const VALID_XML_CHARS =
     .concat(
       Array.from({ length: parseInt('0x100', 16) - parseInt('0x40', 16) }, (v, k) => k + parseInt('0x40', 16)));
 
-// an array describing whether a character value is valid
 const IS_VALID_XML_CHAR = __getIsValidCharMap();
 
 /**
+ * Get an object describing whether a character value is valid
  *
+ * @returns {object} Object of valid chars
  */
 function __getIsValidCharMap () {
   const maxChar = parseInt('0x100', 16);

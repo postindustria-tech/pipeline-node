@@ -21,17 +21,17 @@
  * ********************************************************************* */
 
 /**
-@example clientSideEvidenceFlowElement.js
-
-This example demonstrates the creation of a custom flow element
-which takes the results of a client side form collecting
-date of birth, setting this as evidence on a flowData object
-to calculate a person's starsign.
-The flowElement also serves additional JavaScript which gets a
-user's geolocation and saves the latitude as a cookie.
-This latitude is also then passed in to the flowData to
-calculate if a person is in the northern or southern hemispheres.
-
+ * @example clientSideEvidenceFlowElement.js
+ *
+ * This example demonstrates the creation of a custom flow element
+ * which takes the results of a client side form collecting
+ * date of birth, setting this as evidence on a flowData object
+ * to calculate a person's starsign.
+ * The flowElement also serves additional JavaScript which gets a
+ * user's geolocation and saves the latitude as a cookie.
+ * This latitude is also then passed in to the flowData to
+ * calculate if a person is in the northern or southern hemispheres.
+ *
  */
 
 // First require the core Pipeline

@@ -90,7 +90,7 @@ class FlowElement {
    * Function called to check if a FlowElement is ready
    * Used when there are asynchronous initialisation steps
    *
-   * @returns {Promise}
+   * @returns {Promise} returns Promise
    * */
   ready () {
     return Promise.resolve(this);

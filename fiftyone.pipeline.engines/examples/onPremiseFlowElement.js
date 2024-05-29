@@ -21,14 +21,14 @@
  * ********************************************************************* */
 
 /**
-@example onPremiseFlowElement.js
-
-This example demonstrates the creation of a custom flow element which takes a
-birth date as evidence and uses it to check a lookup table for a starsign.
-This lookup table is stored in a JSON file which is registered using the
-datafile update service. In this case the file has a simple watcher which
-checks if the file has changed.
-
+ * @example onPremiseFlowElement.js
+ *
+ * This example demonstrates the creation of a custom flow element which takes a
+ * birth date as evidence and uses it to check a lookup table for a starsign.
+ * This lookup table is stored in a JSON file which is registered using the
+ * datafile update service. In this case the file has a simple watcher which
+ * checks if the file has changed.
+ *
  */
 const path = require('path');
 

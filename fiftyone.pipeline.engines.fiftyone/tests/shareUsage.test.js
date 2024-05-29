@@ -36,8 +36,8 @@ let server = null;
 /**
  * Local server used to capture usage data sent.
  *
- * @param req the request
- * @param res the response
+ * @param {http.IncomingMessage} req the request
+ * @param {http.ServerResponse} res the response
  */
 const requestListener = function (req, res) {
   let data = '';

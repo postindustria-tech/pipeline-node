@@ -25,6 +25,7 @@ const EventEmitter = require('events');
 
 /**
  * @typedef {import('./flowElement')} FlowElement
+ * @typedef {import('../fiftyone.pipeline.engines/dataFileUpdateService')} DataFileUpdateService
  */
 
 /**
@@ -40,7 +41,7 @@ class Pipeline {
    * add to the Pipeline
    * @param {boolean} suppressProcessExceptions If true then pipeline
    * will suppress exceptions added to FlowData.
-   * @param dataFileUpdateService
+   * @param {DataFileUpdateService} dataFileUpdateService Service that registers FlowElements
    */
   constructor (flowElements = [], suppressProcessExceptions = false, dataFileUpdateService = null) {
     const pipeline = this;
@@ -218,8 +219,9 @@ class Pipeline {
   }
 
   /**
+   *  Update pipeline's property database for FlowElement
    *
-   * @param {FlowElement} flowElement
+   * @param {FlowElement} flowElement FlowElement to update
    * @returns {void}
    */
   updatePropertyDataBaseForElement (flowElement) {
