@@ -20,6 +20,11 @@
     "parserOptions": {
         "ecmaVersion": 2020
     },
+    "settings": {
+        "jsdoc": {
+            "mode": "typescript"
+        }
+    },
     "rules": {
         "node/no-deprecated-api": "off",
         "no-throw-literal": "off",

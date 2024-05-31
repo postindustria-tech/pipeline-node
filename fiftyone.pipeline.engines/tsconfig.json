@@ -16,6 +16,9 @@
       "outDir": "types",
       "lib": ["ES2015"],
       "moduleResolution": "Node",
-      "noImplicitAny": true
+      "noImplicitAny": true,
+      "paths": {
+        "fiftyone.pipeline.core": ["../fiftyone.pipeline.core"]
+      },
     }
   }

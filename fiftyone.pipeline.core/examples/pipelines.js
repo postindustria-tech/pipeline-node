@@ -21,11 +21,11 @@
  * ********************************************************************* */
 
 /**
-@example pipelines.js
-
-This example demonstrates syncronous and asyncronous pipelines
-with multiple flowElements and other core features of the 51Degrees pipeline
-
+ * @example pipelines.js
+ *
+ * This example demonstrates syncronous and asyncronous pipelines
+ * with multiple flowElements and other core features of the 51Degrees pipeline
+ *
  */
 
 // Note that this example is designed to be run from within the

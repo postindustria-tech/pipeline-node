@@ -21,12 +21,12 @@
  * ********************************************************************* */
 
 /**
-@example simpleEvidenceFlowElement.js
-
-This example demonstrates the creation of a custom flowElement
-which takes a birth date as evidence and uses it to check a
-lookup table for a starsign.
-
+ * @example simpleEvidenceFlowElement.js
+ *
+ * This example demonstrates the creation of a custom flowElement
+ * which takes a birth date as evidence and uses it to check a
+ * lookup table for a starsign.
+ *
  */
 
 // First require the core Pipeline

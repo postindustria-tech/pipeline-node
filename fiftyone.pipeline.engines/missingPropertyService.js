@@ -71,6 +71,7 @@ class MissingPropertyService {
    * Return true if the supplied flow element is a CloudEngine, false if not.
    *
    * @param {FlowElement} flowElement The flow element to check
+   * @returns {boolean} Is CloudEngine
    */
   _isCloudEngine (flowElement) {
     try {

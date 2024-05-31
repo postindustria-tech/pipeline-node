@@ -52,7 +52,7 @@ class CloudRequestEngine extends Engine {
    * made from a origin matching those allowed by the resource key.
    * For more detail, see the 'Request Headers' section in the
    * <a href="https://cloud.51degrees.com/api-docs/index.html">cloud documentation</a>.
-   * @param options.requestClient
+   * @param {RequestClient} options.requestClient Set predefined RequestClient.
    */
   constructor (
     {
@@ -176,8 +176,7 @@ class CloudRequestEngine extends Engine {
    * However, transport level errors or other failures can result in
    * responses that are plain text. This function handles these cases.
    *
-   * @param {string} response the response data to process
-   * @param responseBody
+   * @param {string} responseBody the response data to process
    * @returns {Array} The error messages
    */
   getErrorMessages (responseBody) {
@@ -196,7 +195,8 @@ class CloudRequestEngine extends Engine {
   /**
    * Used to handle errors from http requests
    *
-   * @param response
+   * @param {http.ServerResponse} response Responce to get errors from
+   * @returns {Array<CloudRequestError>} Array of CloudRequestError from response
    */
   getErrorsFromResponse (response) {
     let content = response;
@@ -370,7 +370,7 @@ class CloudRequestEngine extends Engine {
    * If there are evidence keys other than 'query.' that conflict then
    * this is unexpected so a warning will be logged.
    *
-   * @param {FlowData} flowData
+   * @param {FlowData} flowData FlowData to get evidence from
    * @returns {Evidence} Evidence Dictionary
    */
   getContent (flowData) {
@@ -393,7 +393,7 @@ class CloudRequestEngine extends Engine {
   /**
    * Add query data to the evidence.
    *
-   * @param flowData
+   * @param {FlowData} flowData FlowData for logging
    * @param {object} queryData The destination dictionary to add query data to.
    * @param {Evidence} allEvidence All evidence in the flow data. This is used to
    * report which evidence keys are conflicting.
@@ -449,6 +449,7 @@ class CloudRequestEngine extends Engine {
    *
    * @param {Evidence} evidence All evidence in the flow data.
    * @param {stirng} type Required evidence key prefix
+   * @returns {Evidence} Selected evidence
    */
   getSelectedEvidence (evidence, type) {
     let selectedEvidence = {};
@@ -483,7 +484,7 @@ class CloudRequestEngine extends Engine {
    *
    * @param {string} itemKey Key to check
    * @param {string} prefix The prefix to check for.
-   * @returns True if the key has the prefix.
+   * @returns {boolean} True if the key has the prefix.
    */
   hasKeyPrefix (itemKey, prefix) {
     return itemKey.startsWith(prefix + '.');
