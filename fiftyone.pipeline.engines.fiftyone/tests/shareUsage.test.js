@@ -398,7 +398,7 @@ test('share usage - send  more than once', done => {
       }, 5000);
     });
   });
-});
+}, 8000);
 
 /**
  * Check that small portion sharing is done correctly.
