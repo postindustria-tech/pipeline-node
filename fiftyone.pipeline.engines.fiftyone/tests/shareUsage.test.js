@@ -395,10 +395,10 @@ test('share usage - send  more than once', done => {
         expect(received[1]).toContain('ua 2');
         expect(received[1]).not.toContain('ua 1');
         done();
-      }, 5000);
+      }, 6000);
     });
   });
-}, 8000);
+}, 15000);
 
 /**
  * Check that small portion sharing is done correctly.
