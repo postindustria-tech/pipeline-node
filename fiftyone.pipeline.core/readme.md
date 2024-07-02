@@ -11,23 +11,32 @@ This package definds the essential components of the Pipeline API such as `flow 
 
 It can be used on its own or with the following additional packages.
 
-- **fiftyone.pipeline.engines** - Adds a specialized type of flow element called an engine which allows for additional features including an auto-updating data file for properties, a service called when a requested property is missing and a caching system.
+- [**fiftyone.pipeline.engines**](/fiftyone.pipeline.engines#readme.md) - Adds a specialized type of flow element called an engine which allows for additional features including an auto-updating data file for properties, a service called when a requested property is missing and a caching system.
 
 Engines created by 51Degrees including:
 
-- **fiftyone.devicedetection** - A device detection engine
-- **fiftyone.location** - A geolocation lookup engine
+- [**fiftyone.devicedetection**](https://github.com/51Degrees/device-detection-node#readme) - A device detection engine
+- [**fiftyone.geolocation**](https://github.com/51Degrees/location-node#readme) - A geolocation lookup engine
 
 Make use of the above along with the following additional packages:
 
-- **fiftyone.pipeline.engines.fiftyone** - Functionality specific to 51Degrees engines.
-- **fiftyone.pipeline.cloudrequestengine** - An engine used to make requests to the 51Degrees cloud service.
+- [**fiftyone.pipeline.engines.fiftyone**](/fiftyone.pipeline.engines.fiftyone#readme.md) - Functionality specific to 51Degrees engines.
+- [**fiftyone.pipeline.cloudrequestengine**](/fiftyone.pipeline.cloudrequestengine#readme.md) - An engine used to make requests to the 51Degrees cloud service.
 
 ## Installation
 
 ```
 npm install fiftyone.pipeline.core
 ```
+
+## Examples
+
+Examples can be found in the `examples/` folder. See below for a list of examples.
+
+| Example                                | Description |
+|----------------------------------------|-------------|
+| [simpleEvidenceFlowElement.js](/fiftyone.pipeline.core/examples/customFlowElements/simpleEvidenceFlowElement.js)                   |  Demonstrates how to create a custom flow element that takes some evidence (birthdate) and returns something related to that evidence (star sign). |
+| [clientSideEvidenceFlowElement.js](/fiftyone.pipeline.core/examples/customFlowElements/clientSideEvidenceFlowElement.js)                 | Demonstrates how to modify the flow element from the 'simple evidence' example to gather evidence from code running on the client device (i.e. JavaScript). |
 
 ## Tests
 
@@ -42,8 +51,3 @@ Then, navigate to the module directory and execute:
 ```
 npm test
 ```
-
-## Examples
-
-- **examples/customFlowElements/1-simpleEvidenceFlowElement.js** - Demonstrates how to create a custom flow element that takes some evidence (birthdate) and returns something related to that evidence (star sign)
-- **examples/customFlowelements/3-clientSideEvidenceFlowElement.js** - Demonstrates how to modify the flow element from the 'simple evidence' example to gather evidence from code running on the client device (i.e. JavaScript).
