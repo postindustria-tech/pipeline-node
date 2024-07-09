@@ -8,7 +8,7 @@ The 51Degrees Pipeline API is a generic web request intelligence and data proces
 
 ## This package - fiftyone.pipeline.engines.fiftyone
 
-This package uses the `engines` class created by the `fiftyone.pipeline.engines`. It makes available:
+This package uses the `engines` class created by the [`fiftyone.pipeline.engines`](/fiftyone.pipeline.engines#readme.md). It makes available:
 
 * A `share usage` engine that is used to send usage information to 51Degrees. 
 
@@ -16,4 +16,18 @@ This package uses the `engines` class created by the `fiftyone.pipeline.engines`
 
 ```
 npm install fiftyone.pipeline.engines.fiftyone
+```
+
+## Tests
+
+To run tests you will need to install the `jest` library.
+
+```
+npm install jest --global
+```
+
+Then, navigate to the module directory and execute:
+
+```
+npm test
 ```
