@@ -51,6 +51,9 @@ class DataFileUpdateService {
    **/
   constructor (pipeline) {
     this.registerPipeline(pipeline);
+    /**
+     * @type {EventEmitter}
+     */
     this.eventEmitter = new EventEmitter();
   }
 

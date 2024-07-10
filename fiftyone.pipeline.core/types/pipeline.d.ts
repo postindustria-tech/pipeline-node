@@ -21,7 +21,11 @@ declare class Pipeline {
     constructor(flowElements?: FlowElement[], suppressProcessExceptions?: boolean, dataFileUpdateService?: DataFileUpdateService);
     flowElementsChain: import("./flowElement")[];
     suppressProcessExceptions: boolean;
-    eventEmitter: EventEmitter<[never]>;
+    /**
+     * A logger for emitting messages
+     * @type {EventEmitter}
+     */
+    eventEmitter: EventEmitter;
     /**
      * @type {object}
      */

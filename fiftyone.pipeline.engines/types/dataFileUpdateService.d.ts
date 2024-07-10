@@ -16,7 +16,10 @@ declare class DataFileUpdateService {
      * pipeline the update service is attached to
      **/
     constructor(pipeline: Pipeline);
-    eventEmitter: EventEmitter<[never]>;
+    /**
+     * @type {EventEmitter}
+     */
+    eventEmitter: EventEmitter;
     registerPipeline(pipeline: any): void;
     pipeline: any;
     /**

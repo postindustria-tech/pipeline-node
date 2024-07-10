@@ -52,7 +52,10 @@ class Pipeline {
     // If true then pipeline will suppress exceptions added to FlowData.
     this.suppressProcessExceptions = suppressProcessExceptions;
 
-    // A logger for emitting messages
+    /**
+     * A logger for emitting messages
+     * @type {EventEmitter}
+     */
     this.eventEmitter = new EventEmitter();
 
     // Flattened dictionary of flowElements the pipeline contains
