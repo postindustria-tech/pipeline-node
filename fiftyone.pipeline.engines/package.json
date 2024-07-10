@@ -21,9 +21,10 @@
     "fiftyone.pipeline.core": "file:../fiftyone.pipeline.core"
   },
   "devDependencies": {
-    "@types/node": "^15.12.2",
-    "jest": "^27.0.6",
-    "prettier": "^2.0.5"
+    "@types/jest": "^27.5.2",
+    "@types/node": "^20.14.10",
+    "jest": "^27.5.1",
+    "typescript": "^5.5.3"
   },
   "license": "EUPL-1.2",
   "bugs": {
