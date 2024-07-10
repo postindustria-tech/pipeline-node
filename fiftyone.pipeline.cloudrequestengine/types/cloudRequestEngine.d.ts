@@ -80,7 +80,7 @@ declare class CloudRequestEngine extends CloudRequestEngine_base {
      * @param {import('http').ServerResponse} response Responce to get errors from
      * @returns {Array<CloudRequestError>} Array of CloudRequestError from response
      */
-    getErrorsFromResponse(response: import('http').ServerResponse): Array<CloudRequestError>;
+    getErrorsFromResponse(response: import("http").ServerResponse): Array<CloudRequestError>;
     /**
      * Internal process to fetch all the properties available under a resourcekey
      *

@@ -70,5 +70,5 @@ declare namespace SetHeadersElement {
     export { Pipeline, FlowData };
 }
 import FlowElement = require("./flowElement.js");
-type Pipeline = import('./pipeline');
-type FlowData = import('./flowData');
+type Pipeline = import("./pipeline");
+type FlowData = import("./flowData");

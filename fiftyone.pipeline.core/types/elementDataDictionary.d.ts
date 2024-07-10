@@ -32,4 +32,4 @@ declare namespace ElementDataDictionary {
     export { FlowElement };
 }
 import ElementData = require("./elementData");
-type FlowElement = import('./flowElement');
+type FlowElement = import("./flowElement");

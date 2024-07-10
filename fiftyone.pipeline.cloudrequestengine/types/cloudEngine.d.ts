@@ -43,14 +43,14 @@ declare class CloudEngine extends CloudEngine_base {
      * Internal process method for all cloud engines
      *
      * @param {FlowData} flowData FlowData to process
-     * @returns {void}
+     * @returns {Promise} Completion promise
      */
-    processInternal(flowData: FlowData): void;
+    processInternal(flowData: FlowData): Promise<any>;
 }
 declare namespace CloudEngine {
     export { Pipeline, FlowElement, FlowData, CloudRequestEngine };
 }
-type CloudRequestEngine = import('./cloudRequestEngine');
 type Pipeline = import("fiftyone.pipeline.core/types/pipeline");
 type FlowElement = import("fiftyone.pipeline.core/types/flowElement");
 type FlowData = import("fiftyone.pipeline.core/types/flowData");
+type CloudRequestEngine = import("./cloudRequestEngine");

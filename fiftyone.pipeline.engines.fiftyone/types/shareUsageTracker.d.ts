@@ -20,18 +20,6 @@ declare class ShareUsageTracker extends ShareUsageTracker_base {
     cache: import("fiftyone.pipeline.engines/types/lru");
     interval: number;
     /**
-     * Function to check if we should put the evidence in the cache
-     *
-     * @param {object} options options for match
-     * @param {string} options.key key of piece of evidence
-     * @param {*} options.value value of piece of evidence
-     * @returns {boolean} whether put in cache
-     **/
-    match({ key, value }: {
-        key: string;
-        value: any;
-    }): boolean;
-    /**
      * Retreive entry from cache
      *
      * @param {object} cacheKey key value store of evidence to lookup

@@ -24,4 +24,4 @@ declare namespace JSONBundlerElement {
 }
 import FlowElement = require("./flowElement.js");
 import BasicListEvidenceKeyFilter = require("./basicListEvidenceKeyFilter.js");
-type FlowData = import('./flowData');
+type FlowData = import("./flowData");

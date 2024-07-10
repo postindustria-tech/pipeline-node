@@ -10,9 +10,9 @@ declare class Helpers {
      * @param {FlowData} flowData A processed FlowData instance to get the response header values
      * from.
      */
-    static setResponseHeaders(response: import('http').ServerResponse, flowData: FlowData): void;
+    static setResponseHeaders(response: import("http").ServerResponse, flowData: FlowData): void;
 }
 declare namespace Helpers {
     export { FlowData };
 }
-type FlowData = import('./flowData');
+type FlowData = import("./flowData");

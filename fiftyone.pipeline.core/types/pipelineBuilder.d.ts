@@ -1,8 +1,6 @@
-/// <reference types="node" />
 export = PipelineBuilder;
 /**
  * @typedef {import('./flowElement')} FlowElement
- * @typedef {import('events').EventEmitter} EventEmitter
  */
 /**
  * A PipelineBuilder generates a Pipeline object
@@ -27,18 +25,17 @@ declare class PipelineBuilder {
      * @param {typeof import('./javascriptbuilder').prototype.settings} settings.javascriptBuilderSettings
      * The settings to pass to the JavaScriptBuilder.
      * See JavaScriptBuilder class for details.
-     * @param {EventEmitter} settings.eventEmitter A logger for emitting messages for pipeline
      */
     constructor(settings?: {
         addJavaScriptBuilder: boolean;
         useSetHeaderProperties: boolean;
-        javascriptBuilderSettings: typeof import('./javascriptbuilder').prototype.settings;
-        eventEmitter: EventEmitter;
+        javascriptBuilderSettings: typeof import("./javascriptbuilder").prototype.settings;
     });
     /**
      * @type {FlowElement[]}
      */
     flowElements: FlowElement[];
+    dataFileUpdateService: any;
     addJavaScriptBuilder: boolean;
     javascriptBuilderSettings: {
         objName: string;
@@ -49,7 +46,6 @@ declare class PipelineBuilder {
         minify: boolean;
     };
     useSetHeaderProperties: boolean;
-    eventEmitter: import("events");
     /**
      * Helper that loads a JSON configuration file from
      * the filesystem and calls pipelineBuilder.buildFromConfiguration
@@ -114,8 +110,7 @@ declare class PipelineBuilder {
     build(): Pipeline;
 }
 declare namespace PipelineBuilder {
-    export { FlowElement, EventEmitter };
+    export { FlowElement };
 }
-type FlowElement = import('./flowElement');
 import Pipeline = require("./pipeline");
-type EventEmitter = import('events').EventEmitter;
+type FlowElement = import("./flowElement");

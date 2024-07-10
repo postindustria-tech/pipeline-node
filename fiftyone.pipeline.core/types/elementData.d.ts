@@ -60,5 +60,5 @@ declare class ElementData {
 declare namespace ElementData {
     export { FlowElement, FlowData };
 }
-type FlowElement = import('./flowElement');
-type FlowData = import('./flowData');
+type FlowElement = import("./flowElement");
+type FlowData = import("./flowData");

@@ -48,10 +48,11 @@ class Tracker extends DataKeyedCache {
   /**
    * If object is found in cache, the match function is called
    *
-   * @param {object} result of the track function
-   * @returns {boolean} whether a match has been made
+   * @param {string} key key of piece of evidence
+   * @param {*} value value of piece of evidence
+   * @returns {boolean} whether put in cache
    */
-  match (result) {
+  match (key, value) {
     return true;
   }
 }

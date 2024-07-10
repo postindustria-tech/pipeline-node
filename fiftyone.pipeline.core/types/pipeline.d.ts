@@ -1,6 +1,7 @@
 export = Pipeline;
 /**
  * @typedef {import('./flowElement')} FlowElement
+ * @typedef {import('fiftyone.pipeline.engines').DataFileUpdateService} DataFileUpdateService
  */
 /**
  * Pipeline holding a list of flowElements for processing, can create
@@ -13,18 +14,19 @@ declare class Pipeline {
      *
      * @param {FlowElement[]} flowElements list of FlowElements to
      * add to the Pipeline
-     * @param {number} suppressProcessExceptions If true then pipeline
+     * @param {boolean} suppressProcessExceptions If true then pipeline
      * will suppress exceptions added to FlowData.
-     * @param {EventEmitter} eventEmitter A logger for emitting messages
+     * @param {DataFileUpdateService} dataFileUpdateService Service that registers FlowElements
      */
-    constructor(flowElements?: FlowElement[], suppressProcessExceptions?: number, eventEmitter?: EventEmitter);
+    constructor(flowElements?: FlowElement[], suppressProcessExceptions?: boolean, dataFileUpdateService?: DataFileUpdateService);
     flowElementsChain: import("./flowElement")[];
-    suppressProcessExceptions: number;
-    eventEmitter: EventEmitter;
+    suppressProcessExceptions: boolean;
+    eventEmitter: EventEmitter<[never]>;
     /**
      * @type {object}
      */
     flowElements: object;
+    dataFileUpdateService: any;
     /**
      * @type {object}
      */
@@ -69,8 +71,9 @@ declare class Pipeline {
     updatePropertyDataBaseForElement(flowElement: FlowElement): void;
 }
 declare namespace Pipeline {
-    export { FlowElement };
+    export { FlowElement, DataFileUpdateService };
 }
 import EventEmitter = require("events");
 import FlowData = require("./flowData");
-type FlowElement = import('./flowElement');
+type FlowElement = import("./flowElement");
+type DataFileUpdateService = any;

@@ -27,4 +27,4 @@ declare namespace SequenceElement {
 }
 import FlowElement = require("./flowElement.js");
 import BasicListEvidenceKeyFilter = require("./basicListEvidenceKeyFilter");
-type FlowData = import('./flowData');
+type FlowData = import("./flowData");

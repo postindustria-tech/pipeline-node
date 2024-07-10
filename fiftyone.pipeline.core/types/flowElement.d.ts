@@ -101,6 +101,6 @@ declare namespace FlowElement {
     export { FlowData, Pipeline, EvidenceKeyFilter };
 }
 import EvidenceKeyFilterBase = require("./evidenceKeyFilter");
-type Pipeline = import('./pipeline');
-type FlowData = import('./flowData');
-type EvidenceKeyFilter = import('./evidenceKeyFilter');
+type FlowData = import("./flowData");
+type Pipeline = import("./pipeline");
+type EvidenceKeyFilter = import("./evidenceKeyFilter");

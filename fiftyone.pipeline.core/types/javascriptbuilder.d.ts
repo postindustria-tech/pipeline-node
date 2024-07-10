@@ -74,5 +74,5 @@ import FlowElement = require("./flowElement.js");
 declare class JSEvidenceKeyFilter extends EvidenceKeyFilter {
     filterEvidenceKey(key: any): boolean;
 }
-type FlowData = import('./flowData');
+type FlowData = import("./flowData");
 import EvidenceKeyFilter = require("./evidenceKeyFilter.js");

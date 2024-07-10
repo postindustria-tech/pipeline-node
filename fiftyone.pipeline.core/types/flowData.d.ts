@@ -86,6 +86,6 @@ declare namespace FlowData {
     export { Pipeline, FlowElement, ElementData };
 }
 import Evidence = require("./evidence");
-type Pipeline = import('./pipeline');
-type FlowElement = import('./flowElement');
-type ElementData = import('./elementData');
+type Pipeline = import("./pipeline");
+type FlowElement = import("./flowElement");
+type ElementData = import("./elementData");
