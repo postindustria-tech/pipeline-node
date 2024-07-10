@@ -46,7 +46,7 @@ class DataFileUpdateService {
   /**
    * Constructor for a DataFileUpdateService
    *
-   * @param {Pipeline} pipeline
+   * @param {Pipeline} [pipeline]
    * pipeline the update service is attached to
    **/
   constructor (pipeline) {
@@ -57,6 +57,11 @@ class DataFileUpdateService {
     this.eventEmitter = new EventEmitter();
   }
 
+  /**
+   * Method to register a pipeline with the update service
+   *
+   * @param {Pipeline} [pipeline] Pipeline to register
+   */
   registerPipeline (pipeline) {
     this.pipeline = pipeline;
   }

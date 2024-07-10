@@ -12,16 +12,21 @@ declare class DataFileUpdateService {
     /**
      * Constructor for a DataFileUpdateService
      *
-     * @param {Pipeline} pipeline
+     * @param {Pipeline} [pipeline]
      * pipeline the update service is attached to
      **/
-    constructor(pipeline: Pipeline);
+    constructor(pipeline?: Pipeline);
     /**
      * @type {EventEmitter}
      */
     eventEmitter: EventEmitter;
-    registerPipeline(pipeline: any): void;
-    pipeline: any;
+    /**
+     * Method to register a pipeline with the update service
+     *
+     * @param {Pipeline} [pipeline] Pipeline to register
+     */
+    registerPipeline(pipeline?: Pipeline): void;
+    pipeline: import("fiftyone.pipeline.core/types/pipeline");
     /**
      * EventEmitter's 'on' delegation
      *
