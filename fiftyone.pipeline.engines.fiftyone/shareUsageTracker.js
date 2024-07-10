@@ -49,12 +49,11 @@ class ShareUsageTracker extends Tracker {
   /**
    * Function to check if we should put the evidence in the cache
    *
-   * @param {object} options options for match
-   * @param {string} options.key key of piece of evidence
-   * @param {*} options.value value of piece of evidence
+   * @param {string} key key of piece of evidence
+   * @param {*} value value of piece of evidence
    * @returns {boolean} whether put in cache
    **/
-  match ({ key, value }) {
+  match (key, value) {
     const difference = Date.now() - value;
 
     if (difference > this.interval) {

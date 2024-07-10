@@ -108,7 +108,7 @@ class CloudEngine extends Engine {
    * Internal process method for all cloud engines
    *
    * @param {FlowData} flowData FlowData to process
-   * @returns {void}
+   * @returns {Promise} Completion promise
    */
   processInternal (flowData) {
     const engine = this;
@@ -121,10 +121,9 @@ class CloudEngine extends Engine {
 
       if (cloudData && cloudData[engine.dataKey] === null) {
         flowData.pipeline.log('error', engine.dataKey + ' not populated. ' +
-          cloudData[engine.dataKey + 'nullreason'] !== null
+        cloudData[engine.dataKey + 'nullreason'] !== null
           ? cloudData[engine.dataKey + 'nullreason']
-          : '' +
-          '\n' + 'This may be because the provided API key is not authorised for ' + engine.dataKey + ' queries.');
+          : '\nThis may be because the provided API key is not authorised for ' + engine.dataKey + ' queries.');
       } else {
         // Loop over cloudData.device properties to check if they have a value
         Object.entries(cloudData[engine.dataKey]).forEach(function ([key, value]) {

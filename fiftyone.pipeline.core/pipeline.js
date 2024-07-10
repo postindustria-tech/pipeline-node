@@ -25,6 +25,7 @@ const EventEmitter = require('events');
 
 /**
  * @typedef {import('./flowElement')} FlowElement
+ * @typedef {import('fiftyone.pipeline.engines').DataFileUpdateService} DataFileUpdateService
  */
 
 /**
@@ -38,11 +39,11 @@ class Pipeline {
    *
    * @param {FlowElement[]} flowElements list of FlowElements to
    * add to the Pipeline
-   * @param {number} suppressProcessExceptions If true then pipeline
+   * @param {boolean} suppressProcessExceptions If true then pipeline
    * will suppress exceptions added to FlowData.
-   * @param {EventEmitter} eventEmitter A logger for emitting messages
+   * @param {DataFileUpdateService} dataFileUpdateService Service that registers FlowElements
    */
-  constructor (flowElements = [], suppressProcessExceptions = false, eventEmitter = null) {
+  constructor (flowElements = [], suppressProcessExceptions = false, dataFileUpdateService = null) {
     const pipeline = this;
 
     // The chain of flowElements to run, including arrays of parallel elements
@@ -52,11 +53,7 @@ class Pipeline {
     this.suppressProcessExceptions = suppressProcessExceptions;
 
     // A logger for emitting messages
-    if (eventEmitter) {
-      this.eventEmitter = eventEmitter;
-    } else {
-      this.eventEmitter = new EventEmitter();
-    }
+    this.eventEmitter = new EventEmitter();
 
     // Flattened dictionary of flowElements the pipeline contains
     /**
@@ -64,12 +61,17 @@ class Pipeline {
      */
     this.flowElements = {};
 
+    if (dataFileUpdateService) {
+      this.dataFileUpdateService = dataFileUpdateService;
+      this.dataFileUpdateService.registerPipeline(this);
+    }
+
     // Run through flowElements and store them by dataKey
     // in the pipeline.flowElements object.
     // Recursive function so it can handle parallel elements
     // which are passed in as arrays
-    const storeInFlowElementList = function (flowElemmentList) {
-      flowElemmentList.forEach(function (slot) {
+    const storeInFlowElementList = function (flowElementList) {
+      flowElementList.forEach(function (slot) {
         if (Array.isArray(slot)) {
           storeInFlowElementList(slot);
         } else {

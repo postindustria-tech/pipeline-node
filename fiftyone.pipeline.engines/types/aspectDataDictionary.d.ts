@@ -39,4 +39,4 @@ declare namespace AspectDataDictionary {
 }
 import AspectData = require("./aspectData");
 type FlowElement = import("fiftyone.pipeline.core/types/flowElement");
-type MissingPropertyService = import('./missingPropertyService');
+type MissingPropertyService = import("./missingPropertyService");

@@ -1,5 +1,6 @@
 export = DataFileUpdateService;
 /**
+ * @typedef {import('fiftyone.pipeline.core').Pipeline} Pipeline
  * @typedef {import('./dataFile')} DataFile
  */
 /**
@@ -11,18 +12,13 @@ declare class DataFileUpdateService {
     /**
      * Constructor for a DataFileUpdateService
      *
-     * @param {EventEmitter=} pipelineEmitter
-     * pipelineEmitter the update service is attached to
+     * @param {Pipeline} pipeline
+     * pipeline the update service is attached to
      **/
-    constructor(pipelineEmitter?: EventEmitter | undefined);
+    constructor(pipeline: Pipeline);
     eventEmitter: EventEmitter;
-    /**
-     * Register emmiter to get human readable statuses
-     *
-     * @param {EventEmitter} pipelineEmitter event emiiter for human readable statuses
-     */
-    registerPipelineEmmiter(pipelineEmitter: EventEmitter): void;
-    pipelineEmitter: EventEmitter;
+    registerPipeline(pipeline: any): void;
+    pipeline: any;
     /**
      * EventEmitter's 'on' delegation
      *
@@ -41,16 +37,17 @@ declare class DataFileUpdateService {
      * Method that updates a datafile when it is due an update
      *
      * @param {DataFile} dataFile the datafile to update
-     * @returns {boolean} returns false if already updating
+     * @returns {boolean | void} returns false if already updating
      * or request failed
      */
-    updateDataFile(dataFile: DataFile): boolean;
+    updateDataFile(dataFile: DataFile): boolean | void;
     /**
      * Internal method called when the datafile has
      * been downloaded and is ready after an update
      *
      * @param {DataFile} dataFile the datafile that is ready
      * @param {string} filename the filename of the updated datafile
+     * @returns {void}
      */
     fileReady(dataFile: DataFile, filename: string): void;
     /**
@@ -76,7 +73,8 @@ declare class DataFileUpdateService {
     registerDataFile(dataFile: DataFile): void;
 }
 declare namespace DataFileUpdateService {
-    export { DataFile };
+    export { Pipeline, DataFile };
 }
 import EventEmitter = require("events");
-type DataFile = import('./dataFile');
+type Pipeline = import("fiftyone.pipeline.core/types/pipeline");
+type DataFile = import("./dataFile");

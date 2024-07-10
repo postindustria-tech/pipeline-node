@@ -32,5 +32,5 @@ declare namespace AspectData {
 }
 import MissingPropertyServiceBase = require("./missingPropertyService");
 type FlowElement = import("fiftyone.pipeline.core/types/flowElement");
-type MissingPropertyService = import('./missingPropertyService');
+type MissingPropertyService = import("./missingPropertyService");
 type FlowData = import("fiftyone.pipeline.core/types/flowData");

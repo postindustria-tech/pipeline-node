@@ -27,7 +27,6 @@ const path = require('path');
 
 /**
  * @typedef {import('./flowElement')} FlowElement
- * @typedef {import('events').EventEmitter} EventEmitter
  */
 
 /**
@@ -53,13 +52,16 @@ class PipelineBuilder {
    * @param {typeof import('./javascriptbuilder').prototype.settings} settings.javascriptBuilderSettings
    * The settings to pass to the JavaScriptBuilder.
    * See JavaScriptBuilder class for details.
-   * @param {EventEmitter} settings.eventEmitter A logger for emitting messages for pipeline
    */
   constructor (settings = {}) {
     /**
      * @type {FlowElement[]}
      */
     this.flowElements = [];
+
+    if (settings.dataFileUpdateService) {
+      this.dataFileUpdateService = settings.dataFileUpdateService;
+    }
 
     if (typeof settings.addJavaScriptBuilder !== 'undefined') {
       this.addJavaScriptBuilder = settings.addJavaScriptBuilder;
@@ -75,10 +77,6 @@ class PipelineBuilder {
       this.useSetHeaderProperties = settings.useSetHeaderProperties;
     } else {
       this.useSetHeaderProperties = true;
-    }
-
-    if (settings.eventEmitter) {
-      this.eventEmitter = settings.eventEmitter;
     }
   }
 
@@ -130,7 +128,7 @@ class PipelineBuilder {
 
     flowElements = this.addRequiredElements(flowElements);
 
-    return new Pipeline(flowElements, false);
+    return new Pipeline(flowElements, false, this.dataFileUpdateService);
   }
 
   /**
@@ -233,7 +231,7 @@ class PipelineBuilder {
    */
   build () {
     this.flowElements = this.addRequiredElements(this.flowElements);
-    return new Pipeline(this.flowElements, false, this.eventEmitter);
+    return new Pipeline(this.flowElements, false, this.dataFileUpdateService);
   }
 }
 
