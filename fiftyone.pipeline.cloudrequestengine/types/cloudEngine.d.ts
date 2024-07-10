@@ -43,9 +43,9 @@ declare class CloudEngine extends CloudEngine_base {
      * Internal process method for all cloud engines
      *
      * @param {FlowData} flowData FlowData to process
-     * @returns {Promise} Completion promise
+     * @returns {Promise<void> | void} Completion promise
      */
-    processInternal(flowData: FlowData): Promise<any>;
+    processInternal(flowData: FlowData): Promise<void> | void;
 }
 declare namespace CloudEngine {
     export { Pipeline, FlowElement, FlowData, CloudRequestEngine };

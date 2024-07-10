@@ -108,7 +108,7 @@ class CloudEngine extends Engine {
    * Internal process method for all cloud engines
    *
    * @param {FlowData} flowData FlowData to process
-   * @returns {Promise} Completion promise
+   * @returns {Promise<void> | void} Completion promise
    */
   processInternal (flowData) {
     const engine = this;
