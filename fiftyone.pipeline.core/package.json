@@ -2,7 +2,12 @@
   "name": "fiftyone.pipeline.core",
   "version": "1.0.21",
   "description": "Core library for the 51Degrees Pipeline API",
-  "keywords": ["51degrees", "pipeline", "data", "service"],
+  "keywords": [
+    "51degrees",
+    "pipeline",
+    "data",
+    "service"
+  ],
   "directories": {
     "test": "tests"
   },
@@ -17,10 +22,12 @@
     "uglify-js": "^3.17.4"
   },
   "devDependencies": {
-    "@types/node": "^15.14.9",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^20.14.10",
     "jest": "^27.5.1",
     "jest-each": "^27.5.1",
-    "node-mocks-http": "^1.13.0"
+    "node-mocks-http": "^1.13.0",
+    "typescript": "^5.5.3"
   },
   "license": "EUPL-1.2",
   "bugs": {

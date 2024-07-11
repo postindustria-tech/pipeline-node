@@ -25,7 +25,7 @@ const EventEmitter = require('events');
 
 /**
  * @typedef {import('./flowElement')} FlowElement
- * @typedef {import('../fiftyone.pipeline.engines/dataFileUpdateService')} DataFileUpdateService
+ * @typedef {import('fiftyone.pipeline.engines').DataFileUpdateService} DataFileUpdateService
  */
 
 /**
@@ -52,10 +52,16 @@ class Pipeline {
     // If true then pipeline will suppress exceptions added to FlowData.
     this.suppressProcessExceptions = suppressProcessExceptions;
 
-    // A logger for emitting messages
+    /**
+     * A logger for emitting messages
+     * @type {EventEmitter}
+     */
     this.eventEmitter = new EventEmitter();
 
     // Flattened dictionary of flowElements the pipeline contains
+    /**
+     * @type {object}
+     */
     this.flowElements = {};
 
     if (dataFileUpdateService) {
@@ -67,8 +73,8 @@ class Pipeline {
     // in the pipeline.flowElements object.
     // Recursive function so it can handle parallel elements
     // which are passed in as arrays
-    const storeInFlowElementList = function (flowElemmentList) {
-      flowElemmentList.forEach(function (slot) {
+    const storeInFlowElementList = function (flowElementList) {
+      flowElementList.forEach(function (slot) {
         if (Array.isArray(slot)) {
           storeInFlowElementList(slot);
         } else {
@@ -87,6 +93,9 @@ class Pipeline {
 
     // Empty property database, later populated and possibly
     // updated by flowElements' property lists
+    /**
+     * @type {object}
+     */
     this.propertyDatabase = {};
 
     // Update property list - Note that some of these could be async
@@ -201,7 +210,7 @@ class Pipeline {
    * Shorthand to trigger a message on the pipeline's eventEmitter
    *
    * @param {string} type type of message
-   * @param {mixed} message message to store in the log
+   * @param {*} message message to store in the log
    */
   log (type, message) {
     this.eventEmitter.emit(type, message);

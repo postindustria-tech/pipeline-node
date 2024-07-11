@@ -99,7 +99,7 @@ class Engine extends FlowElement {
    * and adds it to the cache (if a cache is present)
    *
    * @param {FlowData} flowData FlowData to process
-   * @returns {undefined} result of processing
+   * @returns {Promise<true|void>} result of processing
    */
   process (flowData) {
     const engine = this;

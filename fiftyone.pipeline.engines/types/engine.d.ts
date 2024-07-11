@@ -38,6 +38,17 @@ declare class Engine extends Engine_base {
      */
     inCache(flowData: FlowData): boolean;
     /**
+     * An engine's process function checks cache for an item
+     * (calling inCache)
+     * If found it returns the cached object
+     * If not found it runs the standard processInternal function
+     * and adds it to the cache (if a cache is present)
+     *
+     * @param {FlowData} flowData FlowData to process
+     * @returns {Promise<true|void>} result of processing
+     */
+    process(flowData: FlowData): Promise<true | void>;
+    /**
      * Callback which runs when an attached DataFile is updated
      * Needs to be overriden by a specific engine to do anything
      *
@@ -55,6 +66,6 @@ declare class Engine extends Engine_base {
 declare namespace Engine {
     export { DataFile, DataKeyedCache, FlowData };
 }
+type DataFile = import("./dataFile");
+type DataKeyedCache = import("./dataKeyedCache");
 type FlowData = import("fiftyone.pipeline.core/types/flowData");
-type DataFile = import('./dataFile');
-type DataKeyedCache = import('./dataKeyedCache');

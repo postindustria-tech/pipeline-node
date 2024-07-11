@@ -1,6 +1,7 @@
 export = Pipeline;
 /**
  * @typedef {import('./flowElement')} FlowElement
+ * @typedef {import('fiftyone.pipeline.engines').DataFileUpdateService} DataFileUpdateService
  */
 /**
  * Pipeline holding a list of flowElements for processing, can create
@@ -13,12 +14,27 @@ declare class Pipeline {
      *
      * @param {FlowElement[]} flowElements list of FlowElements to
      * add to the Pipeline
+     * @param {boolean} suppressProcessExceptions If true then pipeline
+     * will suppress exceptions added to FlowData.
+     * @param {DataFileUpdateService} dataFileUpdateService Service that registers FlowElements
      */
-    constructor(flowElements?: FlowElement[]);
+    constructor(flowElements?: FlowElement[], suppressProcessExceptions?: boolean, dataFileUpdateService?: DataFileUpdateService);
     flowElementsChain: import("./flowElement")[];
+    suppressProcessExceptions: boolean;
+    /**
+     * A logger for emitting messages
+     * @type {EventEmitter}
+     */
     eventEmitter: EventEmitter;
-    flowElements: {};
-    propertyDatabase: {};
+    /**
+     * @type {object}
+     */
+    flowElements: object;
+    dataFileUpdateService: any;
+    /**
+     * @type {object}
+     */
+    propertyDatabase: object;
     processMethod: (flowData: any) => any;
     /**
      * get a FlowElement by its dataKey
@@ -39,7 +55,7 @@ declare class Pipeline {
      * Shorthand to trigger a message on the pipeline's eventEmitter
      *
      * @param {string} type type of message
-     * @param {mixed} message message to store in the log
+     * @param {*} message message to store in the log
      */
     log(type: string, message: any): void;
     /**
@@ -51,15 +67,17 @@ declare class Pipeline {
      */
     createFlowData(): FlowData;
     /**
+     *  Update pipeline's property database for FlowElement
      *
-     * @param {FlowElement} flowElement
+     * @param {FlowElement} flowElement FlowElement to update
      * @returns {void}
      */
     updatePropertyDataBaseForElement(flowElement: FlowElement): void;
 }
 declare namespace Pipeline {
-    export { FlowElement };
+    export { FlowElement, DataFileUpdateService };
 }
 import EventEmitter = require("events");
-type FlowElement = import('./flowElement');
 import FlowData = require("./flowData");
+type FlowElement = import("./flowElement");
+type DataFileUpdateService = any;

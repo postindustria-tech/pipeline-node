@@ -131,6 +131,12 @@ class PipelineBuilder {
     return new Pipeline(flowElements, false, this.dataFileUpdateService);
   }
 
+  /**
+   * Add required elements to an existing FlowElement array
+   *
+   * @param {FlowElement[]} flowElements array of elements to add to
+   * @returns {FlowElement[]} resulting array with required elements
+   */
   addRequiredElements (flowElements) {
     return flowElements
       .concat(this.getJavaScriptElements())

@@ -19,9 +19,17 @@ declare class ElementDataDictionary extends ElementData {
         contents: object;
     }, ...args: any[]);
     contents: object;
+    /**
+     * Return value from elementData dictionary
+     *
+     * @param {string} key the property key to retrieve
+     * @returns {number} integer value
+     */
+    getInternal(key: string): number;
+    [Symbol.iterator](): Generator<string, void, unknown>;
 }
 declare namespace ElementDataDictionary {
     export { FlowElement };
 }
 import ElementData = require("./elementData");
-type FlowElement = import('./flowElement');
+type FlowElement = import("./flowElement");

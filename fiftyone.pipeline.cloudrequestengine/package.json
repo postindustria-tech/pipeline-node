@@ -2,7 +2,13 @@
   "name": "fiftyone.pipeline.cloudrequestengine",
   "version": "1.0.21",
   "description": "Cloud request engine for the 51Degrees Pipeline API",
-  "keywords": ["51degrees", "pipeline", "data", "service", "cloud"],
+  "keywords": [
+    "51degrees",
+    "pipeline",
+    "data",
+    "service",
+    "cloud"
+  ],
   "main": "index.js",
   "types": "types/index.d.ts",
   "directories": {
@@ -13,9 +19,11 @@
   },
   "author": "51Degrees Engineering <engineering@51degrees.com>",
   "devDependencies": {
-    "@types/node": "^15.12.2",
-    "jest": "^27.0.6",
-    "jest-each": "^27.0.6"
+    "@types/jest": "^27.5.2",
+    "@types/node": "^20.14.10",
+    "jest": "^27.5.1",
+    "jest-each": "^27.5.1",
+    "typescript": "^5.5.3"
   },
   "dependencies": {
     "fiftyone.pipeline.core": "file:../fiftyone.pipeline.core",

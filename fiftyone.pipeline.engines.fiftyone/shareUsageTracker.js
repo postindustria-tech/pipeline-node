@@ -50,7 +50,7 @@ class ShareUsageTracker extends Tracker {
    * Function to check if we should put the evidence in the cache
    *
    * @param {string} key key of piece of evidence
-   * @param {mixed} value value of piece of evidence
+   * @param {*} value value of piece of evidence
    * @returns {boolean} whether put in cache
    **/
   match (key, value) {
@@ -69,7 +69,7 @@ class ShareUsageTracker extends Tracker {
    * Retreive entry from cache
    *
    * @param {object} cacheKey key value store of evidence to lookup
-   * @returns {mixed} value stored in cache
+   * @returns {*} value stored in cache
    **/
   get (cacheKey) {
     return this.cache.read(cacheKey);

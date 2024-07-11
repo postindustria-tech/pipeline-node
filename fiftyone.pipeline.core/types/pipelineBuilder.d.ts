@@ -22,19 +22,20 @@ declare class PipelineBuilder {
      * @param {boolean} settings.useSetHeaderProperties Whether to
      * automatically add the SetHeadersElement needed to request additional
      * HTTP headers from the client side. This is true by default.
-     * @param {typeof import('./javascriptbuilder').prototype.settings}
-     * settings.javascriptBuilderSettings The settings
-     * to pass to the JavaScriptBuilder. See JavaScriptBuilder class for details.
+     * @param {typeof import('./javascriptbuilder').prototype.settings} settings.javascriptBuilderSettings
+     * The settings to pass to the JavaScriptBuilder.
+     * See JavaScriptBuilder class for details.
      */
     constructor(settings?: {
         addJavaScriptBuilder: boolean;
         useSetHeaderProperties: boolean;
-        javascriptBuilderSettings: typeof import('./javascriptbuilder').prototype.settings;
+        javascriptBuilderSettings: typeof import("./javascriptbuilder").prototype.settings;
     });
     /**
      * @type {FlowElement[]}
      */
     flowElements: FlowElement[];
+    dataFileUpdateService: any;
     addJavaScriptBuilder: boolean;
     javascriptBuilderSettings: {
         objName: string;
@@ -60,6 +61,13 @@ declare class PipelineBuilder {
      * @returns {Pipeline} the constructed pipeline
      */
     buildFromConfiguration(config: object): Pipeline;
+    /**
+     * Add required elements to an existing FlowElement array
+     *
+     * @param {FlowElement[]} flowElements array of elements to add to
+     * @returns {FlowElement[]} resulting array with required elements
+     */
+    addRequiredElements(flowElements: FlowElement[]): FlowElement[];
     /**
      * Internal function used to first check if the
      * JavaScript elements should be added to the pipeline
@@ -104,5 +112,5 @@ declare class PipelineBuilder {
 declare namespace PipelineBuilder {
     export { FlowElement };
 }
-type FlowElement = import('./flowElement');
 import Pipeline = require("./pipeline");
+type FlowElement = import("./flowElement");

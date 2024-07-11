@@ -46,22 +46,42 @@ class DataFileUpdateService {
   /**
    * Constructor for a DataFileUpdateService
    *
-   * @param {Pipeline} pipeline
+   * @param {Pipeline} [pipeline]
    * pipeline the update service is attached to
    **/
   constructor (pipeline) {
     this.registerPipeline(pipeline);
+    /**
+     * @type {EventEmitter}
+     */
     this.eventEmitter = new EventEmitter();
   }
 
+  /**
+   * Method to register a pipeline with the update service
+   *
+   * @param {Pipeline} [pipeline] Pipeline to register
+   */
   registerPipeline (pipeline) {
     this.pipeline = pipeline;
   }
 
+  /**
+   * EventEmitter's 'on' delegation
+   *
+   * @param {string | symbol}  listener listener
+   * @param {Function} callback callback
+   */
   on (listener, callback) {
     this.eventEmitter.on(listener, callback);
   }
 
+  /**
+   * EventEmitter's 'once' delegation
+   *
+   * @param {string | symbol} listener listener
+   * @param {Function} callback callback
+   */
   once (listener, callback) {
     this.eventEmitter.once(listener, callback);
   }
@@ -70,7 +90,8 @@ class DataFileUpdateService {
    * Method that updates a datafile when it is due an update
    *
    * @param {DataFile} dataFile the datafile to update
-   * @returns {undefined}
+   * @returns {boolean | void} returns false if already updating
+   * or request failed
    */
   updateDataFile (dataFile) {
     const dataFileUpdateService = this;
@@ -92,9 +113,7 @@ class DataFileUpdateService {
           'If-Modified-Since': dataFile.getDatePublished().toUTCString()
         };
       } catch (e) {
-
         // getPublished might not exist if no datafile
-
       }
     }
 
@@ -216,7 +235,7 @@ class DataFileUpdateService {
    *
    * @param {DataFile} dataFile the datafile that is ready
    * @param {string} filename the filename of the updated datafile
-   * @returns {undefined}
+   * @returns {void}
    */
   fileReady (dataFile, filename) {
     const dataFileUpdateService = this;
