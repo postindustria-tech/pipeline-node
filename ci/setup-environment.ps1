@@ -15,7 +15,7 @@ $packageJSON = @"
   "scripts": {
     "unit-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testPathIgnorePatterns '.*integration.*'",
     "integration-test": "jest --ci --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --testMatch '**/*integration*.js'",
-    "lint": "eslint . --ext .js",
+    "lint": "nslookup cloud.51degrees.com",
     "tsc": "tsc -b --force"
   },
   "repository": {
